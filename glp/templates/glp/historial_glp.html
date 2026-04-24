@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary"><i class="bi bi-clock-history"></i> Historial de Certificados GLP</h3>
+        <a href="{% url 'crear_glp' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo Certificado</a>
+    </div>
+
+    <form method="GET" class="mb-4">
+        <div class="input-group" style="max-width: 400px;">
+            <input type="text" name="q" class="form-control" placeholder="Buscar por placa..." value="{{ request.GET.q }}">
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>N° Certificado</th>
+                    <th>Placa</th>
+                    <th>Propietario</th>
+                    <th>Tipo</th>
+                    <th>Fecha Emisión</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in certificados %}
+                <tr>
+                    <td class="fw-bold">{{ c.numero_certificado }}</td>
+                    <td><span class="badge bg-info text-dark">{{ c.placa }}</span></td>
+                    <td>{{ c.propietario }}</td>
+                    <td>
+                        {% if c.tipo_certificado == 'INICIAL' %}
+                            <span class="badge bg-warning text-dark">INICIAL</span>
+                        {% else %}
+                            <span class="badge bg-success">ANUAL</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ c.fecha_emision|date:"d/m/Y" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-file-earmark-pdf"></i> PDF
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted p-5">No se encontraron certificados registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

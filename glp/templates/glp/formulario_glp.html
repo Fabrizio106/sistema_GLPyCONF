@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    
+    <div class="card p-4">
+        <div class="card-title">
+            <i class="bi bi-gear-fill text-primary"></i> Sección A: Control de Emisión
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Sede de Inspección</label>
+                {{ form.sede }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Fecha de Emisión</label>
+                {{ form.fecha_emision }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">N° de Certificado</label>
+                {{ form.numero_certificado }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <div class="card-title d-flex justify-content-between w-100">
+            <div><i class="bi bi-search text-primary"></i> Sección B: Datos del Vehículo</div>
+            <span class="badge bg-secondary rounded-pill d-flex align-items-center">Búsqueda Rápida</span>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="form-label">Placa del Vehículo</label>
+                <div class="input-group">
+                    {{ form.placa }}
+                    <button class="btn btn-primary" type="button" id="btnConsultarApi">
+                        <i class="bi bi-cloud-download"></i> Consultar API
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">Nombre del Propietario</label>
+                {{ form.propietario }}
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-3"><label class="form-label">Categoría</label>{{ form.categoria }}</div>
+            <div class="col-md-3"><label class="form-label">Marca</label>{{ form.marca }}</div>
+            <div class="col-md-3"><label class="form-label">Modelo</label>{{ form.modelo }}</div>
+            <div class="col-md-3"><label class="form-label">Versión</label>{{ form.version }}</div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Año Fab.</label>{{ form.anio_fabricacion }}</div>
+            <div class="col-md-4"><label class="form-label">VIN / Chasis</label>{{ form.vin_serie }}</div>
+            <div class="col-md-2"><label class="form-label">N° Motor</label>{{ form.numero_motor }}</div>
+            <div class="col-md-3"><label class="form-label">Combustible</label>{{ form.combustible }}</div>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <div class="card-title"><i class="bi bi-speedometer2 text-primary"></i> Sección C: Especificaciones Técnicas</div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-2"><label class="form-label">Cilindrada</label>{{ form.cilindrada }}</div>
+            <div class="col-md-2"><label class="form-label">Cilindros</label>{{ form.cilindros }}</div>
+            <div class="col-md-2"><label class="form-label">Ejes / Ruedas</label>
+                <div class="d-flex gap-2">{{ form.ejes }} {{ form.ruedas }}</div>
+            </div>
+            <div class="col-md-2"><label class="form-label">Asientos / Pas.</label>
+                <div class="d-flex gap-2">{{ form.asientos }} {{ form.pasajeros }}</div>
+            </div>
+            <div class="col-md-2"><label class="form-label">Largo (m)</label>{{ form.largo }}</div>
+            <div class="col-md-2"><label class="form-label">Ancho (m)</label>{{ form.ancho }}</div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Altura (m)</label>{{ form.alto }}</div>
+            <div class="col-md-3"><label class="form-label">Peso Neto (kg)</label>{{ form.peso_neto }}</div>
+            <div class="col-md-3"><label class="form-label">Peso Bruto (kg)</label>{{ form.peso_bruto }}</div>
+            <div class="col-md-3"><label class="form-label">Carga Útil (kg)</label>{{ form.carga_util }}</div>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <div class="card-title"><i class="bi bi-plugin text-primary"></i> Sección D: Componentes del Sistema GLP</div>
+        <div class="row">
+            <div class="col-md-5 border-end pe-4">
+                <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-circle-fill small me-2"></i>REDUCTOR / VAPORIZADOR</h6>
+                <div class="row g-2">
+                    <div class="col-4"><label class="form-label">Marca</label>{{ form.reductor_marca }}</div>
+                    <div class="col-4"><label class="form-label">Modelo</label>{{ form.reductor_modelo }}</div>
+                    <div class="col-4"><label class="form-label">Serie</label>{{ form.reductor_serie }}</div>
+                </div>
+            </div>
+            <div class="col-md-7 ps-4">
+                <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-circle-fill small me-2"></i>CILINDRO DE ALMACENAMIENTO</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-4"><label class="form-label">Marca</label>{{ form.cilindro_marca }}</div>
+                    <div class="col-4"><label class="form-label">Modelo</label>{{ form.cilindro_modelo }}</div>
+                    <div class="col-4"><label class="form-label">Serie</label>{{ form.cilindro_serie }}</div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-4"><label class="form-label">Capacidad (L)</label>{{ form.cilindro_capacidad }}</div>
+                    <div class="col-8"><label class="form-label">Fecha Fabricación</label>{{ form.cilindro_fecha_fab }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success-custom w-100 text-white rounded-3 fs-5 mb-4 shadow">
+        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Registrar y Generar PDF GLP
+    </button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- 1. LÓGICA DE CÁLCULO DE FECHAS ---
+    const sedeSelect = document.getElementById('id_sede');
+    const combustibleSelect = document.getElementById('id_combustible');
+    const fechaInput = document.getElementById('id_fecha_emision');
+
+    function calcularFecha() {
+        const sede = sedeSelect.value.toUpperCase();
+        const combustible = combustibleSelect.value;
+        if (!sede) return; 
+
+        const combustiblesInicial = ['BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV', 'GASOL/GNV', 'GASOLINA/GNV', 'GNV', 'GASOLINA', 'GASOLINA PREMIUM SIN PLOMO'];
+        let tipo = combustiblesInicial.includes(combustible) ? 'INICIAL' : 'ANUAL';
+        let diasARestar = 1; 
+
+        const sedesMismoDia = ['POTENZA', 'SAN JUAN DE LURIGANCHO', 'CASMA'];
+        if (sedesMismoDia.includes(sede)) {
+            diasARestar = 0;
+        } else if (sede === 'ACURA GLP') {
+            diasARestar = 2;
+        } else if (sede === 'CERDEVA') {
+            diasARestar = (tipo === 'ANUAL') ? 0 : 1;
+        }
+
+        let fechaCalculada = new Date();
+        fechaCalculada.setDate(fechaCalculada.getDate() - diasARestar);
+        let mes = (fechaCalculada.getMonth() + 1).toString().padStart(2, '0');
+        let dia = fechaCalculada.getDate().toString().padStart(2, '0');
+        fechaInput.value = `${fechaCalculada.getFullYear()}-${mes}-${dia}`;
+    }
+
+    sedeSelect.addEventListener('change', calcularFecha);
+    combustibleSelect.addEventListener('change', calcularFecha);
+
+    // --- 2. LÓGICA DE LA API JSON.PE ---
+    const btnApi = document.getElementById('btnConsultarApi');
+    
+    btnApi.addEventListener('click', async function() {
+        const placa = document.getElementById('id_placa').value.trim();
+        
+        if(placa.length !== 6 && placa.length !== 7) {
+            alert("Por favor, ingrese una placa válida.");
+            return;
+        }
+
+        // Cambiamos el texto del botón para que el usuario sepa que está cargando
+        btnApi.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...';
+        btnApi.disabled = true;
+
+        try {
+            // Reemplaza "TU_TOKEN_AQUI" con el token real que te da json.pe en tu plan Plus
+            const response = await fetch(`https://api.json.pe/api/v1/vehiculo/${placa}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer TU_TOKEN_AQUI',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if(response.ok) {
+                const data = await response.json();
+                // Rellenamos los campos automáticamente
+                document.getElementById('id_propietario').value = data.propietario || '';
+                document.getElementById('id_marca').value = data.marca || '';
+                document.getElementById('id_modelo').value = data.modelo || '';
+                document.getElementById('id_numero_motor').value = data.motor || '';
+                document.getElementById('id_vin_serie').value = data.serie || '';
+                document.getElementById('id_anio_fabricacion').value = data.anio_fabricacion || '';
+                
+                // Si la API devuelve color u otros datos, también los asignaremos aquí luego en conformidades
+            } else {
+                alert("Placa no encontrada en la base de datos.");
+            }
+        } catch (error) {
+            alert("Error al conectar con la API de json.pe");
+            console.error(error);
+        } finally {
+            // Restauramos el botón
+            btnApi.innerHTML = '<i class="bi bi-cloud-download"></i> Consultar API';
+            btnApi.disabled = false;
+        }
+    });
+
+});
+</script>
+{% endblock %}
