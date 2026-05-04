@@ -55,6 +55,24 @@
         .w-data-2 { width: 30.625%; }
         .w-prop-name { width: 81.25%; }
 
+        /* Estilo para los puntos legales y observaciones */
+        .seccion-legal {
+            font-size: 7pt;
+            margin-top: 8pt;
+            text-align: justify;
+        }
+
+        .lista-legal {
+            list-style: none;
+            margin-top: 4pt;
+        }
+
+        .lista-legal li {
+            margin-bottom: 3pt;
+            padding-left: 12pt;
+            text-indent: -12pt;
+        }
+
     </style>
 </head>
 <body>
@@ -178,8 +196,34 @@
         </tr>
     </table>
 
-    <p style="font-size: 6pt; margin-top: 15pt; text-align: center;">
-        Se expide el presente certificado en la ciudad de {{ certificado.sede|upper }}, el {{ certificado.fecha_emision|date:"l d \d\e F \d\e\l Y" }}
+    <div class="seccion-legal" style="line-height: 1.4; font-size: 7pt; font-weight: bold; text-align: justify;">
+        <p style="margin: 0;">(*): En caso del cilindro de almacenamiento de GLP, indicar su capacidad en litros y año de fabricación</p>
+        <p style="margin: 0 0 4pt 0;">Habiéndose verificado que:</p>
+        
+        <div class="puntos-numerados">
+            1. El sistema de combustión a GLP (cilindro y kit de conversión) responde a las características originales recomendadas por el fabricante del vehículo y/o el Proveedor de Equipos Completos de Conversión a GLP ( PEC-GLP ), cumple con la Norma Técnica Peruana NTP 321.115:2003 y su montaje cumple las exigencias sobre la ventilación en las distintas zonas de instalación.<br/>
+            2. El vaporizador/regulador cuenta con un sistema de corte de gas automático, en el caso que el motor deje de funcionar.<br/>
+            3. El tanque de almacenamiento de GLP ha sido fabricado bajo normas ASME Sección VIII y cumple las normas dictadas para recipientes a presión, asimismo, cuenta con una válvula check en la entrada de gas, un limitador automático de carga al 80%, una válvula de exceso de presión y una válvula de exceso de flujo.<br/>
+            4. Los accesorios e insumos ( mangueras, tuberías y válvulas) utilizados en la instalación han sido certificados para el uso de GLP y están instalados de manera segura.<br/>
+            5. Los equipos y accesorios utilizados en la modificación para uso de GLP cumplen con la Norma Técnica Peruana NTP 321.115:2003.<br/>
+            6. No existan fugas en los empalmes o uniones y los elementos de cierre actúan herméticamente.<br/>
+            7. Los controles ubicados en el tablero del vehículo responden a las exigencias para los cuales fueron montados.<br/>
+        </div>
+
+        <p style="margin: 2pt 0 2pt 0;">Conste por el presente documento que el sistema de combustión a Gas Licuado de Petróleo-GLP del vehículo antes referido, no afecta negativamente la seguridad del mismo, el tránsito terrestre, el medio ambiente o incumple con las condiciones técnicas establecidas en la normativa vigente en la materia, según consta en el expediente técnico N° {{ certificado.numero_certificado }}, habilitándose al mismo para cargar Gas Licuado de Petróleo-GLP, hasta el {{ certificado.fecha_vencimiento|date:"d/m/Y" }}</p>
+
+        <p style="margin: 0 0 2pt 0;">OBSERVACIONES:</p>
+        <div class="bloque-observaciones">
+            1. Cumpliendo con el D.S. 047-2001-MTC, modificatorias 009-2012 MINAM, D.S. Nro.010-2017 - MINAM, indicamos que el resultado de la prueba de emisiones contaminantes del vehículo es aprobatorio.<br/>
+            2. Los datos de los numerales 1 al 17, provienen de la tarjeta de propiedad del vehículo y/o han sido suministrados por el cliente, por tal motivo deberán ser verificadas por el cliente antes de iniciar cualquier trámite con este certificado.<br/>
+            3. Este documento no es válido en caso de presentar cualquier tipo de alteración o enmendadura.<br/>
+            4. Este documento es válido únicamente en original, con firma Gerente General y del ingeniero supervisor.<br/>
+            5. Las abreviaturas: S/V significa “Sin Versión”, NE significa “No Especificado en los documentos presentados”..<br/>
+        </div>
+    </div>
+
+    <p style="font-size: 7pt; margin-top: 15pt; text-align: center;">
+        Se expide el presente certificado en la ciudad de {{ certificado.ciudad_glp_pdf|upper }}, el {{ certificado.fecha_emision_es }}
     </p>
 
 </body>

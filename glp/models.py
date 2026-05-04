@@ -1,13 +1,39 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
+from django.core.exceptions import ValidationError
+
+class SedeConfiguracion(models.Model):
+    OPCIONES_FECHA = [
+        ('MISMO', 'Mismo día'),
+        ('ANTES', 'Un día antes'),
+        ('ANTES_2', '2 días antes'),
+    ]
+
+    OPCIONES_CIUDAD = [
+        ('CHICLAYO', 'Chiclayo'),
+        ('CHIMBOTE', 'Chimbote'),
+        ('LIMA', 'Lima'),
+    ]
+
+    nombre_sede = models.CharField(max_length=100, unique=True, verbose_name="Nombre de la Sede")
+    
+    ciudad_anual = models.CharField(max_length=20, choices=OPCIONES_CIUDAD)
+    fecha_anual = models.CharField(max_length=10, choices=OPCIONES_FECHA)
+    
+    ciudad_inicial = models.CharField(max_length=20, choices=OPCIONES_CIUDAD)
+    fecha_inicial = models.CharField(max_length=10, choices=OPCIONES_FECHA)
+
+    def __str__(self):
+        return self.nombre_sede
 
 class CertificadoGLP(models.Model):
     # 1. Datos del Certificado (Estos campos ya no se llenan a mano, se calculan solos)
     numero_certificado = models.CharField(max_length=20, unique=True, verbose_name="N° de Certificado")
     tipo_certificado = models.CharField(max_length=10, blank=True, verbose_name="Tipo de Certificado")
-    fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión")
-    sede = models.CharField(max_length=100, verbose_name="Sede") 
+    fecha_emision = models.DateField(blank=True, null=True)
+    sede = models.ForeignKey(SedeConfiguracion, on_delete=models.PROTECT, verbose_name="Sede")
+    ciudad_glp_pdf = models.CharField(max_length=100, blank=True, editable=False)
 
     # 2. Datos del Vehículo
     placa = models.CharField(max_length=10, verbose_name="Placa")
@@ -50,15 +76,51 @@ class CertificadoGLP(models.Model):
     cilindro_capacidad = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Capacidad (L)")
     cilindro_fecha_fab = models.CharField(max_length=20, verbose_name="Fecha Fabricación Cilindro")
 
+    fecha_vencimiento = models.DateField(blank=True, null=True)
+
     class Meta:
         verbose_name = "Certificado GLP"
         verbose_name_plural = "Certificados GLP"
 
     def __str__(self):
         return f"{self.numero_certificado} - {self.placa} ({self.tipo_certificado})"
+    
+    def clean(self):
+        # 1. Generar número ANTES de validar para que full_clean no falle
+        if not self.pk and not self.numero_certificado:
+            ultimo = CertificadoGLP.objects.filter(
+                numero_certificado__gte="10000"
+            ).order_by('numero_certificado').last()
+        
+            if ultimo and ultimo.numero_certificado.isdigit():
+                self.numero_certificado = str(int(ultimo.numero_certificado) + 1)
+            else:
+                self.numero_certificado = "10001"
 
-    # ====== AQUÍ EMPIEZA LA MAGIA DE LA AUTOMATIZACIÓN ======
+        # 2. Validación lógica de pesos
+        if self.peso_bruto and self.peso_neto:
+            if self.peso_bruto <= self.peso_neto:
+                raise ValidationError({'peso_bruto': "El Peso Bruto debe ser mayor al Peso Neto."})
+            # Calculamos la carga útil aquí también
+            self.carga_util = float(self.peso_bruto) - float(self.peso_neto)
+    
+    @property
+    def fecha_emision_es(self):
+        if not self.fecha_emision:
+            return ""
+        meses = ("enero", "febrero", "marzo", "abril", "mayo", "junio", 
+                "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
+        dias = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+        
+        dia_nombre = dias[self.fecha_emision.weekday()]
+        mes_nombre = meses[self.fecha_emision.month - 1]
+        
+        # Retorna: lunes 04 de mayo de 2026
+        return f"{dia_nombre} {self.fecha_emision.day} de {mes_nombre} de {self.fecha_emision.year}"
+    
     def save(self, *args, **kwargs):
+        # para el peso
+        self.full_clean() 
         # 1. Regla de Combustible -> Tipo de Certificado
         combustibles_inicial = [
             'BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV',
@@ -68,36 +130,28 @@ class CertificadoGLP(models.Model):
         if self.combustible in combustibles_inicial:
             self.tipo_certificado = 'INICIAL'
         else:
-            self.tipo_certificado = 'ANUAL' # Por defecto todos los demás (GLP, etc.) son anuales.
-
-        # 2. Regla de Sede -> Cálculo de Fecha
-        # Si la fecha no ha sido forzada manualmente, la calculamos:
+            self.tipo_certificado = 'ANUAL' 
+        
+        # sede y ciudad para el PDF
+        config = self.sede 
+        if self.tipo_certificado == 'ANUAL':
+            self.ciudad_glp_pdf = config.ciudad_anual
+            regla_fecha = config.fecha_anual
+        else:
+            self.ciudad_glp_pdf = config.ciudad_inicial
+            regla_fecha = config.fecha_inicial
+        
+        # por si cambia de fecha
         if not self.fecha_emision:
             hoy = timezone.now().date()
-            sede_upper = self.sede.upper()
-            
-            # Sedes que siempre son el MISMO DIA
-            sedes_mismo_dia = ['POTENZA', 'SAN JUAN DE LURIGANCHO', 'CASMA']
-            
-            # Sedes que siempre son DOS DIAS ANTES
-            sedes_dos_dias = ['ACURA GLP']
-            
-            # Casos especiales (Ej: CERDEVA es Mismo día para anual, pero un día antes para inicial)
-            if sede_upper == 'CERDEVA':
-                if self.tipo_certificado == 'ANUAL':
-                    self.fecha_emision = hoy
-                else:
-                    self.fecha_emision = hoy - timedelta(days=1)
-            
-            elif sede_upper in sedes_mismo_dia:
+            if regla_fecha == 'MISMO':
                 self.fecha_emision = hoy
-                
-            elif sede_upper in sedes_dos_dias:
-                self.fecha_emision = hoy - timedelta(days=2)
-                
-            else:
-                # REGLA GENERAL POR DEFECTO: La mayoría (Revi Chiclayo, Chepen, etc.) son UN DIA ANTES
+            elif regla_fecha == 'ANTES':
                 self.fecha_emision = hoy - timedelta(days=1)
+            elif regla_fecha == 'ANTES_2':
+                self.fecha_emision = hoy - timedelta(days=2)
 
-        # Finalmente, mandamos a guardar a la base de datos
+        if self.fecha_emision:
+            self.fecha_vencimiento = self.fecha_emision + timedelta(days=365)
+
         super().save(*args, **kwargs)

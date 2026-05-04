@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CertificadoGLP
+from .models import CertificadoGLP, SedeConfiguracion
 
 @admin.register(CertificadoGLP)
 class CertificadoGLPAdmin(admin.ModelAdmin):
@@ -9,3 +9,7 @@ class CertificadoGLPAdmin(admin.ModelAdmin):
     search_fields = ('numero_certificado', 'placa', 'propietario')
     # Filtros laterales
     list_filter = ('tipo_certificado', 'sede')
+
+@admin.register(SedeConfiguracion)
+class SedeConfiguracionAdmin(admin.ModelAdmin):
+    list_display = ('nombre_sede', 'ciudad_anual', 'ciudad_inicial')

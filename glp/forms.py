@@ -1,27 +1,22 @@
 from django import forms
-from .models import CertificadoGLP
+from .models import CertificadoGLP, SedeConfiguracion
+from django.utils import timezone
+from datetime import timedelta
 
 class CertificadoGLPForm(forms.ModelForm):
+
+    sede = forms.ModelChoiceField(
+        queryset=SedeConfiguracion.objects.all(),
+        empty_label="Seleccione una Sede",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
     class Meta:
         model = CertificadoGLP
-        # Excluimos tipo_certificado porque lo calculamos nosotros
-        exclude = ['tipo_certificado'] 
+        exclude = ['tipo_certificado', 'ciudad_glp_pdf', 'numero_certificado'] 
         
-        # Le damos estilo a todos los campos para que se vean bien con Bootstrap
         widgets = {
-            'numero_certificado': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 00016391'}),
-            'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            
-            # Convertimos la sede y el combustible en menús desplegables (select)
-            'sede': forms.Select(attrs={'class': 'form-select'}, choices=[
-                ('', 'Seleccione una sede...'),
-                ('REVI CHICLAYO', 'REVI CHICLAYO'),
-                ('POTENZA', 'POTENZA'),
-                ('ACURA GLP', 'ACURA GLP'),
-                ('CERDEVA', 'CERDEVA'),
-                # Aquí puedes agregar el resto de las sedes de tu PDF
-            ]),
-            
+            'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),   
             'combustible': forms.Select(attrs={'class': 'form-select'}, choices=[
                 ('', 'Seleccione combustible...'),
                 ('BI.COMB.GLP', 'BI.COMB.GLP'),
@@ -54,8 +49,8 @@ class CertificadoGLPForm(forms.ModelForm):
             'alto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'carga_util': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-
+            'carga_util': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}),
+            
             # Equipos GLP
             'reductor_marca': forms.TextInput(attrs={'class': 'form-control'}),
             'reductor_modelo': forms.TextInput(attrs={'class': 'form-control'}),
@@ -65,4 +60,16 @@ class CertificadoGLPForm(forms.ModelForm):
             'cilindro_serie': forms.TextInput(attrs={'class': 'form-control'}),
             'cilindro_capacidad': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'cilindro_fecha_fab': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class SedeConfiguracionForm(forms.ModelForm):
+    class Meta:
+        model = SedeConfiguracion
+        fields = ['nombre_sede', 'ciudad_anual', 'fecha_anual', 'ciudad_inicial', 'fecha_inicial']
+        widgets = {
+            'nombre_sede': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: CERDEVA'}),
+            'ciudad_anual': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_anual': forms.Select(attrs={'class': 'form-select'}),
+            'ciudad_inicial': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_inicial': forms.Select(attrs={'class': 'form-select'}),
         }
