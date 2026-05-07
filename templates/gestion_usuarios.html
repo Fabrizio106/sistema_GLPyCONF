@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <i class="bi {% if usuario_editar %}bi-pencil-square text-warning{% else %}bi-person-plus-fill text-primary{% endif %}"></i> 
+                        {% if usuario_editar %} Editar Usuario: {{ usuario_editar.username }} {% else %} Registrar Nuevo Usuario {% endif %}
+                    </h2>
+                    
+                    <!-- Formulario dinámico: Cambia la URL según si edita o registra -->
+                    <form method="POST" action="{% if usuario_editar %}{% url 'editar_usuario' usuario_editar.id %}{% else %}{% url 'gestion_usuarios' %}{% endif %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Usuario (Username)</label>
+                                <input type="text" name="username" value="{{ usuario_editar.username|default:'' }}" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nombres</label>
+                                <input type="text" name="first_name" value="{{ usuario_editar.first_name|default:'' }}" class="form-control" placeholder="Ej: Fabrizio Jair" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Apellidos</label>
+                                <input type="text" name="last_name" value="{{ usuario_editar.last_name|default:'' }}" class="form-control"
+                                    placeholder="Ej: Curo Nicolas" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Rol del Sistema</label>
+                                <select name="rol" class="form-select" required>
+                                    <option value="" disabled {% if not usuario_editar %}selected{% endif %}>Seleccione un rol...</option>
+                                    <option value="Administrador" {% if usuario_editar.groups.first.name == 'Administrador' %}selected{% endif %}>
+                                        Administrador</option>
+                                    <option value="Certificador" {% if usuario_editar.groups.first.name == 'Certificador' %}selected{% endif %}>
+                                        Certificador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contraseña {% if usuario_editar %}(Opcional al editar){% endif %}</label>
+                                    <div class="input-group">
+                                        <!-- Si estamos editando, la contraseña NO es obligatoria -->
+                                        <input type="password" id="password" name="password" class="form-control" {% if not usuario_editar %}required{% endif %}>
+                                        <button class="btn btn-outline-secondary" type="button" id="btnTogglePassword">
+                                            <i class="bi bi-eye" id="password-icon"></i>
+                                        </button>
+                                    </div>
+                            </div>
+                        </div>
+
+                        {% if usuario_editar %}
+                            <button type="submit" class="btn btn-warning mt-2">
+                                <i class="bi bi-arrow-clockwise"></i> ACTUALIZAR DATOS
+                            </button>
+                            <a href="{% url 'gestion_usuarios' %}" class="btn btn-secondary mt-2 ms-2">
+                                <i class="bi bi-x-circle"></i> CANCELAR
+                            </a>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary mt-2">
+                                <i class="bi bi-check-circle"></i> REGISTRAR USUARIO
+                            </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- tabla-->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <i class="bi bi-people-fill text-success"></i> 
+                        Usuarios del Sistema
+                    </h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover mt-3" style="border: 0.5pt solid #dee2e6;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Nombres</th>
+                                    <th>Apellidos</th>
+                                    <th>Rol</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in usuarios %}
+                                <tr>
+                                    <td class="align-middle"><strong>{{ u.username }}</strong></td>
+                                    <td class="align-middle">{{ u.first_name }}</td>
+                                    <td class="align-middle">{{ u.last_name }}</td>
+                                    <td class="align-middle">
+                                        <span class="badge {% if u.groups.first.name == 'Administrador' %}bg-dark{% else %}bg-info{% endif %}">
+                                            {{ u.groups.first.name|default:"Sin Rol" }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'editar_usuario' u.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <!-- Formulario de eliminación con ID único -->
+                                        <form id="delete-form-{{ u.id }}" action="{% url 'eliminar_usuario' u.id %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarEliminacion('{{ u.id }}', '{{ u.username }}')" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No hay usuarios registrados en el sistema.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // ojete 
+    document.getElementById('btnTogglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const icon = document.getElementById('password-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    });
+
+    function confirmarEliminacion(userId, username) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: `Vas a eliminar al usuario "${username}". Esta acción no se puede deshacer.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + userId).submit();
+            }
+        });
+    }
+</script>
+{% endblock %}

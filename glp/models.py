@@ -86,7 +86,6 @@ class CertificadoGLP(models.Model):
         return f"{self.numero_certificado} - {self.placa} ({self.tipo_certificado})"
     
     def clean(self):
-        # 1. Generar número ANTES de validar para que full_clean no falle
         if not self.pk and not self.numero_certificado:
             ultimo = CertificadoGLP.objects.filter(
                 numero_certificado__gte="10000"
@@ -97,11 +96,10 @@ class CertificadoGLP(models.Model):
             else:
                 self.numero_certificado = "10001"
 
-        # 2. Validación lógica de pesos
+        #  para que el bruto sea mayor a mi neto 
         if self.peso_bruto and self.peso_neto:
             if self.peso_bruto <= self.peso_neto:
                 raise ValidationError({'peso_bruto': "El Peso Bruto debe ser mayor al Peso Neto."})
-            # Calculamos la carga útil aquí también
             self.carga_util = float(self.peso_bruto) - float(self.peso_neto)
     
     @property
@@ -115,13 +113,11 @@ class CertificadoGLP(models.Model):
         dia_nombre = dias[self.fecha_emision.weekday()]
         mes_nombre = meses[self.fecha_emision.month - 1]
         
-        # Retorna: lunes 04 de mayo de 2026
         return f"{dia_nombre} {self.fecha_emision.day} de {mes_nombre} de {self.fecha_emision.year}"
     
     def save(self, *args, **kwargs):
-        # para el peso
         self.full_clean() 
-        # 1. Regla de Combustible -> Tipo de Certificado
+        # segun el combustible se sabe si es anal o inciial
         combustibles_inicial = [
             'BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV',
             'GASOL/GNV', 'GASOLINA/GNV', 'GNV', 'GASOLINA', 'GASOLINA PREMIUM SIN PLOMO'
@@ -141,7 +137,6 @@ class CertificadoGLP(models.Model):
             self.ciudad_glp_pdf = config.ciudad_inicial
             regla_fecha = config.fecha_inicial
         
-        # por si cambia de fecha
         if not self.fecha_emision:
             hoy = timezone.now().date()
             if regla_fecha == 'MISMO':
@@ -150,6 +145,9 @@ class CertificadoGLP(models.Model):
                 self.fecha_emision = hoy - timedelta(days=1)
             elif regla_fecha == 'ANTES_2':
                 self.fecha_emision = hoy - timedelta(days=2)
+            # Si el cálculo resulta en Domingo de retro al sabad
+        if self.fecha_emision and self.fecha_emision.weekday() == 6:
+            self.fecha_emision = self.fecha_emision - timedelta(days=1)   
 
         if self.fecha_emision:
             self.fecha_vencimiento = self.fecha_emision + timedelta(days=365)

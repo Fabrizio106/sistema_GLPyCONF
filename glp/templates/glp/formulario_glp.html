@@ -106,7 +106,11 @@
     </div>
 
     <button type="submit" class="btn btn-success-custom w-100 text-white rounded-3 fs-5 mb-4 shadow">
-        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Registrar y Generar PDF GLP
+        {% if editando %}
+        <i class="bi bi-save me-2"></i> Guardar Cambios
+        {% else %}
+        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Registrar y Generar PDF
+        {% endif %}
     </button>
 </form>
 {% endblock %}
@@ -114,138 +118,128 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Carga segura de la configuración de sedes
-        const sedesConfig = JSON.parse('{{ sedes_json|safe }}');
-        
+        console.log("Iniciando script de GLP...");
         const sedeSelect = document.getElementById('id_sede');
         const combustibleSelect = document.getElementById('id_combustible');
         const fechaInput = document.getElementById('id_fecha_emision');
+        const pesoNetoInput = document.getElementById('id_peso_neto');
+        const pesoBrutoInput = document.getElementById('id_peso_bruto');
+        const cargaUtilInput = document.getElementById('id_carga_util');
 
-        const pesoNeto = document.getElementById('id_peso_neto');
-        const pesoBruto = document.getElementById('id_peso_bruto');
-        const cargaUtil = document.getElementById('id_carga_util');
-
-        function calcularPesos() {
-            const neto = parseFloat(pesoNeto.value) || 0;
-            const bruto = parseFloat(pesoBruto.value) || 0;
-            
-            if (bruto > neto) {
-                cargaUtil.value = (bruto - neto).toFixed(2);
-                pesoBruto.classList.remove('is-invalid');
-            } else {
-                cargaUtil.value = "";
-                if (bruto > 0) pesoBruto.classList.add('is-invalid');
-            }
+        let sedesConfig = {};
+        try {
+            sedesConfig = JSON.parse('{{ sedes_json|safe }}');
+        } catch (e) {
+            console.error("Error al cargar sedesConfig:", e);
         }
 
-        pesoNeto.addEventListener('input', calcularPesos);
-        pesoBruto.addEventListener('input', calcularPesos);
-
-        function actualizarFechaAutomatica() {
-            const sedeId = sedeSelect.value;
-            const combustible = combustibleSelect.value;
-
-            // Evitamos errores si no hay selección
-            if (!sedeId || !combustible || !sedesConfig[sedeId]) return;
-
-            // 1. Determinar tipo (Lógica de combustibles)
-            const combustiblesInicial = [
-                'BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV', 
-                'GASOL/GNV', 'GASOLINA/GNV', 'GNV', 'GASOLINA', 'GASOLINA PREMIUM SIN PLOMO'
-            ];
-            const tipo = combustiblesInicial.includes(combustible) ? 'inicial' : 'anual';
-
-            // 2. Obtener regla de la sede elegida
-            const regla = tipo === 'anual' ? sedesConfig[sedeId].anual_dias : sedesConfig[sedeId].inicial_dias;
-
-            // 3. Calcular días a restar
-            let resta = 0;
-            if (regla === 'ANTES') resta = 1;
-            if (regla === 'ANTES_2') resta = 2;
-
-            // 4. Setear la fecha ajustando la zona horaria local (Perú)
-            let d = new Date();
-            d.setDate(d.getDate() - resta);
-            
-            // Ajuste para evitar que el UTC cambie el día
-            const offset = d.getTimezoneOffset();
-            d = new Date(d.getTime() - (offset * 60 * 1000));
-            
-            fechaInput.value = d.toISOString().split('T')[0];
-            
-            // Animación visual de cambio
-            fechaInput.style.backgroundColor = "#fff3cd";
-            setTimeout(() => fechaInput.style.backgroundColor = "white", 500);
-        }
-
-        sedeSelect.addEventListener('change', actualizarFechaAutomatica);
-        combustibleSelect.addEventListener('change', actualizarFechaAutomatica);
-        
-        // --- 2. LÓGICA DE LA API DE PLACAS ---
-        const btnApi = document.getElementById('btnConsultarApi');
-    
-        btnApi.addEventListener('click', async function() {
-            const placaInput = document.getElementById('id_placa');
-            const placa = placaInput.value.trim();
-            
-            if(placa.length < 6) {
-                alert("Por favor, ingrese una placa válida.");
-                return;
-            }
-
-            btnApi.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...';
-            btnApi.disabled = true;
-
-            try {
-                // TOKEN DE JSON.PE
-                const response = await fetch(`https://api.json.pe/api/v1/vehiculo/${placa}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer TU_TOKEN_REAL_AQUI',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if(response.ok) {
-                    const data = await response.json();
-                    // Rellenado automático con IDs de Django
-                    document.getElementById('id_propietario').value = data.propietario || '';
-                    document.getElementById('id_marca').value = data.marca || '';
-                    document.getElementById('id_modelo').value = data.modelo || '';
-                    document.getElementById('id_numero_motor').value = data.motor || '';
-                    document.getElementById('id_vin_serie').value = data.serie || '';
-                    document.getElementById('id_anio_fabricacion').value = data.anio_fabricacion || '';
-                } else {
-                    alert("Placa no encontrada.");
-                }
-            } catch (error) {
-                alert("Error de conexión con la API.");
-                console.error(error);
-            } finally {
-                btnApi.innerHTML = '<i class="bi bi-cloud-download"></i> Consultar API';
-                btnApi.disabled = false;
-            }
-        });
-    });
-
-    function calcularCargaUtil() {
+        function calcularCargaUtil() {
             const neto = parseFloat(pesoNetoInput.value) || 0;
             const bruto = parseFloat(pesoBrutoInput.value) || 0;
 
             if (bruto > 0 && bruto <= neto) {
-                // Error: El bruto no puede ser menor o igual al neto
                 cargaUtilInput.value = "";
                 pesoBrutoInput.classList.add('is-invalid');
                 cargaUtilInput.placeholder = "Error: Bruto debe ser mayor";
             } else if (bruto > neto) {
-                // Cálculo correcto
                 pesoBrutoInput.classList.remove('is-invalid');
-                const resultado = bruto - neto;
-                cargaUtilInput.value = resultado.toFixed(2);
+                cargaUtilInput.value = (bruto - neto).toFixed(2);
                 cargaUtilInput.placeholder = "";
             } else {
                 cargaUtilInput.value = "";
+                pesoBrutoInput.classList.remove('is-invalid');
             }
         }
+
+        if (pesoNetoInput && pesoBrutoInput) {
+            pesoNetoInput.addEventListener('input', calcularCargaUtil);
+            pesoBrutoInput.addEventListener('input', calcularCargaUtil);
+        }
+
+        
+        function actualizarFechaAutomatica() {
+            const sedeId = sedeSelect.value;
+            const combustible = combustibleSelect.value;
+
+            if (!sedeId || !combustible || !sedesConfig[sedeId]) return;
+
+            const combustiblesInicial = [
+                'BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV', 
+                'GASOL/GNV', 'GASOLINA/GNV', 'GNV', 'GASOLINA', 'GASOLINA PREMIUM SIN PLOMO'
+            ];
+            
+            const tipo = combustiblesInicial.includes(combustible.toUpperCase()) ? 'inicial' : 'anual';
+            const regla = tipo === 'anual' ? sedesConfig[sedeId].anual_dias : sedesConfig[sedeId].inicial_dias;
+
+            let resta = 0;
+            if (regla === 'ANTES') resta = 1;
+            if (regla === 'ANTES_2') resta = 2;
+
+            let d = new Date();
+            d.setDate(d.getDate() - resta);
+
+            // Si cae domingo cambiazasaso al sábado
+            if (d.getDay() === 0) d.setDate(d.getDate() - 1);
+            
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            
+            fechaInput.value = `${year}-${month}-${day}`;
+            
+            // Efecto visual
+            fechaInput.style.backgroundColor = "#fff3cd";
+            setTimeout(() => fechaInput.style.backgroundColor = "white", 500);
+        }
+
+        if (sedeSelect && combustibleSelect) {
+            sedeSelect.addEventListener('change', actualizarFechaAutomatica);
+            combustibleSelect.addEventListener('change', actualizarFechaAutomatica);
+        }
+
+        // -- PARA LA API que nel está ---
+        const btnApi = document.getElementById('btnConsultarApi');
+        if (btnApi) {
+            btnApi.addEventListener('click', async function() {
+                const placaInput = document.getElementById('id_placa');
+                const placa = placaInput.value.trim();
+                
+                if(placa.length < 6) {
+                    alert("Por favor, ingrese una placa válida.");
+                    return;
+                }
+
+                btnApi.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                btnApi.disabled = true;
+
+                try {
+                    const response = await fetch(`https://api.json.pe/api/v1/vehiculo/${placa}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer TU_TOKEN_REAL_AQUI',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if(response.ok) {
+                        const data = await response.json();
+                        document.getElementById('id_propietario').value = data.propietario || '';
+                        document.getElementById('id_marca').value = data.marca || '';
+                        document.getElementById('id_modelo').value = data.modelo || '';
+                        document.getElementById('id_numero_motor').value = data.motor || '';
+                        document.getElementById('id_vin_serie').value = data.serie || '';
+                        document.getElementById('id_anio_fabricacion').value = data.anio_fabricacion || '';
+                    } else {
+                        alert("Placa no encontrada.");
+                    }
+                } catch (error) {
+                    alert("Error de conexión con la API.");
+                } finally {
+                    btnApi.innerHTML = '<i class="bi bi-cloud-download"></i> Consultar API';
+                    btnApi.disabled = false;
+                }
+            });
+        }
+    });
 </script>
 {% endblock %}

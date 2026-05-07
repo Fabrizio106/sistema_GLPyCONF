@@ -16,7 +16,7 @@
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">
-            <thead class="table-light">
+            <thead class="table-light ">
                 <tr>
                     <th>N° Certificado</th>
                     <th>Placa</th>
@@ -43,9 +43,26 @@
                     </td>
                     <td>{{ c.fecha_emision|date:"d/m/Y" }}</td>
                     <td class="text-end">
-                        <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-file-earmark-pdf"></i> PDF
-                        </a>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-danger d-inline-flex align-items-center px-3">
+                                <i class="bi bi-file-earmark-pdf me-2"></i> PDF
+                            </a>
+                        
+                            <div class="btn-group">
+                                <a href="{% url 'editar_glp' c.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                        
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        
+                            <form id="form-eliminar-{{ c.pk }}" action="{% url 'eliminar_glp' c.pk %}" method="POST" style="display:none;">
+                                {% csrf_token %}
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
@@ -57,4 +74,26 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacion(id, placa) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Vas a eliminar el certificado de la placa " + placa + ". ¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-eliminar-' + id).submit();
+            }
+        })
+    }
+</script>
 {% endblock %}

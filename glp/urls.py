@@ -8,4 +8,7 @@ urlpatterns = [
     path('configuracion-sedes/', views.gestion_sedes, name='gestion_sedes'),
     path('configuracion-sedes/editar/<int:pk>/', views.gestion_sedes, name='editar_sede'),
     path('configuracion-sedes/eliminar/<int:pk>/', views.eliminar_sede, name='eliminar_sede'),
+    path('editar/<int:pk>/', views.editar_certificado_glp, name='editar_glp'),
+    path('eliminar/<int:pk>/', views.eliminar_certificado_glp, name='eliminar_glp'),
+
 ]

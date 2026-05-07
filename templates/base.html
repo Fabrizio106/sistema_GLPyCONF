@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,122 +10,272 @@
     <!-- SweetAlert2 para los anuncios de éxito -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { background-color: #f4f6f9; overflow-x: hidden; }
-        .sidebar { min-height: 100vh; background-color: #1a2035; color: white; transition: all 0.3s; }
-        .sidebar-brand { padding: 1.5rem; font-weight: 800; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-brand span { color: #8a98bc; font-size: 0.8rem; display: block; font-weight: 400; }
-        
-        .nav-link { color: #a1aabf; padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 10px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
-        .nav-link:hover { color: white; background-color: rgba(255,255,255,0.05); }
-        .nav-link.active { color: white; border-left: 4px solid #0d6efd; background-color: rgba(255,255,255,0.05); }
-        
+        body {
+            background-color: #f4f6f9;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: #1a2035;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-brand span {
+            color: #8a98bc;
+            font-size: 0.8rem;
+            display: block;
+            font-weight: 400;
+        }
+
+        .nav-link {
+            color: #a1aabf;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: white;
+            border-left: 4px solid #0d6efd;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
         /* Estilos para submenús */
-        .submenu { background-color: #161b2e; list-style: none; padding: 0; }
-        .submenu .nav-link { padding-left: 3rem; font-size: 0.9rem; }
-        
-        .topbar { background-color: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 2rem; }
-        .card { border: none; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 1.5rem; }
-        .card-title { color: #1a2035; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
-        .form-label { font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
-        .btn-success-custom { background-color: #057a55; border: none; font-weight: 600; padding: 12px; }
+        .submenu {
+            background-color: #161b2e;
+            list-style: none;
+            padding: 0;
+        }
+
+        .submenu .nav-link {
+            padding-left: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .topbar {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: #1a2035;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        .btn-success-custom {
+            background-color: #057a55;
+            border: none;
+            font-weight: 600;
+            padding: 12px;
+        }
+
+        /* Estilo para las subcategorías del menú */
+        .dropdown-menu {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            font-size: 9pt;
+            /* Consistente con el tamaño de letra de tus tablas */
+            font-weight: bold;
+            color: #333;
+            padding: 10px 15px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .dropdown-item i {
+            margin-right: 8pt;
+            width: 15px;
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="d-flex">
-    <!-- SIDEBAR -->
-    <div class="sidebar col-auto col-md-3 col-xl-2 px-0 text-white">
-        <div class="sidebar-brand">
-            CERTIFICATION<br>ADMIN
-            <span>Technical Curator</span>
+    <div class="d-flex">
+        <div class="sidebar col-auto col-md-3 col-xl-2 px-0 text-white">
+            <div class="sidebar-brand">
+                CEDITEV S.A.C
+            </div>
+
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item w-100">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#submenuGLP">
+                        <i class="bi bi-fuel-pump-fill text-primary"></i>
+                        <span>Módulo GLP</span>
+                        <i class="bi bi-chevron-down ms-auto small"></i>
+                    </a>
+                    <div class="collapse show" id="submenuGLP">
+                        <ul class="submenu">
+                            <li><a href="{% url 'registrar_glp' %}" class="nav-link"><i class="bi bi-plus-circle"></i>
+                                    Nuevo Certificado</a></li>
+                            <li><a href="{% url 'historial_glp' %}" class="nav-link"><i class="bi bi-clock-history"></i>
+                                    Historial</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item w-100">
+                    <a class="nav-link collapsed" data-bs-toggle="collapse" href="#submenuAdmin">
+                        <i class="bi bi-shield-lock-fill text-warning"></i>
+                        <span>CRUDS ADMINISTRATIVOS</span>
+                        <i class="bi bi-chevron-down ms-auto small"></i>
+                    </a>
+                    <div class="collapse" id="submenuAdmin">
+                        <ul class="submenu">
+                            <li>
+                                <a href="{% url 'gestion_sedes' %}" class="nav-link">
+                                    <i class="bi bi-building"></i> Gestionar Sedes
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'gestion_usuarios' %}" class="nav-link">
+                                    <i class="bi bi-people-fill"></i> Gestionar Usuarios
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item w-100 mt-2">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-gear"></i> Módulo Conformidades
+                    </a>
+                </li>
+            </ul>
         </div>
-        
-        <ul class="nav flex-column mt-3">
-            <!-- SECCIÓN OPERATIVA: Módulo GLP -->
-            <li class="nav-item w-100">
-                <a class="nav-link" data-bs-toggle="collapse" href="#submenuGLP">
-                    <i class="bi bi-fuel-pump-fill text-primary"></i> 
-                    <span>Módulo GLP</span>
-                    <i class="bi bi-chevron-down ms-auto small"></i>
-                </a>
-                <div class="collapse show" id="submenuGLP">
-                    <ul class="submenu">
-                        <li><a href="{% url 'registrar_glp' %}" class="nav-link"><i class="bi bi-plus-circle"></i> Nuevo Certificado</a></li>
-                        <li><a href="{% url 'historial_glp' %}" class="nav-link"><i class="bi bi-clock-history"></i> Historial</a></li>
-                    </ul>
-                </div>
-            </li>
 
-            <!-- SECCIÓN ADMINISTRATIVA: Solo personal del staff -->
-            {% if user.is_staff %}
-            <li class="nav-item w-100 mt-2">
-                <div class="px-4 py-2 small text-uppercase fw-bold" style="color: #4b5563; font-size: 0.65rem;">Configuración Admin</div>
-                <a class="nav-link" data-bs-toggle="collapse" href="#submenuAdmin">
-                    <i class="bi bi-shield-lock-fill text-warning"></i> 
-                    <span>CRUDS Sistema</span>
-                    <i class="bi bi-chevron-down ms-auto small"></i>
-                </a>
-                <div class="collapse" id="submenuAdmin">
-                    <ul class="submenu">
-                        <li><a href="{% url 'gestion_sedes' %}" class="nav-link"><i class="bi bi-geo-alt"></i> Sedes GLP</a></li>
-                        <li><a href="/admin" class="nav-link" target="_blank"><i class="bi bi-person-badge"></i> Django Admin</a></li>
-                    </ul>
+        <div class="col d-flex flex-column h-sm-100">
+            <div class="topbar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fw-bold">Módulo GLP</span>
+                    <span class="text-muted small border-start border-2 ps-3">CEDITEV S.A.C</span>
                 </div>
-            </li>
-            {% endif %}
+                <div class="d-flex gap-3 text-muted fs-5">
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Muestra el nombre del usuario logueado en la USAT -->
+                        <span class="small fw-bold">{{ request.user.username }}</span>
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+            
+                    <!-- FORMULARIO OCULTO PARA LOGOUT -->
+                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+            
+                    <!-- LINK QUE ACTIVA EL FORMULARIO -->
+                    <a href="#" class="text-muted"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="bi bi-box-arrow-right" title="Cerrar Sesión"></i>
+                    </a>
+                </div>
+            </div>
 
-            <li class="nav-item w-100 mt-2">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-gear"></i> Módulo Conformidades
-                </a>
-            </li>
-        </ul>
+            <div class="p-4" style="max-height: calc(100vh - 70px); overflow-y: auto;">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="col d-flex flex-column h-sm-100">
-        <!-- TOPBAR -->
-        <div class="topbar d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <span class="fw-bold">Módulo GLP</span>
-                <span class="text-muted small border-start border-2 ps-3">Vehicle Certification System</span>
-            </div>
-            <div class="d-flex gap-3 text-muted fs-5">
-                <i class="bi bi-person-circle"></i>
-                <i class="bi bi-box-arrow-right" title="Cerrar Sesión"></i>
-            </div>
-        </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- CONTENT AREA -->
-        <div class="p-4" style="max-height: calc(100vh - 70px); overflow-y: auto;">
-            {% block content %}{% endblock %}
-        </div>
-    </div>
-</div>
-
-<!-- Lógica de SweetAlert2 para mensajes desde Django -->
 {% if messages %}
-    {% for message in messages %}
+    <!-- Creamos el JSON manualmente para evitar el error de FallbackStorage -->
+    <script id="messages-data" type="application/json">
+        [
+            {% for message in messages %}
+            {
+                "message": "{{ message|escapejs }}",
+                "tags": "{{ message.tags|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    </script>
+
     <script>
-        Swal.fire({
-            title: "¡Éxito!",
-            text: "{{ message }}",
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonColor: "#0d6efd",
-            cancelButtonColor: "#6c757d",
-            confirmButtonText: "Ver en Historial",
-            cancelButtonText: "Registrar otro"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{% url 'historial_glp' %}";
+        const urlHistorial = "{% url 'historial_glp' %}";
+        const messagesData = JSON.parse(document.getElementById('messages-data').textContent);
+        
+        messagesData.forEach(m => {
+            const isUsuario = m.tags.includes('usuario');
+            const isError = m.tags.includes('error');
+            
+            if (isUsuario) {
+                Swal.fire({
+                    title: isError ? "¡Atención!" : "¡Éxito!",
+                    text: m.message,
+                    icon: isError ? "error" : "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            } else {
+                Swal.fire({
+                    title: "¡Éxito!",
+                    text: m.message,
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonColor: "#0d6efd",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Ver en Historial",
+                    cancelButtonText: "Registrar otro"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = urlHistorial;
+                    }
+                });
             }
         });
     </script>
-    {% endfor %}
 {% endif %}
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% block scripts %}{% endblock %}
+
 </body>
 </html>

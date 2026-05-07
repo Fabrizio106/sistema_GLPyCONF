@@ -5,7 +5,7 @@
     <style type="text/css">
         @page {
             size: A4 portrait;
-            margin: 3.82cm 1.83cm 3.97cm 3.3cm; 
+            margin: 3.5cm 1.83cm 3.5cm 3.3cm; 
         }
         
         * { margin: 0; padding: 0; text-indent: 0; }
@@ -15,17 +15,25 @@
             font-family: Arial, sans-serif;
             font-weight: bold;
             font-size: 8pt;
-            line-height: 1; /* Reducimos a 1 para mejor control */
+            line-height: 1.1;
         }
 
-        h1 { font-size: 14pt; text-align: left; padding-left: 35pt; margin-bottom: 12pt; }
+        /* TÍTULO EN UNA SOLA FILA */
+        h1 { 
+            text-align: left; 
+            padding-left: 20pt; 
+            margin-bottom: 12pt;
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 13pt;
+        }
         
         .header-container { width: 100%; border: none; margin-bottom: 2pt; }
         .header-container td { border: none; font-size: 10pt; vertical-align: middle; padding: 0; }
         
-        .header-center { font-size: 10pt; text-align: center; margin-top: 2pt; margin-bottom: 10pt; }
+        .header-center { font-size: 10pt; text-align: left; margin-top: 2pt; margin-bottom: 10pt; }
 
-        /* CONFIGURACIÓN DE TABLAS CORREGIDA */
+        /* ESTILO ÚNICO PARA TODAS LAS TABLAS DE DATOS */
         table.tab-datos { 
             width: 100%; 
             border-collapse: collapse; 
@@ -37,169 +45,192 @@
             border: 0.5pt solid black; 
             font-size: 6pt; 
             height: 0.37cm;
-            /* Ajuste de padding superior para centrar verticalmente el texto de 6pt en 0.37cm */
-            padding-top: 1.5pt; 
-            padding-left: 2pt;
-            padding-right: 2pt;
-            vertical-align: top; /* Cambiamos a top con padding para control milimétrico */
+            padding: 1.5pt 2pt 0 2pt;
+            vertical-align: top;
             white-space: nowrap;
             overflow: hidden;
         }
 
-        /* Anchos de Columna Proporcionales */
+        /* ANCHOS DE COLUMNAS PARA EL CUADRO 1 Y 2 */
         .w-num { width: 3.125%; text-align: center; } 
         .w-label { width: 15.625%; }
         .w-data-1 { width: 31.25%; }
         .w-num-2 { width: 3.125%; text-align: center; }
         .w-label-2 { width: 16.25%; }
         .w-data-2 { width: 30.625%; }
-        .w-prop-name { width: 81.25%; }
 
-        /* Estilo para los puntos legales y observaciones */
-        .seccion-legal {
-            font-size: 7pt;
+        .seccion-legal { font-size: 7pt; margin-top: 8pt; text-align: justify; }
+        .bloque-observaciones { font-size: 7pt; }
+
+        /* FORMATO INICIAL: AJUSTE DE LETRA PARA QUE TODO QUEPA */
+        .formato-inicial h1 { font-size: 10.8pt !important; letter-spacing: -0.3pt; }
+        .formato-inicial .seccion-legal { font-size: 6.2pt !important; line-height: 1.1 !important; }
+        .formato-inicial .bloque-observaciones { font-size: 5.8pt !important; }
+
+        /* Contenedor invisible para forzar el ancho a la mitad */
+        .wrapper-mitad {
+            width: 100%;
+            border: none;
+            border-collapse: collapse;
             margin-top: 8pt;
-            text-align: justify;
+            margin-bottom: 8pt;
+        }
+        .wrapper-mitad td.col-cuadro {
+            width: 250pt; /* Ancho fijo para que no ocupe toda la hoja */
+            border: none !important;
+            padding: 0 !important;
+        }
+        .wrapper-mitad td.col-aire {
+            border: none !important;
         }
 
-        .lista-legal {
-            list-style: none;
-            margin-top: 4pt;
+        /* Tabla de conversión con rayas (bordes) */
+        .tabla-resumen-conversion {
+            width: 100%; 
+            border-collapse: collapse;
+            border: 0.5pt solid black; /* Línea exterior */
         }
-
-        .lista-legal li {
-            margin-bottom: 3pt;
-            padding-left: 12pt;
-            text-indent: -12pt;
+        .tabla-resumen-conversion td {
+            border: 0.5pt solid black !important; /* Líneas interiores */
+            font-size: 8pt;
+            height: 0.42cm;
+            padding: 1.5pt 2pt 0 2pt;
+            vertical-align: top;
+            color: black;
         }
+        
+        .c3-num { width: 30pt; text-align: center; }
+        .c3-label { width: 90pt; }
 
     </style>
 </head>
-<body>
+<body class="{% if certificado.tipo_certificado == 'INICIAL' %}formato-inicial{% endif %}">
 
-    <h1>CERTIFICADO DE INSPECCIÓN DEL VEHICULO A GLP</h1>
+    <h1>
+        {% if certificado.tipo_certificado == 'INICIAL' %}
+            CERTIFICADO DE CONFORMIDAD DEL VEHICULO CON COMBUSTIÓN DE GLP
+        {% else %}
+            CERTIFICADO DE INSPECCIÓN DEL VEHICULO A GLP
+        {% endif %}
+    </h1>
 
     <table class="header-container">
         <tr>
-            <td style="text-align: left;">Tipo de Certificación: INSPECCIÓN {{ certificado.tipo_certificado }}</td>
+            <td style="text-align: left;">El Centro de Certificacion CEDITEV S.A.C</td>
             <td style="text-align: right;">N° {{ certificado.numero_certificado }}</td>
         </tr>
     </table>
 
-    <div class="header-center">CEDITEV S.A.C</div>
+    {% if certificado.tipo_certificado == 'INICIAL' %}
+        <div class="header-center" style="margin-top: 5pt; margin-bottom: 5pt;">CERTIFICA.</div>
+        <p style="font-size: 6.8pt; margin-bottom: 8pt; text-align: justify; line-height: 1.2;">
+            Haber efectuado la evaluación de las condiciones de seguridad respecto de la conversión del sistema de combustión a Gas Licuado de Petróleo- GLP efectuada por el Taller de Conversión a GLP autorizado SITEC INVERSIONES SAC, ubicado en AV.Gerardo Unger N° 3689 <br/>
+            Distrito y Provincia de Independencia, Departamento de Lima, al siguiente vehículo:
+        </p>
+    {% else %}
+        <div class="header-center">CEDITEV S.A.C</div>
+        <p style="margin-bottom: 2pt;">CERTIFICA.</p>
+        <p style="font-size: 7pt; margin-bottom: 12pt; text-align: justify;">
+            Haber efectuado la evaluación de las condiciones de seguridad del sistema de combustion a Gas Licuado de Petróleo - GLP del siguiente vehiculo:
+        </p>
+    {% endif %}
 
-    <p style="margin-bottom: 2pt;">CERTIFICA.</p>
-    <p style="font-size: 7pt; margin-bottom: 12pt; text-align: justify;">
-        Haber efectuado la evaluación de las condiciones de seguridad del sistema de combustion a Gas Licuado de Petróleo - GLP del siguiente vehiculo:
-    </p>
-
+    <!-- TABLA 1: DATOS DEL VEHÍCULO -->
     <table class="tab-datos">
         <tr>
             <td class="w-num">1</td>
             <td class="w-label">PROPIETARIO</td>
-            <td colspan="4" class="w-prop-name">{{ certificado.propietario|upper }}</td>
+            <td colspan="4" style="font-size: 6.5pt;">{{ certificado.propietario|upper }}</td>
         </tr>
         <tr>
-            <td class="w-num">2</td>
-            <td class="w-label">Placa</td>
-            <td class="w-data-1">{{ certificado.placa|upper }}</td>
-            <td class="w-num">10</td>
-            <td class="w-label-2">Cilindrada / Cilindros</td>
-            <td class="w-data-2">{{ certificado.cilindrada }} / {{ certificado.cilindros }}</td>
+            <td class="w-num">2</td><td class="w-label">Placa</td><td class="w-data-1">{{ certificado.placa|upper }}</td>
+            <td class="w-num-2">10</td><td class="w-label-2">Cilindrada / Cilindros</td><td class="w-data-2">{{ certificado.cilindrada }} / {{ certificado.cilindros }}</td>
         </tr>
         <tr>
-            <td class="w-num">3</td>
-            <td class="w-label">Categoria</td>
-            <td class="w-data-1">{{ certificado.categoria|upper }}</td>
-            <td class="w-num">11</td>
-            <td class="w-label-2">Combustible</td>
-            <td class="w-data-2">{{ certificado.combustible|upper }}</td>
+            <td class="w-num">3</td><td class="w-label">Categoria</td><td class="w-data-1">{{ certificado.categoria|upper }}</td>
+            <td class="w-num-2">11</td><td class="w-label-2">Combustible</td><td class="w-data-2">{{ certificado.combustible|upper }}</td>
         </tr>
         <tr>
-            <td class="w-num">4</td>
-            <td class="w-label">Marca</td>
-            <td class="w-data-1">{{ certificado.marca|upper }}</td>
-            <td class="w-num">12</td>
-            <td class="w-label-2">N° Ejes / N° Ruedas</td>
-            <td class="w-data-2">{{ certificado.ejes }} / {{ certificado.ruedas }}</td>
+            <td class="w-num">4</td><td class="w-label">Marca</td><td class="w-data-1">{{ certificado.marca|upper }}</td>
+            <td class="w-num-2">12</td><td class="w-label-2">N° Ejes / N° Ruedas</td><td class="w-data-2">{{ certificado.ejes }} / {{ certificado.ruedas }}</td>
         </tr>
         <tr>
-            <td class="w-num">5</td>
-            <td class="w-label">Modelo</td>
-            <td class="w-data-1">{{ certificado.modelo|upper }}</td>
-            <td class="w-num">13</td>
-            <td class="w-label-2">Asientos / Pasajeros</td>
-            <td class="w-data-2">{{ certificado.asientos }} / {{ certificado.pasajeros }}</td>
+            <td class="w-num">5</td><td class="w-label">Modelo</td><td class="w-data-1">{{ certificado.modelo|upper }}</td>
+            <td class="w-num-2">13</td><td class="w-label-2">Asientos / Pasajeros</td><td class="w-data-2">{{ certificado.asientos }} / {{ certificado.pasajeros }}</td>
         </tr>
         <tr>
-            <td class="w-num">6</td>
-            <td class="w-label">Version</td>
-            <td class="w-data-1">{{ certificado.version|upper|default:"S/V" }}</td>
-            <td class="w-num">14</td>
-            <td class="w-label-2">Largo / Ancho / Alto</td>
-            <td class="w-data-2">{{ certificado.largo }} / {{ certificado.ancho }} / {{ certificado.alto }}</td>
+            <td class="w-num">6</td><td class="w-label">Version</td><td class="w-data-1">{{ certificado.version|upper|default:"S/V" }}</td>
+            <td class="w-num-2">14</td><td class="w-label-2">Largo / Ancho / Alto</td><td class="w-data-2">{{ certificado.largo }} / {{ certificado.ancho }} / {{ certificado.alto }}</td>
         </tr>
         <tr>
-            <td class="w-num">7</td>
-            <td class="w-label">Año de Fab.</td>
-            <td class="w-data-1">{{ certificado.anio_fabricacion }}</td>
-            <td class="w-num">15</td>
-            <td class="w-label-2">Peso Neto</td>
-            <td class="w-data-2">{{ certificado.peso_neto }}kg.</td>
+            <td class="w-num">7</td><td class="w-label">Año de Fab.</td><td class="w-data-1">{{ certificado.anio_fabricacion }}</td>
+            <td class="w-num-2">15</td><td class="w-label-2">Peso Neto</td><td class="w-data-2">{{ certificado.peso_neto|floatformat:0 }}kg.</td>
         </tr>
         <tr>
-            <td class="w-num">8</td>
-            <td class="w-label">VIN / Serie</td>
-            <td class="w-data-1">{{ certificado.vin_serie|upper }}</td>
-            <td class="w-num">16</td>
-            <td class="w-label-2">Peso Bruto</td>
-            <td class="w-data-2">{{ certificado.peso_bruto }}kg.</td>
+            <td class="w-num">8</td><td class="w-label">VIN / Serie</td><td class="w-data-1">{{ certificado.vin_serie|upper }}</td>
+            <td class="w-num-2">16</td><td class="w-label-2">Peso Bruto</td><td class="w-data-2">{{ certificado.peso_bruto|floatformat:0 }}kg.</td>
         </tr>
         <tr>
-            <td class="w-num">9</td>
-            <td class="w-label">N° Motor</td>
-            <td class="w-data-1">{{ certificado.numero_motor|upper }}</td>
-            <td class="w-num">17</td>
-            <td class="w-label-2">Carga Util</td>
-            <td class="w-data-2">{{ certificado.carga_util }}kg.</td>
+            <td class="w-num">9</td><td class="w-label">N° Motor</td><td class="w-data-1">{{ certificado.numero_motor|upper }}</td>
+            <td class="w-num-2">17</td><td class="w-label-2">Carga Util</td><td class="w-data-2">{{ certificado.carga_util|floatformat:0 }}kg.</td>
         </tr>
     </table>
 
-    <p style="margin-bottom: 4pt;">Que cuenta con los siguientes componentes que permiten la combustión a GLP:</p>
+    <p style="margin-bottom: 4pt; font-size: 7pt;">Que cuenta con los siguientes componentes que permiten la combustión a GLP:</p>
 
+    <!-- TABLA 2: COMPONENTES -->
     <table class="tab-datos" style="text-align: center;">
         <tr>
-            <td style="width: 30pt;">ITEM</td>
-            <td>COMPONENTE</td>
-            <td>MARCA</td>
-            <td>MODELO</td>
-            <td>N° SERIE</td>
+            <td style="width: 30pt;">ITEM</td><td>COMPONENTE</td><td>MARCA</td><td>MODELO</td><td>N° SERIE</td>
         </tr>
         <tr>
-            <td>1</td>
-            <td>REDUCTOR</td>
-            <td>{{ certificado.reductor_marca|upper }}</td>
-            <td>{{ certificado.reductor_modelo|upper }}</td>
-            <td>{{ certificado.reductor_serie|upper }}</td>
+            <td>1</td><td>REDUCTOR</td><td>{{ certificado.reductor_marca|upper }}</td><td>{{ certificado.reductor_modelo|upper }}</td><td>{{ certificado.reductor_serie|upper }}</td>
         </tr>
         <tr>
-            <td>2</td>
-            <td>CILINDRO</td>
-            <td>{{ certificado.cilindro_marca|upper }}</td>
-            <td>{{ certificado.cilindro_modelo|upper }}</td>
-            <td>{{ certificado.cilindro_serie|upper }}</td>
+            <td>2</td><td>CILINDRO</td><td>{{ certificado.cilindro_marca|upper }}</td><td>{{ certificado.cilindro_modelo|upper }}</td><td>{{ certificado.cilindro_serie|upper }}</td>
         </tr>
         <tr>
-            <td colspan="2" style="border: none; padding-top: 0;"></td>
+            <td colspan="2" style="border: none;"></td>
             <td colspan="2">Capacidad (L) / Fecha de fabricación</td>
-            <td>{{ certificado.cilindro_capacidad }} LTS / {{ certificado.cilindro_fecha_fab }}</td>
+            <td>{{ certificado.cilindro_capacidad|floatformat:0 }} LTS / {{ certificado.cilindro_fecha_fab }}</td>
         </tr>
     </table>
 
-    <div class="seccion-legal" style="line-height: 1.4; font-size: 7pt; font-weight: bold; text-align: justify;">
+    <div class="seccion-legal" style="line-height: 1.4; font-weight: bold; text-align: justify;">
         <p style="margin: 0;">(*): En caso del cilindro de almacenamiento de GLP, indicar su capacidad en litros y año de fabricación</p>
-        <p style="margin: 0 0 4pt 0;">Habiéndose verificado que:</p>
-        
+
+        {% if certificado.tipo_certificado == 'INICIAL' %}
+            <p style="margin-top: 10pt; font-weight: bold;">
+                Como consecuencia de la conversión del sistema de combustión a GLP, las características originales del vehículo se han modificado de la siguiente manera:
+            </p>
+            
+            <table class="wrapper-mitad">
+                <tr>
+                    <td class="col-cuadro">
+                        <table class="tabla-resumen-conversion">
+                            <tr>
+                                <td class="c3-num">11</td>
+                                <td class="c3-label">Combustible</td>
+                                <td>BI-COMBUSTIBLE GLP</td>
+                            </tr>
+                            <tr>
+                                <td class="c3-num">15</td>
+                                <td class="c3-label">Peso Neto (kg)</td>
+                                <td>{{ certificado.peso_neto|add:30|floatformat:0 }}</td>
+                            </tr>
+                            <tr>
+                                <td class="c3-num">16</td>
+                                <td class="c3-label">Carga Util (kg)</td>
+                                <td>{{ certificado.carga_util|add:-30|floatformat:0 }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="col-aire">&nbsp;</td>
+                </tr>
+            </table>
+        {% endif %}
+
+        <p style="margin: 2pt 0 2pt 0; font-weight: bold;">Habiéndose verificado que:</p> 
         <div class="puntos-numerados">
             1. El sistema de combustión a GLP (cilindro y kit de conversión) responde a las características originales recomendadas por el fabricante del vehículo y/o el Proveedor de Equipos Completos de Conversión a GLP ( PEC-GLP ), cumple con la Norma Técnica Peruana NTP 321.115:2003 y su montaje cumple las exigencias sobre la ventilación en las distintas zonas de instalación.<br/>
             2. El vaporizador/regulador cuenta con un sistema de corte de gas automático, en el caso que el motor deje de funcionar.<br/>
@@ -210,7 +241,7 @@
             7. Los controles ubicados en el tablero del vehículo responden a las exigencias para los cuales fueron montados.<br/>
         </div>
 
-        <p style="margin: 2pt 0 2pt 0;">Conste por el presente documento que el sistema de combustión a Gas Licuado de Petróleo-GLP del vehículo antes referido, no afecta negativamente la seguridad del mismo, el tránsito terrestre, el medio ambiente o incumple con las condiciones técnicas establecidas en la normativa vigente en la materia, según consta en el expediente técnico N° {{ certificado.numero_certificado }}, habilitándose al mismo para cargar Gas Licuado de Petróleo-GLP, hasta el {{ certificado.fecha_vencimiento|date:"d/m/Y" }}</p>
+        <p style="margin: 4pt 0;">Conste por el presente documento que el sistema de combustión a Gas Licuado de Petróleo-GLP del vehículo antes referido, no afecta negativamente la seguridad del mismo, el tránsito terrestre, el medio ambiente o incumple con las condiciones técnicas establecidas en la normativa vigente en la materia, según consta en el expediente técnico N° {{ certificado.numero_certificado }}, habilitándose al mismo para cargar Gas Licuado de Petróleo-GLP, hasta el {{ certificado.fecha_vencimiento|date:"d/m/Y" }}</p>
 
         <p style="margin: 0 0 2pt 0;">OBSERVACIONES:</p>
         <div class="bloque-observaciones">
@@ -222,7 +253,7 @@
         </div>
     </div>
 
-    <p style="font-size: 7pt; margin-top: 15pt; text-align: center;">
+    <p style="font-size: 7pt; margin-top: 10pt; text-align: center;">
         Se expide el presente certificado en la ciudad de {{ certificado.ciudad_glp_pdf|upper }}, el {{ certificado.fecha_emision_es }}
     </p>
 
