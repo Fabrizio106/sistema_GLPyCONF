@@ -46,7 +46,6 @@ class CertificadoGLP(models.Model):
     vin_serie = models.CharField(max_length=50, verbose_name="VIN / N° de serie")
     numero_motor = models.CharField(max_length=50, verbose_name="N° Motor")
     
-    # Este campo es el "gatillo" para saber si es Inicial o Anual
     combustible = models.CharField(max_length=50, verbose_name="Combustible")
     
     # 3. Especificaciones Técnicas
@@ -58,12 +57,12 @@ class CertificadoGLP(models.Model):
     pasajeros = models.CharField(max_length=10, verbose_name="Pasajeros")
     
     # Dimensiones y Pesos
-    largo = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Longitud (m)", null=True, blank=True)
-    ancho = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Ancho (m)", null=True, blank=True)
-    alto = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Altura (m)", null=True, blank=True)
-    peso_neto = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Peso Neto (kg)")
-    peso_bruto = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Peso Bruto (kg)")
-    carga_util = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Carga Útil (kg)")
+    largo = models.DecimalField(max_digits=5, decimal_places=4, verbose_name="Longitud (m)", null=True, blank=True)
+    ancho = models.DecimalField(max_digits=5, decimal_places=4, verbose_name="Ancho (m)", null=True, blank=True)
+    alto = models.DecimalField(max_digits=5, decimal_places=4, verbose_name="Altura (m)", null=True, blank=True)
+    peso_neto = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Peso Neto (kg)")
+    peso_bruto = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Peso Bruto (kg)")
+    carga_util = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Carga Útil (kg)")
 
     # 4. Datos del Equipo GLP
     reductor_marca = models.CharField(max_length=50, verbose_name="Marca Reductor")
