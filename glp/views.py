@@ -29,6 +29,8 @@ def registrar_certificado_glp(request):
     if request.method == 'POST':
         form = CertificadoGLPForm(request.POST)
         if form.is_valid():
+            certificado = form.save(commit=False)
+            certificado.usuario = request.user
             form.save() 
             messages.success(request, "¡Certificado registrado con éxito!")
             return redirect('registrar_glp') 
@@ -43,7 +45,6 @@ def registrar_certificado_glp(request):
 
 def render_to_pdf(template_src, context_dict={}, filename="documento"):
     template = get_template(template_src)
-    # Esta línea es la que cambia {{ certificado.placa }} por "ABC-123"
     html = template.render(context_dict) 
     
     response = HttpResponse(content_type='application/pdf')
@@ -57,20 +58,36 @@ def render_to_pdf(template_src, context_dict={}, filename="documento"):
 
 @login_required
 def historial_glp(request):
-    certificados = CertificadoGLP.objects.all().order_by('-id')
-    
-    query = request.GET.get('q')
+    certificados = CertificadoGLP.objects.filter(usuario=request.user).order_by('-id')
+    query = request.GET.get('q') # por placa
+    sede_id = request.GET.get('sede')      # por sede
+    fecha_unica = request.GET.get('fecha') # por dia
+    f_inicio = request.GET.get('inicio')   # por rango
+    f_fin = request.GET.get('fin')
     if query:
         certificados = certificados.filter(placa__icontains=query)
+    if sede_id:
+        certificados = certificados.filter(sede_id=sede_id)
+    if fecha_unica:
+        certificados = certificados.filter(fecha_emision=fecha_unica)
+    elif f_inicio and f_fin:
+        certificados = certificados.filter(fecha_emision__range=[f_inicio, f_fin])
+    
+    sedes = SedeConfiguracion.objects.all()
         
-    return render(request, 'glp/historial_glp.html', {'certificados': certificados})
+    return render(request, 'glp/historial_glp.html', {
+        'certificados': certificados,
+        'sedes': sedes,
+    })
 
 @login_required
 def descargar_pdf_glp(request, pk):
     certificado = get_object_or_404(CertificadoGLP, pk=pk)
     return render_to_pdf('glp/pdf_certificado.html', {'certificado': certificado}, filename=certificado.placa)
 
+
 @login_required
+@staff_member_required
 def gestion_sedes(request, pk=None):
     sede_instancia = get_object_or_404(SedeConfiguracion, pk=pk) if pk else None
     
@@ -122,6 +139,7 @@ def eliminar_certificado_glp(request, pk):
     return redirect('historial_glp')
 
 @login_required
+@staff_member_required
 def gestion_usuarios(request, user_id=None):
     usuario_editar = None
     if user_id:
@@ -181,3 +199,47 @@ def eliminar_usuario(request, user_id):
         messages.warning(request, f"Usuario eliminado.", extra_tags='usuario')
     
     return redirect('gestion_usuarios')
+
+@login_required
+@staff_member_required
+def reporte_glp_admin(request):
+
+    q = request.GET.get('q')
+    user_id = request.GET.get('usuario')
+    sede_id = request.GET.get('sede')
+    f_unica = request.GET.get('fecha')
+    f_inicio = request.GET.get('inicio')
+    f_fin = request.GET.get('fin')
+
+    hubo_busqueda = any([q, user_id, sede_id, f_unica, (f_inicio and f_fin)])
+
+    if hubo_busqueda:
+        certificados = CertificadoGLP.objects.all().order_by('-id')
+        if q:
+            certificados = certificados.filter(placa__icontains=q)
+        if user_id:
+            certificados = certificados.filter(usuario_id=user_id)
+        if sede_id:
+            certificados = certificados.filter(sede_id=sede_id)
+        if f_unica:
+            certificados = certificados.filter(fecha_emision=f_unica)
+        elif f_inicio and f_fin:
+            certificados = certificados.filter(fecha_emision__range=[f_inicio, f_fin])
+    else:
+        certificados = CertificadoGLP.objects.none()
+
+    usuarios = User.objects.filter(is_staff=False)
+    sedes = SedeConfiguracion.objects.all()
+
+    total_encontrados = certificados.count()
+    total_anuales = certificados.filter(tipo_certificado='ANUAL').count()
+    total_iniciales = certificados.filter(tipo_certificado='INICIAL').count()
+
+    return render(request, 'glp/reporte_general_glp.html', {
+        'certificados': certificados,
+        'usuarios': usuarios,
+        'sedes': sedes,
+        'total': total_encontrados,
+        'anuales': total_anuales,
+        'iniciales': total_iniciales
+    })

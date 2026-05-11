@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class SedeConfiguracion(models.Model):
     OPCIONES_FECHA = [
@@ -27,11 +28,47 @@ class SedeConfiguracion(models.Model):
     def __str__(self):
         return self.nombre_sede
 
+COMBUSTIBLE_CHOICES = [
+    ('ANUAL (GLP y otros)', (
+        ('BI.COMB.GLP', 'BI.COMB.GLP'),
+        ('BI-COMBUSTIBLE GLP', 'BI-COMBUSTIBLE GLP'),
+        ('BI COMB./GLP', 'BI COMB./GLP'),
+        ('BI.COMBUS.GLP', 'BI.COMBUS.GLP'),
+        ('BI.COMBUST.GLP', 'BI.COMBUST.GLP'),
+        ('DUAL(GASOLINA/GLP)', 'DUAL(GASOLINA/GLP)'),
+        ('GAS', 'GAS'),
+        ('GAS NATURAL COMPR', 'GAS NATURAL COMPR'),
+        ('GAS-GASOLINA', 'GAS-GASOLINA'),
+        ('GASOL/DUAL', 'GASOL/DUAL'),
+        ('GASOL/GLP', 'GASOL/GLP'),
+        ('GAS-GLP', 'GAS-GLP'),
+        ('GASOLINA-GAS', 'GASOLINA-GAS'),
+        ('GASOLINA/GLP', 'GASOLINA/GLP'),
+        ('GASOLINA/GNC', 'GASOLINA/GNC'),
+        ('GLP', 'GLP'),
+        ('GSL/GASP', 'GSL/GASP'),
+    )),
+    ('INICIAL (GNV y otros)', (
+        ('BI COMB.-GNV', 'BI COMB.-GNV'),
+        ('BI COMBUSTIBLE GNV', 'BI COMBUSTIBLE GNV'),
+        ('BI-GNV', 'BI-GNV'),
+        ('DUAL GNV', 'DUAL GNV'),
+        ('GASOL/GNV', 'GASOL/GNV'),
+        ('GASOLINA/GNV', 'GASOLINA/GNV'),
+        ('GNV', 'GNV'),
+        ('GASOLINA', 'GASOLINA'),
+        ('GASOLINA PREMIUM SIN PLOMO', 'GASOLINA PREMIUM SIN PLOMO'),
+    )),
+]
+
 class CertificadoGLP(models.Model):
-    # 1. Datos del Certificado (Estos campos ya no se llenan a mano, se calculan solos)
+    # 1. Datos del Certificado
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Certificador", null=True, blank=True)
     numero_certificado = models.CharField(max_length=20, unique=True, verbose_name="N° de Certificado")
     tipo_certificado = models.CharField(max_length=10, blank=True, verbose_name="Tipo de Certificado")
-    fecha_emision = models.DateField(blank=True, null=True)
+    fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
+    fecha_certificacion = models.DateField(blank=True, null=True, verbose_name="Fecha del Documento") 
+    fecha_registro = models.DateTimeField(auto_now_add=True, verbose_name="Registro en Sistema")
     sede = models.ForeignKey(SedeConfiguracion, on_delete=models.PROTECT, verbose_name="Sede")
     ciudad_glp_pdf = models.CharField(max_length=100, blank=True, editable=False)
 
@@ -46,7 +83,7 @@ class CertificadoGLP(models.Model):
     vin_serie = models.CharField(max_length=50, verbose_name="VIN / N° de serie")
     numero_motor = models.CharField(max_length=50, verbose_name="N° Motor")
     
-    combustible = models.CharField(max_length=50, verbose_name="Combustible")
+    combustible = models.CharField(max_length=50, verbose_name="Combustible", choices=COMBUSTIBLE_CHOICES)
     
     # 3. Especificaciones Técnicas
     cilindrada = models.CharField(max_length=20, verbose_name="Cilindrada")
@@ -57,9 +94,9 @@ class CertificadoGLP(models.Model):
     pasajeros = models.CharField(max_length=10, verbose_name="Pasajeros")
     
     # Dimensiones y Pesos
-    largo = models.DecimalField(max_digits=5, decimal_places=4, verbose_name="Longitud (m)", null=True, blank=True)
-    ancho = models.DecimalField(max_digits=5, decimal_places=4, verbose_name="Ancho (m)", null=True, blank=True)
-    alto = models.DecimalField(max_digits=5, decimal_places=4, verbose_name="Altura (m)", null=True, blank=True)
+    largo = models.CharField(max_length=20, verbose_name="Largo (m)", blank=True, null=True)
+    ancho = models.CharField(max_length=20, verbose_name="Ancho (m)", blank=True, null=True)
+    alto = models.CharField(max_length=20, verbose_name="Altura (m)", blank=True, null=True)
     peso_neto = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Peso Neto (kg)")
     peso_bruto = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Peso Bruto (kg)")
     carga_util = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Carga Útil (kg)")
@@ -72,7 +109,7 @@ class CertificadoGLP(models.Model):
     cilindro_marca = models.CharField(max_length=50, verbose_name="Marca Cilindro")
     cilindro_modelo = models.CharField(max_length=50, verbose_name="Modelo Cilindro")
     cilindro_serie = models.CharField(max_length=50, verbose_name="Serie Cilindro")
-    cilindro_capacidad = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Capacidad (L)")
+    cilindro_capacidad = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Capacidad (L)")
     cilindro_fecha_fab = models.CharField(max_length=20, verbose_name="Fecha Fabricación Cilindro")
 
     fecha_vencimiento = models.DateField(blank=True, null=True)
@@ -102,17 +139,17 @@ class CertificadoGLP(models.Model):
             self.carga_util = float(self.peso_bruto) - float(self.peso_neto)
     
     @property
-    def fecha_emision_es(self):
-        if not self.fecha_emision:
+    def fecha_certificacion_es(self):
+        if not self.fecha_certificacion:
             return ""
         meses = ("enero", "febrero", "marzo", "abril", "mayo", "junio", 
                 "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
         dias = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
         
-        dia_nombre = dias[self.fecha_emision.weekday()]
-        mes_nombre = meses[self.fecha_emision.month - 1]
+        dia_nombre = dias[self.fecha_certificacion.weekday()]
+        mes_nombre = meses[self.fecha_certificacion.month - 1]
         
-        return f"{dia_nombre} {self.fecha_emision.day} de {mes_nombre} de {self.fecha_emision.year}"
+        return f"{dia_nombre} {self.fecha_certificacion.day} de {mes_nombre} de {self.fecha_certificacion.year}"
     
     def save(self, *args, **kwargs):
         self.full_clean() 
@@ -127,6 +164,9 @@ class CertificadoGLP(models.Model):
         else:
             self.tipo_certificado = 'ANUAL' 
         
+        
+        self.fecha_emision = timezone.localdate()
+        
         # sede y ciudad para el PDF
         config = self.sede 
         if self.tipo_certificado == 'ANUAL':
@@ -136,19 +176,20 @@ class CertificadoGLP(models.Model):
             self.ciudad_glp_pdf = config.ciudad_inicial
             regla_fecha = config.fecha_inicial
         
-        if not self.fecha_emision:
-            hoy = timezone.now().date()
-            if regla_fecha == 'MISMO':
-                self.fecha_emision = hoy
-            elif regla_fecha == 'ANTES':
-                self.fecha_emision = hoy - timedelta(days=1)
-            elif regla_fecha == 'ANTES_2':
-                self.fecha_emision = hoy - timedelta(days=2)
-            # Si el cálculo resulta en Domingo de retro al sabad
-        if self.fecha_emision and self.fecha_emision.weekday() == 6:
-            self.fecha_emision = self.fecha_emision - timedelta(days=1)   
+        if regla_fecha == 'MISMO':
+            self.fecha_certificacion = self.fecha_emision
+        elif regla_fecha == 'ANTES':
+            self.fecha_certificacion = self.fecha_emision - timedelta(days=1)
+        elif regla_fecha == 'ANTES_2':
+            self.fecha_certificacion = self.fecha_emision - timedelta(days=2)
+        else:
+            self.fecha_certificacion = self.fecha_emision
+        
 
-        if self.fecha_emision:
-            self.fecha_vencimiento = self.fecha_emision + timedelta(days=365)
+            # Si el cálculo resulta en Domingo de retro al sabad
+        if self.fecha_certificacion and self.fecha_certificacion.weekday() == 6:
+            self.fecha_certificacion = self.fecha_certificacion - timedelta(days=1)
+
+        self.fecha_vencimiento = self.fecha_emision + timedelta(days=365)
 
         super().save(*args, **kwargs)

@@ -112,7 +112,7 @@ try:
 except:
     locale.setlocale(locale.LC_ALL, '') # Si falla, usa el del sistema
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Lima'
 
 USE_I18N = True
 

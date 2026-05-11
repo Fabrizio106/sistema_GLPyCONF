@@ -17,14 +17,7 @@ class CertificadoGLPForm(forms.ModelForm):
         
         widgets = {
             'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),   
-            'combustible': forms.Select(attrs={'class': 'form-select'}, choices=[
-                ('', 'Seleccione combustible...'),
-                ('BI.COMB.GLP', 'BI.COMB.GLP'),
-                ('DUAL(GASOLINA/GLP)', 'DUAL(GASOLINA/GLP)'),
-                ('GASOLINA', 'GASOLINA'),
-                ('GNV', 'GNV'),
-                # Aquí puedes agregar el resto de los combustibles de tu imagen
-            ]),
+            'combustible': forms.Select(attrs={'class': 'form-select'}),
 
             # Campos del vehículo
             'placa': forms.TextInput(attrs={'class': 'form-control'}),
@@ -44,11 +37,11 @@ class CertificadoGLPForm(forms.ModelForm):
             'ruedas': forms.TextInput(attrs={'class': 'form-control'}),
             'asientos': forms.TextInput(attrs={'class': 'form-control'}),
             'pasajeros': forms.TextInput(attrs={'class': 'form-control'}),
-            'largo': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'alto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'largo': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'alto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'carga_util': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}),
             
             # Equipos GLP
@@ -58,7 +51,7 @@ class CertificadoGLPForm(forms.ModelForm):
             'cilindro_marca': forms.TextInput(attrs={'class': 'form-control'}),
             'cilindro_modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'cilindro_serie': forms.TextInput(attrs={'class': 'form-control'}),
-            'cilindro_capacidad': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'cilindro_capacidad': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'cilindro_fecha_fab': forms.TextInput(attrs={'class': 'form-control'}),
         }
 

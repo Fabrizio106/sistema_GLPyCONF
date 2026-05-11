@@ -10,5 +10,6 @@ urlpatterns = [
     path('configuracion-sedes/eliminar/<int:pk>/', views.eliminar_sede, name='eliminar_sede'),
     path('editar/<int:pk>/', views.editar_certificado_glp, name='editar_glp'),
     path('eliminar/<int:pk>/', views.eliminar_certificado_glp, name='eliminar_glp'),
+    path('reportes/', views.reporte_glp_admin, name='reporte_glp_admin'),
 
 ]
