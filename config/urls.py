@@ -24,6 +24,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('admin/', admin.site.urls),
     path('glp/', include('glp.urls')),
+    path('conformidades/', include('conformidades.urls')),
     path('usuarios/', glp_views.gestion_usuarios, name='gestion_usuarios'), # Lista y formulario
     path('usuarios/editar/<int:user_id>/', glp_views.gestion_usuarios, name='editar_usuario'),
     path('usuarios/eliminar/<int:user_id>/', glp_views.eliminar_usuario, name='eliminar_usuario'),

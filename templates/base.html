@@ -1,334 +1,378 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Sistema de Certificaciones{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
     <style>
-        :root { font-display: swap; }
-        body {
-            background-color: #f4f6f9;
-            overflow-x: hidden;
-            font-family: system-ui,
-            -apple-system, sans-serif;
-        }
+      :root {
+        font-display: swap;
+      }
+      body {
+        background-color: #f4f6f9;
+        overflow-x: hidden;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
 
-        .sidebar {
-            min-height: 100vh;
-            background-color: #1a2035;
-            color: white;
-            transition: all 0.3s;
-        }
+      .sidebar {
+        min-height: 100vh;
+        background-color: #1a2035;
+        color: white;
+        transition: all 0.3s;
+      }
 
-        .sidebar-brand {
-            padding: 1.5rem;
-            font-weight: 800;
-            font-size: 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+      .sidebar-brand {
+        padding: 1.5rem;
+        font-weight: 800;
+        font-size: 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
-        .sidebar-brand span {
-            color: #8a98bc;
-            font-size: 0.8rem;
-            display: block;
-            font-weight: 400;
-        }
+      .sidebar-brand span {
+        color: #8a98bc;
+        font-size: 0.8rem;
+        display: block;
+        font-weight: 400;
+      }
 
-        .nav-link {
-            color: #a1aabf;
-            padding: 0.8rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
+      .nav-link {
+        color: #a1aabf;
+        padding: 0.8rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
 
-        .nav-link:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
+      .nav-link:hover {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.05);
+      }
 
-        .nav-link.active {
-            color: white;
-            border-left: 4px solid #0d6efd;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
+      .nav-link.active {
+        color: white;
+        border-left: 4px solid #0d6efd;
+        background-color: rgba(255, 255, 255, 0.05);
+      }
 
-        .submenu {
-            background-color: #161b2e;
-            list-style: none;
-            padding: 0;
-        }
+      .submenu {
+        background-color: #161b2e;
+        list-style: none;
+        padding: 0;
+      }
 
-        .submenu .nav-link {
-            padding-left: 3rem;
-            font-size: 0.9rem;
-        }
+      .submenu .nav-link {
+        padding-left: 3rem;
+        font-size: 0.9rem;
+      }
 
-        .topbar {
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 2rem;
-        }
+      .topbar {
+        background-color: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 2rem;
+      }
 
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-        }
+      .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+      }
 
-        .card-title {
-            color: #1a2035;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
-        }
+      .card-title {
+        color: #1a2035;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+      }
 
-        .form-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #6b7280;
-            text-transform: uppercase;
-        }
+      .form-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #6b7280;
+        text-transform: uppercase;
+      }
 
-        .btn-success-custom {
-            background-color: #057a55;
-            border: none;
-            font-weight: 600;
-            padding: 12px;
-        }
+      .btn-success-custom {
+        background-color: #057a55;
+        border: none;
+        font-weight: 600;
+        padding: 12px;
+      }
 
-        /* Estilo para las subcategorías del menú */
-        .dropdown-menu {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+      /* Estilo para las subcategorías del menú */
+      .dropdown-menu {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        .dropdown-item {
-            font-size: 9pt;
-            font-weight: bold;
-            color: #333;
-            padding: 10px 15px;
-        }
+      .dropdown-item {
+        font-size: 9pt;
+        font-weight: bold;
+        color: #333;
+        padding: 10px 15px;
+      }
 
-        .dropdown-item:hover {
-            background-color: #007bff;
-            color: white;
-        }
+      .dropdown-item:hover {
+        background-color: #007bff;
+        color: white;
+      }
 
-        .dropdown-item i {
-            margin-right: 8pt;
-            width: 15px;
-            text-align: center;
-        }
+      .dropdown-item i {
+        margin-right: 8pt;
+        width: 15px;
+        text-align: center;
+      }
 
-        .nav-link.active-parent {
-            color: white !important;
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            border-left: 4px solid #0d6efd;
-        }
+      .nav-link.active-parent {
+        color: white !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-left: 4px solid #0d6efd;
+      }
 
-        /* Sombreado para la subsección específica donde estás */
-        .submenu .nav-link.active-child {
-            color: white !important;
-            background-color: #242b45 !important;
-            font-weight: bold;
-        }
+      /* Sombreado para la subsección específica donde estás */
+      .submenu .nav-link.active-child {
+        color: white !important;
+        background-color: #242b45 !important;
+        font-weight: bold;
+      }
 
-        /* Para que el ícono de la flecha rote cuando esté abierto */
-        .nav-link:not(.collapsed) .bi-chevron-down {
-            transform: rotate(180deg);
-            transition: transform 0.3s;
-        }
+      /* Para que el ícono de la flecha rote cuando esté abierto */
+      .nav-link:not(.collapsed) .bi-chevron-down {
+        transform: rotate(180deg);
+        transition: transform 0.3s;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div class="d-flex">
-        <div class="sidebar col-auto col-md-3 col-xl-2 px-0 text-white">
-            <div class="sidebar-brand">
-                CEDITEV S.A.C
+      <div class="sidebar col-auto col-md-3 col-xl-2 px-0 text-white">
+        <div class="sidebar-brand">CEDITEV S.A.C</div>
+
+        <ul class="nav flex-column mt-3" id="sidebarMenu">
+          <li class="nav-item w-100">
+            <a
+              class="nav-link {% if 'nuevo' in request.path or 'historial' in request.path %}active-parent{% else %}collapsed{% endif %}"
+              data-bs-toggle="collapse"
+              href="#submenuGLP"
+              data-bs-parent="#sidebarMenu"
+            >
+              <i class="bi bi-fuel-pump-fill text-primary"></i>
+              <span>MÓDULO GLP</span>
+              <i class="bi bi-chevron-down ms-auto small"></i>
+            </a>
+
+            <div
+              class="collapse {% if 'nuevo' in request.path or 'historial' in request.path %}show{% endif %}"
+              id="submenuGLP"
+            >
+              <ul class="submenu">
+                <li>
+                  <a
+                    href="{% url 'registrar_glp' %}"
+                    class="nav-link {% if 'nuevo' in request.path %}active-child{% endif %}"
+                  >
+                    <i class="bi bi-plus-circle"></i> Nuevo Certificado
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="{% url 'historial_glp' %}"
+                    class="nav-link {% if 'historial' in request.path %}active-child{% endif %}"
+                  >
+                    <i class="bi bi-clock-history"></i> Historial
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          {% if user.is_staff %}
+          <li class="nav-item w-100">
+            <a
+              class="nav-link {% if 'sedes' in request.path or 'usuarios' in request.path %}active-parent{% else %}collapsed{% endif %}"
+              data-bs-toggle="collapse"
+              href="#submenuAdmin"
+              data-bs-parent="#sidebarMenu"
+            >
+              <i class="bi bi-shield-lock-fill text-warning"></i>
+              <span>CRUDS ADMINISTRATIVOS</span>
+              <i class="bi bi-chevron-down ms-auto small"></i>
+            </a>
+            <div
+              class="collapse {% if 'sedes' in request.path or 'usuarios' in request.path %}show{% endif %}"
+              id="submenuAdmin"
+            >
+              <ul class="submenu">
+                <li>
+                  <a
+                    href="{% url 'gestion_sedes' %}"
+                    class="nav-link {% if 'sedes' in request.path %}active-child{% endif %}"
+                  >
+                    <i class="bi bi-building"></i> Gestionar Sedes
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="{% url 'gestion_usuarios' %}"
+                    class="nav-link {% if 'usuarios' in request.path %}active-child{% endif %}"
+                  >
+                    <i class="bi bi-people-fill"></i> Gestionar Usuarios
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          {% endif %}
+
+          <li class="nav-item w-100 mt-2">
+            <a
+              class="nav-link"
+              data-bs-toggle="collapse"
+              href="#submenuConformidad"
+            >
+              <i class="bi bi-file-earmark-check-fill text-success"></i>
+              <span>Módulo Conformidades</span>
+              <i class="bi bi-chevron-down ms-auto small"></i>
+            </a>
+            <!-- La clase 'show' hace que el menú inicie abierto -->
+            <div class="collapse show" id="submenuConformidad">
+              <ul class="submenu">
+                <li>
+                  <a
+                    href="{% url 'crear_certificado_conformidad' %}"
+                    class="nav-link"
+                  >
+                    <i class="bi bi-plus-circle"></i> Nuevo Certificado
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link">
+                    <i class="bi bi-clock-history"></i> Historial
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col d-flex flex-column h-sm-100">
+        <div class="topbar d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <span class="fw-bold">Módulos</span>
+            <span class="text-muted small border-start border-2 ps-3"
+              >CEDITEV S.A.C</span
+            >
+          </div>
+          <div class="d-flex gap-3 text-muted fs-5">
+            <div class="d-flex align-items-center gap-2">
+              <span class="small fw-bold">{{ request.user.username }}</span>
+              <i class="bi bi-person-circle"></i>
             </div>
 
-            <ul class="nav flex-column mt-3" id="sidebarMenu">
-                <li class="nav-item w-100">
-                    <a class="nav-link {% if 'nuevo' in request.path or 'historial' in request.path %}active-parent{% else %}collapsed{% endif %}"
-                        data-bs-toggle="collapse" href="#submenuGLP" data-bs-parent="#sidebarMenu">
-                        <i class="bi bi-fuel-pump-fill text-primary"></i>
-                        <span>MÓDULO GLP</span>
-                        <i class="bi bi-chevron-down ms-auto small"></i>
-                    </a>
-                
-                    <div class="collapse {% if 'nuevo' in request.path or 'historial' in request.path %}show{% endif %}"
-                        id="submenuGLP">
-                        <ul class="submenu">
-                            <li>
-                                <a href="{% url 'registrar_glp' %}"
-                                    class="nav-link {% if 'nuevo' in request.path %}active-child{% endif %}">
-                                    <i class="bi bi-plus-circle"></i> Nuevo Certificado
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'historial_glp' %}"
-                                    class="nav-link {% if 'historial' in request.path %}active-child{% endif %}">
-                                    <i class="bi bi-clock-history"></i> Historial
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            
-                {% if user.is_staff %}
-                <li class="nav-item w-100">
-                    <a class="nav-link {% if 'sedes' in request.path or 'usuarios' in request.path %}active-parent{% else %}collapsed{% endif %}"
-                        data-bs-toggle="collapse" href="#submenuAdmin" data-bs-parent="#sidebarMenu">
-                        <i class="bi bi-shield-lock-fill text-warning"></i>
-                        <span>CRUDS ADMINISTRATIVOS</span>
-                        <i class="bi bi-chevron-down ms-auto small"></i>
-                    </a>
-                    <div class="collapse {% if 'sedes' in request.path or 'usuarios' in request.path %}show{% endif %}"
-                        id="submenuAdmin">
-                        <ul class="submenu">
-                            <li>
-                                <a href="{% url 'gestion_sedes' %}"
-                                    class="nav-link {% if 'sedes' in request.path %}active-child{% endif %}">
-                                    <i class="bi bi-building"></i> Gestionar Sedes
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'gestion_usuarios' %}"
-                                    class="nav-link {% if 'usuarios' in request.path %}active-child{% endif %}">
-                                    <i class="bi bi-people-fill"></i> Gestionar Usuarios
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                {% endif %}
-            
-                <li class="nav-item w-100 mt-2">
-                    <a href="#" class="nav-link {% if 'conformidades' in request.path %}active-parent{% endif %}">
-                        <i class="bi bi-gear"></i> MÓDULO CONFORMIDADES
-                    </a>
-                </li>
+            <form
+              id="logout-form"
+              action="{% url 'logout' %}"
+              method="post"
+              style="display: none"
+            >
+              {% csrf_token %}
+            </form>
 
-                {% if user.is_staff %}
-                <li class="nav-item w-100 mt-2">
-                    <a class="nav-link {% if 'reporte' in request.path %}active-parent{% else %}collapsed{% endif %}"
-                        data-bs-toggle="collapse" href="#submenuReportes" aria-expanded="false">
-                        <i class="bi bi-file-earmark-bar-graph-fill text-info"></i>
-                        <span>REPORTES ADMINISTRATIVOS</span>
-                        <i class="bi bi-chevron-down ms-auto small"></i>
-                    </a>
-                
-                    <div class="collapse {% if 'reporte' in request.path %}show{% endif %}" id="submenuReportes">
-                        <ul class="submenu">
-                            <li>
-                                <a href="{% url 'reporte_glp_admin' %}"
-                                    class="nav-link {% if 'reporte-glp' in request.path %}active-child{% endif %}">
-                                    <i class="bi bi-fuel-pump"></i> Reporte GLP
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                {% endif %}
-            </ul>
+            <a
+              href="#"
+              class="text-muted"
+              onclick="
+                event.preventDefault();
+                document.getElementById('logout-form').submit();
+              "
+            >
+              <i class="bi bi-box-arrow-right" title="Cerrar Sesión"></i>
+            </a>
+          </div>
         </div>
 
-        <div class="col d-flex flex-column h-sm-100">
-            <div class="topbar d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-3">
-                    <span class="fw-bold">Módulo GLP</span>
-                    <span class="text-muted small border-start border-2 ps-3">CEDITEV S.A.C</span>
-                </div>
-                <div class="d-flex gap-3 text-muted fs-5">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="small fw-bold">{{ request.user.username }}</span>
-                        <i class="bi bi-person-circle"></i>
-                    </div>
-            
-                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
-                        {% csrf_token %}
-                    </form>
-            
-                    <a href="#" class="text-muted"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="bi bi-box-arrow-right" title="Cerrar Sesión"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="p-4" style="max-height: calc(100vh - 70px); overflow-y: auto;">
-                {% block content %}{% endblock %}
-            </div>
+        <div
+          class="p-4"
+          style="max-height: calc(100vh - 70px); overflow-y: auto"
+        >
+          {% block content %}{% endblock %}
         </div>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      defer
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
     {% if messages %}
     <script id="messages-data" type="application/json">
-        [
-            {% for message in messages %}
-            {
-                "message": "{{ message|escapejs }}",
-                "tags": "{{ message.tags|escapejs }}"
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ]
+      [
+          {% for message in messages %}
+          {
+              "message": "{{ message|escapejs }}",
+              "tags": "{{ message.tags|escapejs }}"
+          }{% if not forloop.last %},{% endif %}
+          {% endfor %}
+      ]
     </script>
 
     <script>
-        // Esperamos a que la página cargue para ejecutar SweetAlert
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlHistorial = "{% url 'historial_glp' %}";
-            const messageElement = document.getElementById('messages-data');
-            if(!messageElement) return;
+      // Esperamos a que la página cargue para ejecutar SweetAlert
+      window.addEventListener("DOMContentLoaded", () => {
+        const urlHistorial = "{% url 'historial_glp' %}";
+        const messageElement = document.getElementById("messages-data");
+        if (!messageElement) return;
 
-            const messagesData = JSON.parse(messageElement.textContent);
-            
-            messagesData.forEach(m => {
-                const isUsuario = m.tags.includes('usuario');
-                const isError = m.tags.includes('error');
-                
-                Swal.fire({
-                    title: isError ? "¡Atención!" : "¡Éxito!",
-                    text: m.message,
-                    icon: isError ? "error" : "success",
-                    showCancelButton: !isUsuario,
-                    confirmButtonColor: "#0d6efd",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: isUsuario ? "OK" : "Ver en Historial",
-                    cancelButtonText: "Registrar otro",
-                    showConfirmButton: true,
-                    timer: isUsuario ? 2000 : null,
-                    timerProgressBar: isUsuario
-                }).then((result) => {
-                    if (result.isConfirmed && !isUsuario) {
-                        window.location.href = urlHistorial;
-                    }
-                });
-            });
+        const messagesData = JSON.parse(messageElement.textContent);
+
+        messagesData.forEach((m) => {
+          const isUsuario = m.tags.includes("usuario");
+          const isError = m.tags.includes("error");
+
+          Swal.fire({
+            title: isError ? "¡Atención!" : "¡Éxito!",
+            text: m.message,
+            icon: isError ? "error" : "success",
+            showCancelButton: !isUsuario,
+            confirmButtonColor: "#0d6efd",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: isUsuario ? "OK" : "Ver en Historial",
+            cancelButtonText: "Registrar otro",
+            showConfirmButton: true,
+            timer: isUsuario ? 2000 : null,
+            timerProgressBar: isUsuario,
+          }).then((result) => {
+            if (result.isConfirmed && !isUsuario) {
+              window.location.href = urlHistorial;
+            }
+          });
         });
+      });
     </script>
-    {% endif %}
-
-    {% block scripts %}{% endblock %}
-
-</body>
+    {% endif %} {% block scripts %}{% endblock %}
+  </body>
 </html>

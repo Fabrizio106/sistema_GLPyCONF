@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4 text-center fw-bold text-primary">Registro de Certificado de Conformidad</h2>
+    
+    <form method="POST" id="certificado-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-danger shadow-sm">
+                <strong>Por favor corrija los siguientes errores:</strong>
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <div class="card p-4 mb-4 shadow-sm border-start border-primary border-4">
+            <div class="card-title mb-3 fw-bold">
+                <i class="bi bi-file-earmark-check-fill text-primary"></i> Sección A: Identificación
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3"><label class="form-label fw-bold small">PLACA</label>{{ form.placa }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">CATEGORÍA</label>{{ form.categoria }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">MARCA</label>{{ form.marca }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">MODELO</label>{{ form.modelo }}</div>
+            </div>
+            <div class="row g-3 mt-1">
+                <div class="col-md-3"><label class="form-label fw-bold small">VERSIÓN</label>{{ form.version }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">COLOR</label>{{ form.color }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">AÑO FABRICACIÓN</label>{{ form.anio_fabricacion }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">AÑO MODELO</label>{{ form.anio_modelo }}</div>
+            </div>
+            <div class="row g-3 mt-1">
+                <div class="col-md-4"><label class="form-label fw-bold small">NÚMERO VIN</label>{{ form.numero_vin }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small">NÚMERO SERIE</label>{{ form.numero_serie }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small">NÚMERO MOTOR</label>{{ form.numero_motor }}</div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm border-start border-secondary border-4">
+            <div class="card-title mb-3 fw-bold text-secondary">
+                <i class="bi bi-speedometer2"></i> Sección B: Especificaciones Técnicas
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-3"><label class="form-label fw-bold small">CARROCERÍA</label>{{ form.carroceria }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold small">COMBUSTIBLE</label>{{ form.combustible }}</div>
+                <div class="col-md-2"><label class="form-label fw-bold small">POTENCIA</label>{{ form.potencia }}</div>
+                <div class="col-md-2"><label class="form-label fw-bold small">CILINDRADA</label>{{ form.cilindrada }}</div>
+                <div class="col-md-2"><label class="form-label fw-bold small">CILINDROS</label>{{ form.cilindros }}</div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-2"><label class="form-label fw-bold small">EJES</label>{{ form.ejes }}</div>
+                <div class="col-md-2"><label class="form-label fw-bold small">RUEDAS</label>{{ form.ruedas }}</div>
+                <div class="col-md-2"><label class="form-label fw-bold small">ASIENTOS</label>{{ form.asientos }}</div>
+                <div class="col-md-2"><label class="form-label fw-bold small">PASAJEROS</label>{{ form.pasajeros }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small">FÓRMULA RODANTE</label>{{ form.formula_rodante }}</div>
+            </div>
+            <div class="row g-3 mb-3 ">
+                <div class="col-md-4"><label class="form-label fw-bold small">LONGITUD (m)</label>{{ form.longitud }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small">ALTURA (m)</label>{{ form.altura }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small">ANCHO (m)</label>{{ form.ancho }}</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label fw-bold small">PESO BRUTO (kg)</label>{{ form.peso_bruto }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small">PESO NETO (kg)</label>{{ form.peso_neto }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold small text-success">CARGA ÚTIL (kg)</label>{{ form.carga_util }}</div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm border-info border-start border-4">
+            <div class="card-title mb-3 fw-bold text-info">
+                <i class="bi bi-list-check"></i> Sección C: Trámites / Cambios Realizados
+            </div>
+
+            <div id="tramites-master-container">
+                </div>
+
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-outline-info shadow-sm fw-bold" id="btn-add-tramite-block">
+                    <i class="bi bi-plus-circle-fill me-1"></i> AGREGAR OTRO TRÁMITE
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 shadow mb-5">
+            <i class="bi bi-save-fill me-2"></i> GUARDAR CERTIFICADO COMPLETO
+        </button>
+    </form>
+</div>
+
+<template id="tramite-block-template">
+    <div class="tramite-block border rounded p-3 mb-4 bg-white shadow-sm position-relative">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-block-btn" aria-label="Close"></button>
+        <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-gear-fill me-2"></i>Configuración de Trámite</h6>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">TIPO DE TRÁMITE</label>
+                <select class="form-select form-select-sm border-info selector-tipo" name="tipo_tramite_multiple[]" required>
+                    <option value="">-- Seleccione --</option>
+                    <option value="RECTIFICACION">RECTIFICACIÓN</option>
+                    <option value="ADECUACION">ADECUACIÓN</option>
+                    <option value="INCORPORACION">INCORPORACIÓN</option>
+                    <option value="MODIFICACION">MODIFICACIÓN</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="checklist-area d-none">
+            <p class="small text-muted mb-2 fw-bold">Marque los campos a modificar:</p>
+            <div class="row g-2 checklist-options p-3 bg-light rounded border mb-3"></div>
+            <div class="row g-3 inputs-area"></div>
+        </div>
+    </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const masterContainer = document.getElementById('tramites-master-container');
+    const addBlockBtn = document.getElementById('btn-add-tramite-block');
+    const template = document.getElementById('tramite-block-template');
+
+    const config = {
+        'RECTIFICACION': ['categoria', 'marca', 'modelo', 'color', 'numero_vin', 'numero_serie', 'numero_motor', 'anio_fabricacion'],
+        'ADECUACION': ['ejes', 'ruedas', 'peso_bruto', 'peso_neto', 'carga_util'],
+        'INCORPORACION': ['carroceria', 'potencia', 'combustible', 'formula_rodante', 'cilindrada'],
+        'MODIFICACION': ['asientos', 'pasajeros', 'longitud', 'altura', 'ancho', 'cilindros']
+    };
+
+    // Función corregida para bloquear opciones ya seleccionadas
+    function updateSelectors() {
+        const allSelectors = document.querySelectorAll('.selector-tipo');
+        const selectedValues = Array.from(allSelectors)
+            .map(s => s.value)
+            .filter(v => v !== "");
+
+        allSelectors.forEach(select => {
+            const currentVal = select.value;
+            select.querySelectorAll('option').forEach(opt => {
+                if (opt.value !== "") {
+                    // Si la opción está seleccionada en OTRO select, se deshabilita en este
+                    opt.disabled = selectedValues.includes(opt.value) && opt.value !== currentVal;
+                }
+            });
+        });
+    }
+
+    function createNewBlock() {
+        const currentBlocks = document.querySelectorAll('.tramite-block');
+        if (currentBlocks.length >= Object.keys(config).length) {
+            alert("No hay más tipos de trámites disponibles.");
+            return;
+        }
+
+        const clone = template.content.cloneNode(true);
+        const block = clone.querySelector('.tramite-block');
+        const selector = block.querySelector('.selector-tipo');
+        const checklistArea = block.querySelector('.checklist-area');
+        const checklistOptions = block.querySelector('.checklist-options');
+        const inputsArea = block.querySelector('.inputs-area');
+        const removeBtn = block.querySelector('.remove-block-btn');
+        const blockId = Date.now() + Math.floor(Math.random() * 100);
+
+        selector.addEventListener('change', function() {
+            const val = this.value;
+            checklistOptions.innerHTML = '';
+            inputsArea.innerHTML = '';
+            
+            if (config[val]) {
+                checklistArea.classList.remove('d-none');
+                config[val].forEach(campo => {
+                    const labelStr = campo.replace('_', ' ').toUpperCase();
+                    checklistOptions.innerHTML += `
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input chk-item" type="checkbox" id="chk-${blockId}-${campo}" data-campo="${campo}" data-label="${labelStr}">
+                                <label class="form-check-label small" for="chk-${blockId}-${campo}">${labelStr}</label>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                checklistArea.classList.add('d-none');
+            }
+            updateSelectors(); // Llamar al cambiar el valor
+        });
+
+        checklistOptions.addEventListener('change', function(e) {
+            if (e.target.classList.contains('chk-item')) {
+                const campo = e.target.dataset.campo;
+                const label = e.target.dataset.label;
+                const tipoActual = selector.value;
+                if (e.target.checked) {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6';
+                    col.id = `input-${blockId}-${campo}`;
+                    col.innerHTML = `
+                        <div class="input-group input-group-sm mb-2 shadow-sm">
+                            <span class="input-group-text bg-info text-white fw-bold" style="min-width: 140px;">${label}</span>
+                            <input type="text" name="valor_${tipoActual}_${campo}" class="form-control" required placeholder="Nuevo valor">
+                            <input type="hidden" name="mapa_tramites[]" value="${tipoActual}|${campo}">
+                        </div>`;
+                    inputsArea.appendChild(col);
+                } else {
+                    const el = document.getElementById(`input-${blockId}-${campo}`);
+                    if (el) el.remove();
+                }
+            }
+        });
+
+        removeBtn.addEventListener('click', () => {
+            if (document.querySelectorAll('.tramite-block').length > 1) {
+                block.remove();
+                updateSelectors(); // Llamar al eliminar para liberar la opción
+            } else {
+                alert("Debe existir al menos un bloque de trámite.");
+            }
+        });
+
+        masterContainer.appendChild(block);
+        updateSelectors(); // Llamar al crear el bloque
+    }
+
+    // Inicializar
+    createNewBlock();
+    addBlockBtn.addEventListener('click', createNewBlock);
+
+    // Cálculo Carga Útil
+    const pb = document.querySelector('[name="peso_bruto"]');
+    const pn = document.querySelector('[name="peso_neto"]');
+    const cu = document.querySelector('[name="carga_util"]');
+    function calc() {
+        const val = (parseFloat(pb.value) || 0) - (parseFloat(pn.value) || 0);
+        cu.value = val > 0 ? val.toFixed(2) : "0.00";
+    }
+    if(pb && pn) { pb.addEventListener('input', calc); pn.addEventListener('input', calc); }
+});
+</script>
+{% endblock %}
