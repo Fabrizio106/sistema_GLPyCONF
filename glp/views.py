@@ -118,6 +118,8 @@ def editar_certificado_glp(request, pk):
     if request.method == 'POST':
         form = CertificadoGLPForm(request.POST, instance=certificado) #con el instance 
         if form.is_valid():
+            certificado_editado = form.save(commit=False)
+            certificado_editado.usuario = request.user
             form.save()
             messages.success(request, "Certificado actualizado correctamente.")
             return redirect('historial_glp')
