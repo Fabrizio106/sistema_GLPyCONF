@@ -196,6 +196,6 @@ class CertificadoGLP(models.Model):
         if self.fecha_certificacion and self.fecha_certificacion.weekday() == 6:
             self.fecha_certificacion = self.fecha_certificacion - timedelta(days=1)
 
-        self.fecha_vencimiento = self.fecha_emision + timedelta(days=365)
+        self.fecha_vencimiento = self.fecha_certificacion + timedelta(days=365)
 
         super().save(*args, **kwargs)
