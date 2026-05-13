@@ -116,7 +116,13 @@
 
     <table class="header-container">
         <tr>
-            <td style="text-align: left;">El Centro de Certificacion CEDITEV S.A.C</td>
+            <td style="text-align: left;">
+                {% if certificado.tipo_certificado == 'INICIAL' %}
+                El Centro de Certificacion CEDITEV S.A.C
+                {% else %}
+                <strong>Tipo de Certificación: INSPECCIÓN ANUAL</strong>
+                {% endif %}
+            </td>
             <td style="text-align: right;">N° {{ certificado.numero_formateado }}</td>
         </tr>
     </table>
@@ -128,7 +134,7 @@
             Distrito y Provincia de Independencia, Departamento de Lima, al siguiente vehículo:
         </p>
     {% else %}
-        <div class="header-center">CEDITEV S.A.C</div>
+        <div style="text-align: center; font-weight: bold; width: 100%;">CEDITEV S.A.C</div>
         <p style="margin-bottom: 2pt;">CERTIFICA.</p>
         <p style="font-size: 7pt; margin-bottom: 12pt; text-align: justify;">
             Haber efectuado la evaluación de las condiciones de seguridad del sistema de combustion a Gas Licuado de Petróleo - GLP del siguiente vehiculo:
