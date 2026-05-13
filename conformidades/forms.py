@@ -1,14 +1,29 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import CertificadoConformidad, TramiteConformidad
+from glp.models import SedeConfiguracion
+from datetime import date
 
 class CertificadoForm(forms.ModelForm):
+    sede = forms.ModelChoiceField(
+        queryset=SedeConfiguracion.objects.all(),
+        empty_label="Seleccione una Sede",
+        widget=forms.Select(attrs={'class': 'form-select'})
+        )
+    
+    def __init__(self, *args, **kwargs):
+        super(CertificadoForm, self).__init__(*args, **kwargs)
+        # LÓGICA DE FECHA AUTOMÁTICA: 
+        # Si el formulario es nuevo (no tiene instancia grabada), ponemos hoy.
+        if not self.instance.pk:
+            self.fields['fecha_emision'].initial = date.today()
+    
     class Meta:
         model = CertificadoConformidad
         # Incluimos todos los campos del modelo
         fields = '__all__'
         # Excluimos la fecha de registro porque se pone sola
-        exclude = ['fecha_registro']
+        exclude = ['fecha_registro', 'numero_certificado']
         
         # Agregamos clases de Bootstrap para que se vea bien
         widgets = {
@@ -20,9 +35,11 @@ class CertificadoForm(forms.ModelForm):
                 'pasajeros', 'ruedas', 'ejes', 'cilindros', 'cilindrada',
                 'anio_fabricacion', 'anio_modelo', 'version'
             ]
+            
         }
         # Los campos numéricos necesitan su propio widget
         widgets.update({
+            'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),

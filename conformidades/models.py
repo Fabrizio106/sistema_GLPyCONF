@@ -1,9 +1,23 @@
 from django.db import models
+from glp.models import SedeConfiguracion
+from django.conf import settings
 
 class CertificadoConformidad(models.Model):
     """
     Modelo Base: Representa el vehículo y los datos originales del certificado.
     """
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True, 
+        verbose_name='Certificador'
+    )
+    
+    sede = models.ForeignKey(SedeConfiguracion, on_delete=models.PROTECT, verbose_name="Sede")
+    fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
+    numero_certificado = models.CharField(max_length=20, unique=True,null=True,blank=True, verbose_name="N° de Certificado")
+    
     # Identificación Básica
     numero_vin = models.CharField(max_length=17, unique=True, verbose_name="Número VIN")
     placa = models.CharField(max_length=100, verbose_name="Placa")
@@ -51,6 +65,24 @@ class CertificadoConformidad(models.Model):
 
     def __str__(self):
         return f"{self.placa} - {self.numero_vin}"
+    
+    def clean(self):
+        """
+        Lógica de autogeneración para Conformidades
+        """
+        # Solo se ejecuta si es un registro nuevo (no tiene pk)
+        if not self.pk and not self.numero_certificado:
+            # Buscamos el último número de conformidad en la base de datos
+            ultimo = CertificadoConformidad.objects.filter(
+                numero_certificado__gte="10000"
+            ).order_by('numero_certificado').last()
+            
+            if ultimo and ultimo.numero_certificado.isdigit():
+                # Incrementamos en 1 el valor encontrado
+                self.numero_certificado = str(int(ultimo.numero_certificado) + 1)
+            else:
+                # Si es el primer registro del sistema, empezamos en 10001
+                self.numero_certificado = "10001"
 
 
 class TramiteConformidad(models.Model):

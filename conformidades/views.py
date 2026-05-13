@@ -3,7 +3,21 @@ from django.db import transaction
 from django.contrib import messages
 from .forms import CertificadoForm  # Asegúrate de que este formulario use el modelo CertificadoConformidad
 from .models import TramiteConformidad
+from django.contrib.auth.decorators import login_required
+from glp.models import SedeConfiguracion
+import json
 
+def obtener_sedes_json():
+    sedes_queryset = SedeConfiguracion.objects.all()
+    sedes_data = {
+        str(s.id): {
+            'anual_dias': s.fecha_anual,
+            'inicial_dias': s.fecha_inicial
+        } for s in sedes_queryset
+    }
+    return json.dumps(sedes_data)
+
+@login_required
 def crear_certificado_conformidad(request):
     """
     Vista procesadora para el template dinámico con Checklists y Múltiples Bloques.
@@ -15,8 +29,12 @@ def crear_certificado_conformidad(request):
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    # 1. Guardamos el Certificado Base
-                    certificado = form.save()
+                    # 1. Guardamos el Certificado Base sin confirmar (commit=False)
+                    # Esto nos permite asignar el usuario antes de guardar en la BD
+                    certificado = form.save(commit=False)
+                    certificado.usuario = request.user  # Asignamos el usuario actual
+                    # Ahora sí, guardamos el certificado en la base de datos
+                    certificado.save()
 
                     # 2. Procesamos los trámites dinámicos enviados por el JS
                     # mapa_tramites[] contiene la relación "TIPO|CAMPO" (ej: RECTIFICACION|color)
@@ -48,5 +66,6 @@ def crear_certificado_conformidad(request):
         form = CertificadoForm()
 
     return render(request, 'conformidades/conformidad_form.html', {
-        'form': form
+        'form': form,
+        'sedes_json': obtener_sedes_json()
     })

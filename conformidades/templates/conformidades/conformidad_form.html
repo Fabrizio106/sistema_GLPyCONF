@@ -14,9 +14,25 @@
             </div>
         {% endif %}
 
-        <div class="card p-4 mb-4 shadow-sm border-start border-primary border-4">
+        <div class="card p-4 mb-4 shadow-sm  border-4">
+            <div class="card-title">
+                <i class="bi bi-gear-fill text-primary"></i> Sección A: Control de Emisión
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Sede de Inspección</label>
+                    {{ form.sede }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Fecha de Emisión</label>
+                    {{ form.fecha_emision }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm  border-4">
             <div class="card-title mb-3 fw-bold">
-                <i class="bi bi-file-earmark-check-fill text-primary"></i> Sección A: Identificación
+                <i class="bi bi-file-earmark-check-fill text-primary"></i> Sección B: Identificación
             </div>
             <div class="row g-3">
                 <div class="col-md-3"><label class="form-label fw-bold small">PLACA</label>{{ form.placa }}</div>
@@ -37,9 +53,9 @@
             </div>
         </div>
 
-        <div class="card p-4 mb-4 shadow-sm border-start border-secondary border-4">
-            <div class="card-title mb-3 fw-bold text-secondary">
-                <i class="bi bi-speedometer2"></i> Sección B: Especificaciones Técnicas
+        <div class="card p-4 mb-4 shadow-sm border-4">
+            <div class="card-title mb-3 fw-bold ">
+                <i class="bi bi-speedometer2 text-primary"></i> Sección C: Especificaciones Técnicas
             </div>
             <div class="row g-3 mb-3">
                 <div class="col-md-3"><label class="form-label fw-bold small">CARROCERÍA</label>{{ form.carroceria }}</div>
@@ -67,9 +83,9 @@
             </div>
         </div>
 
-        <div class="card p-4 mb-4 shadow-sm border-info border-start border-4">
-            <div class="card-title mb-3 fw-bold text-info">
-                <i class="bi bi-list-check"></i> Sección C: Trámites / Cambios Realizados
+        <div class="card p-4 mb-4 shadow-sm border-info border-4">
+            <div class="card-title mb-3 fw-bold">
+                <i class="bi bi-list-check text-primary"></i> Sección D: Trámites / Cambios Realizados
             </div>
 
             <div id="tramites-master-container">
@@ -89,9 +105,9 @@
 </div>
 
 <template id="tramite-block-template">
-    <div class="tramite-block border rounded p-3 mb-4 bg-white shadow-sm position-relative">
+    <div class="tramite-block border rounded p-3 mb-4  shadow-sm position-relative">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-block-btn" aria-label="Close"></button>
-        <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-gear-fill me-2"></i>Configuración de Trámite</h6>
+        <h6 class="fw-bold mb-3"><i class="bi bi-gear-fill me-2"></i>Configuración de Trámite</h6>
         
         <div class="row mb-3">
             <div class="col-md-6">

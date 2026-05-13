@@ -24,9 +24,9 @@ class TramiteInline(admin.TabularInline):
 @admin.register(CertificadoConformidad)
 class CertificadoAdmin(admin.ModelAdmin):
     # Columnas para la tabla principal
-    list_display = ('placa', 'marca', 'modelo', 'anio_fabricacion', 'carga_util')
+    list_display = ('numero_certificado','placa', 'marca', 'modelo', 'anio_fabricacion', 'carga_util')
     # Buscador por placa o VIN
-    search_fields = ('placa', 'numero_vin', 'numero_serie')
+    search_fields = ('numero_certificado','placa', 'numero_vin', 'numero_serie')
     # Filtro lateral
     list_filter = ('marca', 'anio_fabricacion')
     # Integración de los trámites
