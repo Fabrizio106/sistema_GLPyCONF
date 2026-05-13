@@ -130,7 +130,7 @@ class CertificadoGLP(models.Model):
             if ultimo and ultimo.numero_certificado.isdigit():
                 self.numero_certificado = str(int(ultimo.numero_certificado) + 1)
             else:
-                self.numero_certificado = "10001"
+                self.numero_certificado = "25876"
 
         #  para que el bruto sea mayor a mi neto 
         if self.peso_bruto and self.peso_neto:
