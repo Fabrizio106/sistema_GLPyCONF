@@ -124,7 +124,7 @@ class CertificadoGLP(models.Model):
     def clean(self):
         if not self.pk and not self.numero_certificado:
             ultimo = CertificadoGLP.objects.filter(
-                numero_certificado__gte="10000"
+                numero_certificado__gte="25876"
             ).order_by('numero_certificado').last()
         
             if ultimo and ultimo.numero_certificado.isdigit():
