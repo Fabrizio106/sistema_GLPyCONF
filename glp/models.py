@@ -121,6 +121,12 @@ class CertificadoGLP(models.Model):
     def __str__(self):
         return f"{self.numero_certificado} - {self.placa} ({self.tipo_certificado})"
     
+    @property
+    def numero_formateado(self):
+        if self.numero_certificado:
+            return self.numero_certificado.zfill(8)
+        return ""
+
     def clean(self):
         if not self.pk and not self.numero_certificado:
             ultimo = CertificadoGLP.objects.filter(
