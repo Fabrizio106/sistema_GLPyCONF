@@ -109,7 +109,7 @@ class CertificadoGLP(models.Model):
     cilindro_marca = models.CharField(max_length=50, verbose_name="Marca Cilindro")
     cilindro_modelo = models.CharField(max_length=50, verbose_name="Modelo Cilindro")
     cilindro_serie = models.CharField(max_length=50, verbose_name="Serie Cilindro")
-    cilindro_capacidad = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Capacidad (L)")
+    cilindro_capacidad = models.CharField(max_length=20, verbose_name="Capacidad (L)")
     cilindro_fecha_fab = models.CharField(max_length=20, verbose_name="Fecha Fabricación Cilindro")
 
     fecha_vencimiento = models.DateField(blank=True, null=True)
@@ -172,6 +172,7 @@ class CertificadoGLP(models.Model):
         
         
         self.fecha_emision = timezone.localdate()
+        
         
         # sede y ciudad para el PDF
         config = self.sede 
