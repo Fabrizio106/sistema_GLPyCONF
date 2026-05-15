@@ -122,7 +122,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+#Es la que le dice a Django dónde juntar todo
+STATIC_ROOT = BASE_DIR / 'static'
 
 LOGIN_REDIRECT_URL = 'registrar_glp'
 
