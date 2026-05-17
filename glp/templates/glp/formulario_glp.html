@@ -18,8 +18,8 @@
                 {{ form.combustible }}
             </div>
             <div class="col-md-4">
-                <label class="form-label">Fecha de Emisión</label>
-                {{ form.fecha_emision }}
+                <label class="form-label">Fecha de certificación</label>
+                {{ form.fecha_certificacion }}
             </div>
         </div>
     </div>
@@ -119,9 +119,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log("Iniciando script de GLP...");
+        const editando = '{{ editando|yesno:"true,false" }}' === 'true';
         const sedeSelect = document.getElementById('id_sede');
         const combustibleSelect = document.getElementById('id_combustible');
-        const fechaInput = document.getElementById('id_fecha_emision');
+        const fechaInput = document.getElementById('id_fecha_certificacion');
         const pesoNetoInput = document.getElementById('id_peso_neto');
         const pesoBrutoInput = document.getElementById('id_peso_bruto');
         const cargaUtilInput = document.getElementById('id_carga_util');
@@ -143,7 +144,7 @@
                 cargaUtilInput.placeholder = "Error: Bruto debe ser mayor";
             } else if (bruto > neto) {
                 pesoBrutoInput.classList.remove('is-invalid');
-                cargaUtilInput.value = (bruto - neto).toFixed(2);
+                cargaUtilInput.value = (bruto - neto).toFixed(0);
                 cargaUtilInput.placeholder = "";
             } else {
                 cargaUtilInput.value = "";

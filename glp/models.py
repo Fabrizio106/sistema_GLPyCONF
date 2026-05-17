@@ -170,11 +170,6 @@ class CertificadoGLP(models.Model):
         else:
             self.tipo_certificado = 'ANUAL' 
         
-        
-        self.fecha_emision = timezone.localdate()
-        
-        
-        # sede y ciudad para el PDF
         config = self.sede 
         if self.tipo_certificado == 'ANUAL':
             self.ciudad_glp_pdf = config.ciudad_anual
@@ -183,20 +178,30 @@ class CertificadoGLP(models.Model):
             self.ciudad_glp_pdf = config.ciudad_inicial
             regla_fecha = config.fecha_inicial
         
-        if regla_fecha == 'MISMO':
-            self.fecha_certificacion = self.fecha_emision
-        elif regla_fecha == 'ANTES':
-            self.fecha_certificacion = self.fecha_emision - timedelta(days=1)
-        elif regla_fecha == 'ANTES_2':
-            self.fecha_certificacion = self.fecha_emision - timedelta(days=2)
-        else:
-            self.fecha_certificacion = self.fecha_emision
+        # 1. La de emisión (Real) se guarda oculta y solo una vez cuando es NUEVO
+        if not self.pk:
+            self.fecha_emision = timezone.localdate()
         
+        # 2. Solo calcula la automática si el campo viene vacío (Registro nuevo)
+        # Si ya trae fecha (porque la editaste a mano), se respeta tu cambio.
+        if not self.fecha_certificacion:
+            if regla_fecha == 'MISMO':
+                self.fecha_certificacion = self.fecha_emision
+            elif regla_fecha == 'ANTES':
+                self.fecha_certificacion = self.fecha_emision - timedelta(days=1)
+            elif regla_fecha == 'ANTES_2':
+                self.fecha_certificacion = self.fecha_emision - timedelta(days=2)
+            else:
+                self.fecha_certificacion = self.fecha_emision
 
             # Si el cálculo resulta en Domingo de retro al sabad
-        if self.fecha_certificacion and self.fecha_certificacion.weekday() == 6:
-            self.fecha_certificacion = self.fecha_certificacion - timedelta(days=1)
+            if self.fecha_certificacion and self.fecha_certificacion.weekday() == 6:
+                self.fecha_certificacion = self.fecha_certificacion - timedelta(days=1)
 
-        self.fecha_vencimiento = self.fecha_certificacion + timedelta(days=365)
+        # 3. El vencimiento siempre se amarra a la fecha del documento final
+        if self.fecha_certificacion:
+            self.fecha_vencimiento = self.fecha_certificacion + timedelta(days=365)
+        else:
+            self.fecha_vencimiento = None
 
         super().save(*args, **kwargs)

@@ -85,7 +85,10 @@
                             <span class="badge bg-success">ANUAL</span>
                         {% endif %}
                     </td>
-                    <td>{{ c.fecha_emision|date:"d/m/Y" }}</td> 
+                    <td>
+                        <div class="fw-bold text-dark">{{ c.fecha_emision|date:"d/m/Y" }}</div>
+                        <small class="text-muted" style="font-size: 0.75rem;">F.E: {{ c.fecha_certificacion|date:"d/m/Y" }}</small>
+                    </td>
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-danger d-inline-flex align-items-center px-3">

@@ -31,7 +31,7 @@ def registrar_certificado_glp(request):
         if form.is_valid():
             certificado = form.save(commit=False)
             certificado.usuario = request.user
-            form.save() 
+            certificado.save()
             messages.success(request, "¡Certificado registrado con éxito!")
             return redirect('registrar_glp') 
     else:
@@ -64,14 +64,24 @@ def historial_glp(request):
     fecha_unica = request.GET.get('fecha') # por dia
     f_inicio = request.GET.get('inicio')   # por rango
     f_fin = request.GET.get('fin')
+
+    tiene_filtro = False
+
     if query:
         certificados = certificados.filter(placa__icontains=query)
+        tiene_filtro = True
     if sede_id:
         certificados = certificados.filter(sede_id=sede_id)
+        tiene_filtro = True
     if fecha_unica:
         certificados = certificados.filter(fecha_emision=fecha_unica)
+        tiene_filtro = True
     elif f_inicio and f_fin:
         certificados = certificados.filter(fecha_emision__range=[f_inicio, f_fin])
+        tiene_filtro = True
+
+    if not tiene_filtro:
+        certificados = certificados.filter(fecha_emision=timezone.localdate())
     
     sedes = SedeConfiguracion.objects.all()
         
@@ -120,7 +130,7 @@ def editar_certificado_glp(request, pk):
         if form.is_valid():
             certificado_editado = form.save(commit=False)
             certificado_editado.usuario = request.user
-            form.save()
+            certificado_editado.save()
             messages.success(request, "Certificado actualizado correctamente.")
             return redirect('historial_glp')
     else:
