@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +24,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-tn=w&4g+ttk9wrd&x@stv-2!*3u3qwx*z%wakjfqav^2d#r2f%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+RUNNING_ON_SERVER = os.path.exists('/home/fabrizionicolas')
 
+if RUNNING_ON_SERVER:
+    # CONFIGURACIÓN PARA LA PÁGINA REAL (PRODUCCIÓN)
+    DEBUG = False  # Oculta los errores detallados con líneas de código en la web
+    ALLOWED_HOSTS = ['www.ceditev.com', 'ceditev.com']
+else:
+    # CONFIGURACIÓN PARA TU COMPUTADORA (LOCAL)
+    DEBUG = True   # Te muestra el error exacto y la línea fallida para que puedas programar
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
