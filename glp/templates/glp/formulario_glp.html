@@ -18,8 +18,8 @@
                 {{ form.combustible }}
             </div>
             <div class="col-md-4">
-                <label class="form-label">Fecha de Emisión</label>
-                {{ form.fecha_emision }}
+                <label class="form-label">Fecha de certificación</label>
+                {{ form.fecha_certificacion }}
             </div>
         </div>
     </div>
@@ -34,8 +34,8 @@
                 <label class="form-label">Placa del Vehículo</label>
                 <div class="input-group">
                     {{ form.placa }}
-                    <button class="btn btn-primary" type="button" id="btnConsultarApi">
-                        <i class="bi bi-cloud-download"></i> Consultar API
+                    <button class="btn btn-outline-primary" type="button" id="btn-buscar-historial">
+                        <i class="bi bi-search"></i>
                     </button>
                 </div>
             </div>
@@ -52,7 +52,7 @@
         </div>
         <div class="row g-3">
             <div class="col-md-3"><label class="form-label">Año Fab.</label>{{ form.anio_fabricacion }}</div>
-            <div class="col-md-5"><label class="form-label">VIN / Chasis</label>{{ form.vin_serie }}</div>
+            <div class="col-md-5"><label class="form-label">N° Serie</label>{{ form.vin_serie }}</div>
             <div class="col-md-4"><label class="form-label">N° Motor</label>{{ form.numero_motor }}</div>
         </div>
     </div>
@@ -68,7 +68,7 @@
             <div class="col-md-2"><label class="form-label">Asientos / Pas.</label>
                 <div class="d-flex gap-2">{{ form.asientos }} {{ form.pasajeros }}</div>
             </div>
-            <div class="col-md-2"><label class="form-label">Largo (m)</label>{{ form.largo }}</div>
+            <div class="col-md-2"><label class="form-label">Longitud (m)</label>{{ form.largo }}</div>
             <div class="col-md-2"><label class="form-label">Ancho (m)</label>{{ form.ancho }}</div>
         </div>
         <div class="row g-3">
@@ -113,15 +113,31 @@
         {% endif %}
     </button>
 </form>
+
+<div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-clock-history me-2"></i>Historial Vehicular</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4" id="contenido-historial">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log("Iniciando script de GLP...");
+        const editando = '{{ editando|yesno:"true,false" }}' === 'true';
         const sedeSelect = document.getElementById('id_sede');
         const combustibleSelect = document.getElementById('id_combustible');
-        const fechaInput = document.getElementById('id_fecha_emision');
+        const fechaInput = document.getElementById('id_fecha_certificacion');
         const pesoNetoInput = document.getElementById('id_peso_neto');
         const pesoBrutoInput = document.getElementById('id_peso_bruto');
         const cargaUtilInput = document.getElementById('id_carga_util');
@@ -143,7 +159,7 @@
                 cargaUtilInput.placeholder = "Error: Bruto debe ser mayor";
             } else if (bruto > neto) {
                 pesoBrutoInput.classList.remove('is-invalid');
-                cargaUtilInput.value = (bruto - neto).toFixed(2);
+                cargaUtilInput.value = (bruto - neto).toFixed(0);
                 cargaUtilInput.placeholder = "";
             } else {
                 cargaUtilInput.value = "";
@@ -241,5 +257,48 @@
             });
         }
     });
+
+    document.getElementById('btn-buscar-historial').addEventListener('click', function() {
+    const placa = document.getElementById('id_placa').value;
+    const modalElement = new bootstrap.Modal(document.getElementById('modalHistorial'));
+    const contenedor = document.getElementById('contenido-historial');
+
+    if (!placa) {
+        Swal.fire({
+            title: 'Campo vacío',
+            text: 'Por favor, ingrese una placa para consultar el historial.',
+            icon: 'warning',
+            confirmButtonColor: '#FD7401', 
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+
+    modalElement.show();
+    contenedor.innerHTML = '<div class="spinner-border text-primary"></div>';
+
+    fetch(`/glp/consultar-historial/?placa=${placa}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.encontrado) {
+                const colorEstado = data.estado === 'VIGENTE' ? 'text-success' : 'text-danger';
+                contenedor.innerHTML = `
+                    <h2 class="fw-bold text-primary mb-3">${data.placa}</h2>
+                    <p class="mb-1">Último GLP: <strong>${data.fecha_ultima}</strong></p>
+                    <p class="fs-5">Días para expirar: <span class="fw-bold ${colorEstado}">${data.dias_restantes} días</span></p>
+                    <div class="badge p-2 px-3 ${data.estado === 'VIGENTE' ? 'bg-success' : 'bg-danger'}">${data.estado}</div>
+                `;
+            } else {
+                contenedor.innerHTML = `
+                    <i class="bi bi-info-circle text-warning fs-1"></i>
+                    <p class="mt-3">No se encontraron GLP previas para esta placa.</p>
+                `;
+            }
+        })
+        .catch(error => {
+            contenedor.innerHTML = '<p class="text-danger">Error al consultar los datos.</p>';
+        });
+    });
 </script>
+
 {% endblock %}

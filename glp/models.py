@@ -109,7 +109,7 @@ class CertificadoGLP(models.Model):
     cilindro_marca = models.CharField(max_length=50, verbose_name="Marca Cilindro")
     cilindro_modelo = models.CharField(max_length=50, verbose_name="Modelo Cilindro")
     cilindro_serie = models.CharField(max_length=50, verbose_name="Serie Cilindro")
-    cilindro_capacidad = models.DecimalField(max_digits=8, decimal_places=4, verbose_name="Capacidad (L)")
+    cilindro_capacidad = models.CharField(max_length=20, verbose_name="Capacidad (L)")
     cilindro_fecha_fab = models.CharField(max_length=20, verbose_name="Fecha Fabricación Cilindro")
 
     fecha_vencimiento = models.DateField(blank=True, null=True)
@@ -121,16 +121,22 @@ class CertificadoGLP(models.Model):
     def __str__(self):
         return f"{self.numero_certificado} - {self.placa} ({self.tipo_certificado})"
     
+    @property
+    def numero_formateado(self):
+        if self.numero_certificado:
+            return self.numero_certificado.zfill(8)
+        return ""
+
     def clean(self):
         if not self.pk and not self.numero_certificado:
             ultimo = CertificadoGLP.objects.filter(
-                numero_certificado__gte="10000"
+                numero_certificado__gte="25876"
             ).order_by('numero_certificado').last()
         
             if ultimo and ultimo.numero_certificado.isdigit():
                 self.numero_certificado = str(int(ultimo.numero_certificado) + 1)
             else:
-                self.numero_certificado = "10001"
+                self.numero_certificado = "25876"
 
         #  para que el bruto sea mayor a mi neto 
         if self.peso_bruto and self.peso_neto:
@@ -164,10 +170,6 @@ class CertificadoGLP(models.Model):
         else:
             self.tipo_certificado = 'ANUAL' 
         
-        
-        self.fecha_emision = timezone.localdate()
-        
-        # sede y ciudad para el PDF
         config = self.sede 
         if self.tipo_certificado == 'ANUAL':
             self.ciudad_glp_pdf = config.ciudad_anual
@@ -176,20 +178,30 @@ class CertificadoGLP(models.Model):
             self.ciudad_glp_pdf = config.ciudad_inicial
             regla_fecha = config.fecha_inicial
         
-        if regla_fecha == 'MISMO':
-            self.fecha_certificacion = self.fecha_emision
-        elif regla_fecha == 'ANTES':
-            self.fecha_certificacion = self.fecha_emision - timedelta(days=1)
-        elif regla_fecha == 'ANTES_2':
-            self.fecha_certificacion = self.fecha_emision - timedelta(days=2)
-        else:
-            self.fecha_certificacion = self.fecha_emision
+        # 1. La de emisión (Real) se guarda oculta y solo una vez cuando es NUEVO
+        if not self.pk:
+            self.fecha_emision = timezone.localdate()
         
+        # 2. Solo calcula la automática si el campo viene vacío (Registro nuevo)
+        # Si ya trae fecha (porque la editaste a mano), se respeta tu cambio.
+        if not self.fecha_certificacion:
+            if regla_fecha == 'MISMO':
+                self.fecha_certificacion = self.fecha_emision
+            elif regla_fecha == 'ANTES':
+                self.fecha_certificacion = self.fecha_emision - timedelta(days=1)
+            elif regla_fecha == 'ANTES_2':
+                self.fecha_certificacion = self.fecha_emision - timedelta(days=2)
+            else:
+                self.fecha_certificacion = self.fecha_emision
 
             # Si el cálculo resulta en Domingo de retro al sabad
-        if self.fecha_certificacion and self.fecha_certificacion.weekday() == 6:
-            self.fecha_certificacion = self.fecha_certificacion - timedelta(days=1)
+            if self.fecha_certificacion and self.fecha_certificacion.weekday() == 6:
+                self.fecha_certificacion = self.fecha_certificacion - timedelta(days=1)
 
-        self.fecha_vencimiento = self.fecha_emision + timedelta(days=365)
+        # 3. El vencimiento siempre se amarra a la fecha del documento final
+        if self.fecha_certificacion:
+            self.fecha_vencimiento = self.fecha_certificacion + timedelta(days=365)
+        else:
+            self.fecha_vencimiento = None
 
         super().save(*args, **kwargs)
