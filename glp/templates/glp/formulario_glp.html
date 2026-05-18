@@ -34,8 +34,8 @@
                 <label class="form-label">Placa del Vehículo</label>
                 <div class="input-group">
                     {{ form.placa }}
-                    <button class="btn btn-primary" type="button" id="btnConsultarApi">
-                        <i class="bi bi-cloud-download"></i> Consultar API
+                    <button class="btn btn-outline-primary" type="button" id="btn-buscar-historial">
+                        <i class="bi bi-search"></i>
                     </button>
                 </div>
             </div>
@@ -113,6 +113,21 @@
         {% endif %}
     </button>
 </form>
+
+<div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-clock-history me-2"></i>Historial Vehicular</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4" id="contenido-historial">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -242,5 +257,48 @@
             });
         }
     });
+
+    document.getElementById('btn-buscar-historial').addEventListener('click', function() {
+    const placa = document.getElementById('id_placa').value;
+    const modalElement = new bootstrap.Modal(document.getElementById('modalHistorial'));
+    const contenedor = document.getElementById('contenido-historial');
+
+    if (!placa) {
+        Swal.fire({
+            title: 'Campo vacío',
+            text: 'Por favor, ingrese una placa para consultar el historial.',
+            icon: 'warning',
+            confirmButtonColor: '#ff7300', 
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+
+    modalElement.show();
+    contenedor.innerHTML = '<div class="spinner-border text-primary"></div>';
+
+    fetch(`/glp/consultar-historial/?placa=${placa}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.encontrado) {
+                const colorEstado = data.estado === 'VIGENTE' ? 'text-success' : 'text-danger';
+                contenedor.innerHTML = `
+                    <h2 class="fw-bold text-primary mb-3">${data.placa}</h2>
+                    <p class="mb-1">Último GLP: <strong>${data.fecha_ultima}</strong></p>
+                    <p class="fs-5">Días para expirar: <span class="fw-bold ${colorEstado}">${data.dias_restantes} días</span></p>
+                    <div class="badge p-2 px-3 ${data.estado === 'VIGENTE' ? 'bg-success' : 'bg-danger'}">${data.estado}</div>
+                `;
+            } else {
+                contenedor.innerHTML = `
+                    <i class="bi bi-info-circle text-warning fs-1"></i>
+                    <p class="mt-3">No se encontraron conformidades previas para esta placa.</p>
+                `;
+            }
+        })
+        .catch(error => {
+            contenedor.innerHTML = '<p class="text-danger">Error al consultar los datos.</p>';
+        });
+    });
 </script>
+
 {% endblock %}

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .models import CertificadoGLP, SedeConfiguracion
 from .forms import SedeConfiguracionForm, CertificadoGLPForm
-from datetime import timedelta
+from datetime import date, timedelta
 from django.utils import timezone
 import json
 from django.contrib import messages
@@ -255,3 +255,25 @@ def reporte_glp_admin(request):
         'anuales': total_anuales,
         'iniciales': total_iniciales
     })
+
+def consultar_ultima_conformidad(request):
+    placa = request.GET.get('placa', None)
+    if not placa:
+        return JsonResponse({'error': 'No se proporcionó placa'}, status=400)
+    
+    # Buscamos la última conformidad por fecha de emisión
+    ultima = CertificadoGLP.objects.filter(placa=placa).order_by('-fecha_certificacion').first()
+    
+    if ultima:
+        fecha_expiracion = ultima.fecha_emision + timedelta(days=365)
+        dias_faltantes = (fecha_expiracion - date.today()).days
+        
+        return JsonResponse({
+            'encontrado': True,
+            'placa': ultima.placa,
+            'fecha_ultima': ultima.fecha_emision.strftime('%d/%m/%Y'),
+            'dias_restantes': dias_faltantes if dias_faltantes > 0 else 0,
+            'estado': 'VIGENTE' if dias_faltantes > 0 else 'EXPIRADO'
+        })
+    else:
+        return JsonResponse({'encontrado': False})
