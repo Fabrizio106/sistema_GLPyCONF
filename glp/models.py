@@ -31,6 +31,7 @@ class SedeConfiguracion(models.Model):
 COMBUSTIBLE_CHOICES = [
     ('ANUAL (GLP y otros)', (
         ('BI.COMB.GLP', 'BI.COMB.GLP'),
+        ('BI COMB.GLP', 'BI COMB.GLP'),
         ('BI-COMBUSTIBLE GLP', 'BI-COMBUSTIBLE GLP'),
         ('BI COMB./GLP', 'BI COMB./GLP'),
         ('BI.COMBUS.GLP', 'BI.COMBUS.GLP'),
@@ -47,6 +48,7 @@ COMBUSTIBLE_CHOICES = [
         ('GASOLINA/GNC', 'GASOLINA/GNC'),
         ('GLP', 'GLP'),
         ('GSL/GASP', 'GSL/GASP'),
+        ('GUAL GLP', 'DUAL GLP'),
     )),
     ('INICIAL (GNV y otros)', (
         ('BI COMB.-GNV', 'BI COMB.-GNV'),
