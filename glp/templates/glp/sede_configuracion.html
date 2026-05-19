@@ -1,68 +1,145 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow mb-5">
-        <div class="card-header {% if editando %}bg-warning{% else %}bg-primary{% endif %} text-white">
-            <h4 class="mb-0">{% if editando %}Editar Sede: {{ editando.nombre_sede }}{% else %}Registrar Nueva Sede{% endif %}</h4>
-        </div>
+<div class="container">
+
+    <!-- TÍTULO FUERA DEL CARD -->
+    <div class="page-title-row">
+        <h3 class="page-title">
+            Sedes
+        </h3>
+    </div>
+
+    <div class="card section-card mb-5">
         <div class="card-body">
+
+            <h5 class="card-title section-title">
+                <i class="bi bi-geo-alt"></i>
+                {% if editando %}
+                Editar Sede: {{ editando.nombre_sede }}
+                {% else %}
+                Registrar Nueva Sede
+                {% endif %}
+            </h5>
+
             <form method="POST">
                 {% csrf_token %}
+
                 <div class="row">
                     <div class="col-md-12 mb-3">
-                        {{ form.nombre_sede.label_tag }}
+                        <label class="form-label" for="{{ form.nombre_sede.id_for_label }}">
+                            Nombre de la sede
+                        </label>
                         {{ form.nombre_sede }}
                     </div>
-                    <div class="col-md-6 border-end">
-                        <h6 class="text-primary">Configuración ANUAL</h6>
-                        {{ form.ciudad_anual.label_tag }} {{ form.ciudad_anual }}
-                        <div class="mt-2">{{ form.fecha_anual.label_tag }} {{ form.fecha_anual }}</div>
+
+                    <div class="col-md-6 border-end pe-md-4">
+                        <h6 class="subsection-title">
+                            Configuración Anual
+                        </h6>
+
+                        <label class="form-label" for="{{ form.ciudad_anual.id_for_label }}">
+                            Ciudad anual
+                        </label>
+                        {{ form.ciudad_anual }}
+
+                        <div class="mt-3">
+                            <label class="form-label" for="{{ form.fecha_anual.id_for_label }}">
+                                Fecha anual
+                            </label>
+                            {{ form.fecha_anual }}
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h6 class="text-success">Configuración INICIAL</h6>
-                        {{ form.ciudad_inicial.label_tag }} {{ form.ciudad_inicial }}
-                        <div class="mt-2">{{ form.fecha_inicial.label_tag }} {{ form.fecha_inicial }}</div>
+
+                    <div class="col-md-6 ps-md-4">
+                        <h6 class="subsection-title">
+                            Configuración Inicial
+                        </h6>
+
+                        <label class="form-label" for="{{ form.ciudad_inicial.id_for_label }}">
+                            Ciudad inicial
+                        </label>
+                        {{ form.ciudad_inicial }}
+
+                        <div class="mt-3">
+                            <label class="form-label" for="{{ form.fecha_inicial.id_for_label }}">
+                                Fecha inicial
+                            </label>
+                            {{ form.fecha_inicial }}
+                        </div>
                     </div>
                 </div>
-                <div class="mt-3 text-end">
+
+                <div class="mt-4 text-end">
                     {% if editando %}
-                        <a href="{% url 'gestion_sedes' %}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{% url 'gestion_sedes' %}" class="btn btn-outline-orange me-2">
+                        Cancelar
+                    </a>
                     {% endif %}
-                    <button type="submit" class="btn {% if editando %}btn-warning{% else %}btn-success{% endif %}">
-                        {% if editando %}Actualizar Cambios{% else %}Guardar Sede{% endif %}
+
+                    <button type="submit" class="btn btn-orange">
+                        {% if editando %}
+                        Actualizar Cambios
+                        {% else %}
+                        Guardar Sede
+                        {% endif %}
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">Sedes Configuradas</h5>
-        </div>
+    <div class="table-card">
+
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table custom-table align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Sede</th>
-                        <th>Anual (Ciudad/Fecha)</th>
-                        <th>Inicial (Ciudad/Fecha)</th>
-                        <th class="text-center">Acciones</th>
+                        <th>Anual</th>
+                        <th>Inicial</th>
+                        <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for s in sedes %}
                     <tr>
                         <td class="fw-bold">{{ s.nombre_sede }}</td>
-                        <td>{{ s.ciudad_anual }} <span class="badge bg-light text-dark">{{ s.get_fecha_anual_display }}</span></td>
-                        <td>{{ s.ciudad_inicial }} <span class="badge bg-light text-dark">{{ s.get_fecha_inicial_display }}</span></td>
-                        <td class="text-center">
-                            <a href="{% url 'editar_sede' s.pk %}" class="btn btn-sm btn-outline-warning">Editar</a>
-                            <a href="{% url 'eliminar_sede' s.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar esta sede?')">Eliminar</a>
+
+                        <td>
+                            {{ s.ciudad_anual }}
+                            <span class="badge badge-soft">
+                                {{ s.get_fecha_anual_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ s.ciudad_inicial }}
+                            <span class="badge badge-soft">
+                                {{ s.get_fecha_inicial_display }}
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            <a href="{% url 'editar_sede' s.pk %}" class="btn btn-table-action btn-table-edit"
+                                title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                            <a href="{% url 'eliminar_sede' s.pk %}" class="btn btn-table-action btn-table-delete"
+                                title="Eliminar" onclick="return confirm('¿Eliminar esta sede?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
                         </td>
                     </tr>
+
                     {% empty %}
-                    <tr><td colspan="4" class="text-center">No hay sedes registradas.</td></tr>
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            No hay sedes registradas.
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
