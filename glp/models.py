@@ -48,7 +48,7 @@ COMBUSTIBLE_CHOICES = [
         ('GASOLINA/GNC', 'GASOLINA/GNC'),
         ('GLP', 'GLP'),
         ('GSL/GASP', 'GSL/GASP'),
-        ('GUAL GLP', 'DUAL GLP'),
+        ('DUAL GLP', 'DUAL GLP'),
     )),
     ('INICIAL (GNV y otros)', (
         ('BI COMB.-GNV', 'BI COMB.-GNV'),
