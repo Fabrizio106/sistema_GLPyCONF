@@ -64,10 +64,10 @@
             <div class="filter-field">
                 <label class="form-label">Buscar placa</label>
                 <input type="text"
-                       name="q"
-                       class="form-control filter-control"
-                       placeholder="Ej: ABC-123"
-                       value="{{ request.GET.q }}">
+                    name="q"
+                    class="form-control filter-control"
+                    placeholder="Ej: ABC-123"
+                    value="{{ request.GET.q }}">
             </div>
 
             <div class="filter-field">
@@ -97,25 +97,25 @@
             <div class="filter-field">
                 <label class="form-label">Día exacto</label>
                 <input type="date"
-                       name="fecha"
-                       class="form-control filter-control"
-                       value="{{ request.GET.fecha }}">
+                    name="fecha"
+                    class="form-control filter-control"
+                    value="{{ request.GET.fecha }}">
             </div>
 
             <div class="filter-field filter-rango">
                 <label class="form-label">Rango de fechas</label>
                 <div class="input-group filter-date-range">
                     <input type="date"
-                           name="inicio"
-                           class="form-control filter-control"
-                           value="{{ request.GET.inicio }}">
+                        name="inicio"
+                        class="form-control filter-control"
+                        value="{{ request.GET.inicio }}">
 
                     <span class="input-group-text filter-range-separator">al</span>
 
                     <input type="date"
-                           name="fin"
-                           class="form-control filter-control"
-                           value="{{ request.GET.fin }}">
+                        name="fin"
+                        class="form-control filter-control"
+                        value="{{ request.GET.fin }}">
                 </div>
             </div>
 
