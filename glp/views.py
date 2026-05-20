@@ -250,10 +250,10 @@ def reporte_glp_admin(request):
     return render(request, 'glp/reporte_general_glp.html', {
         'certificados': certificados,
         'usuarios': usuarios,
-        'sedes': sedes,
-        'total': total_encontrados,
-        'anuales': total_anuales,
-        'iniciales': total_iniciales
+        'sedes': sedes, 
+        'total_encontrados': total_encontrados,
+        'total_anuales': total_anuales,
+        'total_iniciales': total_iniciales
     })
 
 def consultar_ultima_conformidad(request):
