@@ -1,0 +1,37 @@
+.topbar {
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 2rem;
+}
+            
+
+.topbar-breadcrumb {
+    display: flex;
+    align-items: center;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.topbar-breadcrumb i {
+    font-size: 16px;
+    color: #111827;
+    margin-right: 10px;
+}
+
+.breadcrumb-module {
+    color: #111827;
+    font-weight: 600;
+    margin-right: 16px;
+}
+
+.breadcrumb-separator {
+    color: #9ca3af;
+    font-weight: 500;
+    margin-right: 16px;
+}
+
+.breadcrumb-page {
+    color: #6b7280;
+    font-weight: 500;
+}
