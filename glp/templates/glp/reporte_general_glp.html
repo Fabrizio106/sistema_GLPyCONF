@@ -1,217 +1,218 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<!-- TÍTULO FUERA DEL CARD -->
-<div class="page-title-row report-header">
-    <div>
-        <h3 class="page-title">
-            Reporte Administrativo GLP
-        </h3>
-        <p class="page-subtitle">
-            Visualización y filtrado de certificaciones a nivel global
-        </p>
-    </div>
-
-    <button type="button" class="btn btn-orange">
-        <i class="bi bi-printer"></i>
-        Imprimir Reporte
-    </button>
-</div>
-
-<!-- MÉTRICAS FUERA DEL CARD -->
-<div class="report-stats-grid mb-4">
-
-    <div class="report-stat-card stat-orange">
-        <div class="stat-icon">
-            <i class="bi bi-check2-all"></i>
-        </div>
+<div class="container-fluid">
+    <!-- TÍTULO FUERA DEL CARD -->
+    <div class="page-title-row report-header">
         <div>
-            <p class="stat-label">Total Certificados</p>
-            <h3 class="stat-value">{{ total_certificados|default:0 }}</h3>
+            <h3 class="page-title">
+                Reporte Administrativo GLP
+            </h3>
+            <p class="page-subtitle">
+                Visualización y filtrado de certificaciones a nivel global
+            </p>
         </div>
+
+        <button type="button" class="btn btn-orange">
+            <i class="bi bi-printer"></i>
+            Imprimir Reporte
+        </button>
     </div>
 
-    <div class="report-stat-card stat-blue">
-        <div class="stat-icon">
-            <i class="bi bi-calendar-check"></i>
+    <!-- MÉTRICAS FUERA DEL CARD -->
+    <div class="report-stats-grid mb-4">
+
+        <div class="report-stat-card stat-orange">
+            <div class="stat-icon">
+                <i class="bi bi-check2-all"></i>
+            </div>
+            <div>
+                <p class="stat-label">Total Certificados</p>
+                <h3 class="stat-value">{{ total_certificados|default:0 }}</h3>
+            </div>
         </div>
-        <div>
-            <p class="stat-label">Anuales Realizados</p>
-            <h3 class="stat-value">{{ total_anuales|default:0 }}</h3>
+
+        <div class="report-stat-card stat-blue">
+            <div class="stat-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div>
+                <p class="stat-label">Anuales Realizados</p>
+                <h3 class="stat-value">{{ total_anuales|default:0 }}</h3>
+            </div>
         </div>
+
+        <div class="report-stat-card stat-orange">
+            <div class="stat-icon">
+                <i class="bi bi-star"></i>
+            </div>
+            <div>
+                <p class="stat-label">Inspecciones Iniciales</p>
+                <h3 class="stat-value">{{ total_iniciales|default:0 }}</h3>
+            </div>
+        </div>
+
     </div>
 
-    <div class="report-stat-card stat-orange">
-        <div class="stat-icon">
-            <i class="bi bi-star"></i>
-        </div>
-        <div>
-            <p class="stat-label">Inspecciones Iniciales</p>
-            <h3 class="stat-value">{{ total_iniciales|default:0 }}</h3>
-        </div>
-    </div>
+    <!-- CARD PRINCIPAL: FILTROS + TABLA -->
+    <div class="card section-card">
+        <div class="card-body">
 
-</div>
+            <!-- FILTROS -->
+            <form method="GET" class="filters-grid filters-grid-report mb-4">
 
-<!-- CARD PRINCIPAL: FILTROS + TABLA -->
-<div class="card section-card">
-    <div class="card-body">
-
-        <!-- FILTROS -->
-        <form method="GET" class="filters-grid mb-4">
-
-            <div class="filter-field">
-                <label class="form-label">Buscar placa</label>
-                <input type="text"
-                    name="q"
-                    class="form-control filter-control"
-                    placeholder="Ej: ABC-123"
-                    value="{{ request.GET.q }}">
-            </div>
-
-            <div class="filter-field">
-                <label class="form-label">Certificador</label>
-                <select name="usuario" class="form-select filter-control">
-                    <option value="">Todos los usuarios</option>
-                    {% for u in usuarios %}
-                    <option value="{{ u.id }}" {% if request.GET.usuario == u.id|stringformat:"i" %}selected{% endif %}>
-                        {{ u.first_name }} {{ u.last_name }} ({{ u.username }})
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter-field">
-                <label class="form-label">Sede</label>
-                <select name="sede" class="form-select filter-control">
-                    <option value="">Todas las sedes</option>
-                    {% for s in sedes %}
-                    <option value="{{ s.id }}" {% if request.GET.sede == s.id|stringformat:"i" %}selected{% endif %}>
-                        {{ s.nombre_sede }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter-field">
-                <label class="form-label">Día exacto</label>
-                <input type="date"
-                    name="fecha"
-                    class="form-control filter-control"
-                    value="{{ request.GET.fecha }}">
-            </div>
-
-            <div class="filter-field filter-rango">
-                <label class="form-label">Rango de fechas</label>
-                <div class="input-group filter-date-range">
-                    <input type="date"
-                        name="inicio"
+                <div class="filter-field">
+                    <label class="form-label">Buscar placa</label>
+                    <input type="text"
+                        name="q"
                         class="form-control filter-control"
-                        value="{{ request.GET.inicio }}">
-
-                    <span class="input-group-text filter-range-separator">al</span>
-
-                    <input type="date"
-                        name="fin"
-                        class="form-control filter-control"
-                        value="{{ request.GET.fin }}">
+                        placeholder="Ej: ABC-123"
+                        value="{{ request.GET.q }}">
                 </div>
-            </div>
 
-            <div class="filter-actions">
-                <button type="submit" class="btn btn-filter" title="Aplicar filtros">
-                    Filtrar
-                </button>
+                <div class="filter-field">
+                    <label class="form-label">Certificador</label>
+                    <select name="usuario" class="form-select filter-control">
+                        <option value="">Todos los usuarios</option>
+                        {% for u in usuarios %}
+                        <option value="{{ u.id }}" {% if request.GET.usuario == u.id|stringformat:"i" %}selected{% endif %}>
+                            {{ u.first_name }} {{ u.last_name }} ({{ u.username }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <a href="{% url 'reporte_glp_admin' %}" class="btn btn-clean-filter" title="Limpiar búsqueda">
-                    <i class="bi bi-eraser"></i>
-                </a>
-            </div>
+                <div class="filter-field">
+                    <label class="form-label">Sede</label>
+                    <select name="sede" class="form-select filter-control">
+                        <option value="">Todas las sedes</option>
+                        {% for s in sedes %}
+                        <option value="{{ s.id }}" {% if request.GET.sede == s.id|stringformat:"i" %}selected{% endif %}>
+                            {{ s.nombre_sede }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        </form>
+                <div class="filter-field">
+                    <label class="form-label">Día exacto</label>
+                    <input type="date"
+                        name="fecha"
+                        class="form-control filter-control"
+                        value="{{ request.GET.fecha }}">
+                </div>
 
-        <!-- TABLA -->
-        <div class="table-responsive">
-            <table class="table custom-table align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>N° Cert.</th>
-                        <th>Placa</th>
-                        <th>Certificador</th>
-                        <th>Sede</th>
-                        <th>Tipo</th>
-                        <th>Fecha emisión</th>
-                        <th class="text-end">Documento</th>
-                    </tr>
-                </thead>
+                <div class="filter-field filter-rango">
+                    <label class="form-label">Rango de fechas</label>
+                    <div class="input-group filter-date-range">
+                        <input type="date"
+                            name="inicio"
+                            class="form-control filter-control"
+                            value="{{ request.GET.inicio }}">
 
-                <tbody>
-                    {% for c in certificados %}
-                    <tr>
-                        <td class="fw-bold">{{ c.numero_certificado }}</td>
+                        <span class="input-group-text filter-range-separator">al</span>
 
-                        <td>
-                            <span class="badge badge-soft">
-                                {{ c.placa }}
-                            </span>
-                        </td>
+                        <input type="date"
+                            name="fin"
+                            class="form-control filter-control"
+                            value="{{ request.GET.fin }}">
+                    </div>
+                </div>
 
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-person-circle text-muted"></i>
-                                <span class="fw-semibold small">
-                                    {{ c.usuario.get_full_name|default:c.usuario.username }}
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-filter" title="Aplicar filtros">
+                        Filtrar
+                    </button>
+
+                    <a href="{% url 'reporte_glp_admin' %}" class="btn btn-clean-filter" title="Limpiar búsqueda">
+                        <i class="bi bi-eraser"></i>
+                    </a>
+                </div>
+
+            </form>
+
+            <!-- TABLA -->
+            <div class="table-responsive">
+                <table class="table custom-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>N° Cert.</th>
+                            <th>Placa</th>
+                            <th>Certificador</th>
+                            <th>Sede</th>
+                            <th>Tipo</th>
+                            <th>Fecha emisión</th>
+                            <th class="text-end">Documento</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for c in certificados %}
+                        <tr>
+                            <td class="fw-bold">{{ c.numero_certificado }}</td>
+
+                            <td>
+                                <span class="badge badge-soft">
+                                    {{ c.placa }}
                                 </span>
-                            </div>
-                        </td>
+                            </td>
 
-                        <td>{{ c.sede.nombre_sede }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-circle text-muted"></i>
+                                    <span class="fw-semibold small">
+                                        {{ c.usuario.get_full_name|default:c.usuario.username }}
+                                    </span>
+                                </div>
+                            </td>
 
-                        <td>
-                            {% if c.tipo_certificado == 'INICIAL' %}
-                                <span class="badge badge-inicial">INICIAL</span>
-                            {% else %}
-                                <span class="badge badge-anual">ANUAL</span>
-                            {% endif %}
-                        </td>
+                            <td>{{ c.sede.nombre_sede }}</td>
 
-                        <td>
-                            <div class="fw-semibold small">
-                                {{ c.fecha_emision|date:"d/m/Y" }}
-                            </div>
+                            <td>
+                                {% if c.tipo_certificado == 'INICIAL' %}
+                                    <span class="badge badge-inicial">INICIAL</span>
+                                {% else %}
+                                    <span class="badge badge-anual">ANUAL</span>
+                                {% endif %}
+                            </td>
 
-                            <div class="text-muted small">
-                                <i class="bi bi-clock-history"></i>
-                                {{ c.fecha_registro|date:"H:i" }}
-                            </div>
+                            <td>
+                                <div class="fw-semibold small">
+                                    {{ c.fecha_emision|date:"d/m/Y" }}
+                                </div>
 
-                            <div class="text-muted small">
-                                Emisión: {{ c.fecha_certificacion|date:"d/m/Y" }}
-                            </div>
-                        </td>
+                                <div class="text-muted small">
+                                    <i class="bi bi-clock-history"></i>
+                                    {{ c.fecha_registro|date:"H:i" }}
+                                </div>
 
-                        <td class="text-end">
-                            <a href="{% url 'descargar_pdf_glp' c.pk %}"
-                               class="btn btn-table-action btn-table-delete"
-                               title="Descargar PDF">
-                                <i class="bi bi-file-earmark-pdf"></i>
-                            </a>
-                        </td>
-                    </tr>
+                                <div class="text-muted small">
+                                    Emisión: {{ c.fecha_certificacion|date:"d/m/Y" }}
+                                </div>
+                            </td>
 
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-5">
-                            <i class="bi bi-search fs-1 d-block mb-3"></i>
-                            No se encontraron registros con los filtros seleccionados.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <td class="text-end">
+                                <a href="{% url 'descargar_pdf_glp' c.pk %}"
+                                class="btn btn-table-action btn-table-delete"
+                                title="Descargar PDF">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-search fs-1 d-block mb-3"></i>
+                                No se encontraron registros con los filtros seleccionados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-
     </div>
 </div>
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
 
     <!-- TÍTULO FUERA DEL CARD -->
     <div class="page-title-row">
@@ -89,60 +89,78 @@
         </div>
     </div>
 
-    <div class="table-card">
+    <!-- TABLA DE SEDES -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card section-card">
+                <div class="card-body">
 
-        <div class="table-responsive">
-            <table class="table custom-table align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>Sede</th>
-                        <th>Anual</th>
-                        <th>Inicial</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                </thead>
+                    <h2 class="card-title">
+                        <i class="bi bi-building"></i>
+                        Sedes Configuradas
+                    </h2>
 
-                <tbody>
-                    {% for s in sedes %}
-                    <tr>
-                        <td class="fw-bold">{{ s.nombre_sede }}</td>
+                    <div class="table-responsive">
+                        <table class="table table-hover mt-3 admin-table align-middle" style="border: 0.5pt solid #dee2e6;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sede</th>
+                                    <th>Anual</th>
+                                    <th>Inicial</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
 
-                        <td>
-                            {{ s.ciudad_anual }}
-                            <span class="badge badge-soft">
-                                {{ s.get_fecha_anual_display }}
-                            </span>
-                        </td>
+                            <tbody>
+                                {% for s in sedes %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <strong>{{ s.nombre_sede }}</strong>
+                                    </td>
 
-                        <td>
-                            {{ s.ciudad_inicial }}
-                            <span class="badge badge-soft">
-                                {{ s.get_fecha_inicial_display }}
-                            </span>
-                        </td>
+                                    <td class="align-middle">
+                                        {{ s.ciudad_anual }}
+                                        <span class="badge badge-soft ms-2">
+                                            {{ s.get_fecha_anual_display }}
+                                        </span>
+                                    </td>
 
-                        <td class="text-end">
-                            <a href="{% url 'editar_sede' s.pk %}" class="btn btn-table-action btn-table-edit"
-                                title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </a>
+                                    <td class="align-middle">
+                                        {{ s.ciudad_inicial }}
+                                        <span class="badge badge-soft ms-2">
+                                            {{ s.get_fecha_inicial_display }}
+                                        </span>
+                                    </td>
 
-                            <a href="{% url 'eliminar_sede' s.pk %}" class="btn btn-table-action btn-table-delete"
-                                title="Eliminar" onclick="return confirm('¿Eliminar esta sede?')">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
+                                    <td class="text-center align-middle">
+                                        <a href="{% url 'editar_sede' s.pk %}"
+                                        class="btn btn-sm btn-table-edit"
+                                        title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
 
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center text-muted py-5">
-                            No hay sedes registradas.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                        <a href="{% url 'eliminar_sede' s.pk %}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Eliminar"
+                                        onclick="return confirm('¿Eliminar esta sede?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        No hay sedes registradas.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
