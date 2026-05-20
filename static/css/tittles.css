@@ -1,0 +1,57 @@
+:root {
+    --brand-blue: #2F49CF;
+    --brand-orange: #FD7401;
+    --text-dark: #111827;
+    --text-muted: #6B7280;
+}
+
+/* Título principal de página */
+.page-title {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-title i {
+    color: var(--text-dark);
+    font-size: 24px;
+}
+
+/* Títulos de cards/secciones */
+.card-title,
+.section-title {
+    color: var(--brand-blue);
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.card-title i,
+.section-title i,
+.section-icon {
+    color: var(--brand-blue);
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Subtítulos internos */
+.subsection-title {
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+}
