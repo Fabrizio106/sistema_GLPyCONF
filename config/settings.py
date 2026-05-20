@@ -136,6 +136,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 LOGIN_REDIRECT_URL = 'registrar_glp'
 
 # A dónde va después de cerrar sesión
