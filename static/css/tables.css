@@ -1,0 +1,9 @@
+.badge-soft {
+    background-color: #FFF3EA;
+    color: #FD7401;
+    border: 1px solid #FFD2B3;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+}
