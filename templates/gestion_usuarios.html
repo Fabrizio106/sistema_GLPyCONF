@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="bi {% if usuario_editar %}bi-pencil-square text-warning{% else %}bi-person-plus-fill text-primary{% endif %}"></i> 
+                        <i class="bi {% if usuario_editar %}bi-pencil-square text-warning{% else %}bi-person-plus {% endif %}"></i> 
                         {% if usuario_editar %} Editar Usuario: {{ usuario_editar.username }} {% else %} Registrar Nuevo Usuario {% endif %}
                     </h2>
                     
@@ -56,18 +56,20 @@
                             </div>
                         </div>
 
-                        {% if usuario_editar %}
-                            <button type="submit" class="btn btn-warning mt-2">
-                                <i class="bi bi-arrow-clockwise"></i> ACTUALIZAR DATOS
-                            </button>
-                            <a href="{% url 'gestion_usuarios' %}" class="btn btn-secondary mt-2 ms-2">
-                                <i class="bi bi-x-circle"></i> CANCELAR
-                            </a>
-                        {% else %}
-                            <button type="submit" class="btn btn-primary mt-2">
-                                <i class="bi bi-check-circle"></i> REGISTRAR USUARIO
-                            </button>
-                        {% endif %}
+                        <div class="mt-4 text-end">
+                            {% if usuario_editar %}
+                                <button type="submit" class="btn btn-warning mt-2">
+                                    <i class="bi bi-arrow-clockwise"></i> ACTUALIZAR DATOS
+                                </button>
+                                <a href="{% url 'gestion_usuarios' %}" class="btn btn-secondary mt-2 ms-2">
+                                    <i class="bi bi-x-circle"></i> CANCELAR
+                                </a>
+                            {% else %}
+                                <button type="submit" class="btn btn-orange mt-2">
+                                    Registrar Usuario
+                                </button>
+                            {% endif %}
+                        </div>
                     </form>
                 </div>
             </div>
@@ -80,7 +82,7 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="bi bi-people-fill text-success"></i> 
+                        <i class="bi bi-people"></i> 
                         Usuarios del Sistema
                     </h2>
                     <div class="table-responsive">
@@ -106,7 +108,7 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{% url 'editar_usuario' u.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                        <a href="{% url 'editar_usuario' u.id %}" class="btn btn-sm btn-table-edit" title="Editar">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <!-- Formulario de eliminación con ID único -->
