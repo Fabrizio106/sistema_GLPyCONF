@@ -111,8 +111,15 @@
                                     <td class="align-middle"><strong>{{ u.username }}</strong></td>
                                     <td class="align-middle">{{ u.first_name }}</td>
                                     <td class="align-middle">{{ u.last_name }}</td>
-                                    <td class="align-middle">
-                                        <span class="badge {% if u.groups.first.name == 'Administrador' %}bg-dark{% else %}bg-info{% endif %}">
+                                    <td class="align-left">
+                                        <span class="badge-config 
+                                            {% if u.groups.first.name == 'Administrador' %}
+                                                badge-config-blue
+                                            {% elif u.groups.first.name == 'Certificador' %}
+                                                badge-config-orange
+                                            {% else %}
+                                                badge-config-blue
+                                            {% endif %}">
                                             {{ u.groups.first.name|default:"Sin Rol" }}
                                         </span>
                                     </td>

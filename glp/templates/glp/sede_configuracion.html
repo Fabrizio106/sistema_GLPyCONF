@@ -119,17 +119,33 @@
                                     </td>
 
                                     <td class="align-middle">
-                                        {{ s.ciudad_anual }}
-                                        <span class="badge badge-soft ms-2">
-                                            {{ s.get_fecha_anual_display }}
-                                        </span>
+                                        <div class="city-badge-group">
+                                            <span>{{ s.ciudad_anual }}</span>
+
+                                            <span class="badge-config 
+                                                {% if s.get_fecha_anual_display == 'Mismo día' %}
+                                                    badge-config-blue
+                                                {% else %}
+                                                    badge-config-orange
+                                                {% endif %}">
+                                                {{ s.get_fecha_anual_display }}
+                                            </span>
+                                        </div>
                                     </td>
 
                                     <td class="align-middle">
-                                        {{ s.ciudad_inicial }}
-                                        <span class="badge badge-soft ms-2">
-                                            {{ s.get_fecha_inicial_display }}
-                                        </span>
+                                        <div class="city-badge-group">
+                                            <span>{{ s.ciudad_inicial }}</span>
+
+                                            <span class="badge-config 
+                                                {% if s.get_fecha_inicial_display == 'Mismo día' %}
+                                                    badge-config-blue
+                                                {% else %}
+                                                    badge-config-orange
+                                                {% endif %}">
+                                                {{ s.get_fecha_inicial_display }}
+                                            </span>
+                                        </div>
                                     </td>
 
                                     <td class="text-center align-middle">
