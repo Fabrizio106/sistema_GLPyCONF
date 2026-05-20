@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -142,3 +143,13 @@ LOGIN_REDIRECT_URL = 'registrar_glp'
 
 # A dónde va después de cerrar sesión
 LOGOUT_REDIRECT_URL = 'login'
+
+# ==========================================
+# CONFIGURACIÓN DE SEGURIDAD DE SESIONES
+# ==========================================
+
+# 1. Tiempo máximo de inactividad en segundos (1hora)
+SESSION_COOKIE_AGE = 3600 
+
+# 2. ¡La clave! Renueva las 1 hora cada vez que el usuario carga una página nueva o interactúa
+SESSION_SAVE_EVERY_REQUEST = True
