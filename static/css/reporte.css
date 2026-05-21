@@ -1,0 +1,192 @@
+p {
+    margin-bottom: 1rem;
+}
+
+
+.report-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.report-stat-card {
+    min-height: 112px;
+    border-radius: 14px;
+    padding: 24px 26px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    transition: all 0.2s ease;
+}
+
+.report-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-icon i {
+    font-size: 30px;
+    line-height: 1;
+}
+
+.stat-label {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.stat-value {
+    margin: 0;
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* Total Certificados */
+.stat-blue {
+    border-left: 5px solid #2F49CF;
+}
+
+.stat-blue .stat-icon {
+    background: #EEF2FF;
+}
+
+.stat-blue .stat-icon i {
+    color: #2F49CF;
+}
+
+.stat-blue .stat-label {
+    color: #2F49CF;
+}
+
+/* Anuales Realizados */
+.stat-orange {
+    border-left: 5px solid #FD7401;
+}
+
+.stat-orange .stat-icon {
+    background: #FFF3EA;
+}
+
+.stat-orange .stat-icon i {
+    color: #FD7401;
+}
+
+.stat-orange .stat-label {
+    color: #FD7401;
+}
+
+/* Inspecciones Iniciales */
+.stat-light-blue {
+    border-left: 5px solid #FD7401;
+}
+
+.stat-light-blue .stat-icon {
+    background: #FFF3EA;
+}
+
+.stat-light-blue .stat-icon i {
+    color: #FD7401;
+}
+
+.stat-light-blue .stat-label {
+    color: #FD7401;
+}
+
+@media (max-width: 992px) {
+    .report-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.filters-grid-report{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr 0.9fr 0.9fr 1.7fr auto;
+    gap: 24px;
+    align-items: end;
+}
+
+.filter-field {
+    min-width: 0;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.filter-control {
+    height: 40px;
+    min-height: 40px;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+.filter-date-range {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.filter-date-range .form-control {
+    min-width: 0;
+}
+
+.filter-range-separator {
+    width: 56px;
+    min-width: 56px;
+    padding: 0;
+    justify-content: center;
+    background-color: #f8fafc;
+    color: #111827;
+}
+
+.btn-filter {
+    height: 40px;
+    min-height: 40px;
+    min-width: 110px;
+    padding: 0 20px;
+}
+
+.btn-clean-filter {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+}
+
+.badge-inicial {
+    background-color: #FFF3EA !important; /* Fondo naranja muy suave */
+    color: #FD7401 !important;            /* Texto naranja corporativo */
+    padding: 6px 14px;
+    border-radius: 50px;                  /* Hace que sea un óvalo perfecto */
+    font-weight: 700;                     /* Corregido guion medio */
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.badge-anual {
+    background-color: #EEF2FF !important; /* Fondo azul muy suave */
+    color: #2F49CF !important;            /* Texto azul corporativo */
+    padding: 6px 14px;
+    border-radius: 50px;                  /* Hace que sea un óvalo perfecto */
+    font-weight: 700;                     /* Corregido guion medio */
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}

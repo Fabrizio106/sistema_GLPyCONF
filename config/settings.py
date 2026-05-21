@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +24,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-tn=w&4g+ttk9wrd&x@stv-2!*3u3qwx*z%wakjfqav^2d#r2f%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+RUNNING_ON_SERVER = os.path.exists('/home/fabrizionicolas')
 
+if RUNNING_ON_SERVER:
+    # CONFIGURACIÓN PARA LA PÁGINA REAL (PRODUCCIÓN)
+    DEBUG = False  # Oculta los errores detallados con líneas de código en la web
+    ALLOWED_HOSTS = ['www.ceditev.com', 'ceditev.com']
+else:
+    # CONFIGURACIÓN PARA TU COMPUTADORA (LOCAL)
+    DEBUG = True   # Te muestra el error exacto y la línea fallida para que puedas programar
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -49,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -64,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processors.menu_context', 
             ],
         },
     },
@@ -123,8 +133,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_REDIRECT_URL = 'registrar_glp'
 
 # A dónde va después de cerrar sesión
 LOGOUT_REDIRECT_URL = 'login'
+
+# ==========================================
+# CONFIGURACIÓN DE SEGURIDAD DE SESIONES
+# ==========================================
+
+# 1. Tiempo máximo de inactividad en segundos (2horas)
+SESSION_COOKIE_AGE = 7200 
+
+# 2. ¡La clave! Renueva las 2 horas cada vez que el usuario carga una página nueva o interactúa
+SESSION_SAVE_EVERY_REQUEST = True

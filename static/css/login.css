@@ -1,0 +1,141 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+}
+
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+}
+
+.login-left {
+    width: 55%;
+    background-color: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.login-left img {
+    max-width: 70%;
+    height: auto;
+}
+
+.login-right {
+    width: 45%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 360px;
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #353B3F;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto 15px auto;
+    width: 180px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 35px;
+    color: #353B3F;
+}
+
+.form-label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.input-group {
+    margin-bottom: 22px;
+}
+
+.form-control {
+    height: 48px;
+    border: none;
+    background-color: #f1f2f4;
+    font-size: 14px;
+    padding-left: 16px;
+    border-radius: 8px 0 0 8px;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    background-color: #f1f2f4;
+}
+
+.input-group-text {
+    width: 48px;
+    border: none;
+    background-color: #FD7401;
+    color: white;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-login {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    background-color: #FD7401;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(39, 97, 170, 0.20);
+    transition: 0.2s ease;
+}
+
+.btn-login:hover {
+    background-color: #D96300;
+    color: white;
+}
+
+.alert {
+    margin-top: 18px;
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .login-wrapper {
+        flex-direction: column;
+    }
+
+    .login-left {
+        display: none;
+    }
+
+    .login-right {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+    }
+}

@@ -1,127 +1,156 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
-    
-    <div class="card p-4">
-        <div class="card-title">
-            <i class="bi bi-gear-fill text-primary"></i> Sección A: Control de Emisión
-        </div>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">Sede de Inspección</label>
-                {{ form.sede }}
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Combustible</label>
-                {{ form.combustible }}
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Fecha de Emisión</label>
-                {{ form.fecha_emision }}
-            </div>
-        </div>
-    </div>
+<div class="container-fluid">
+    <form method="POST">
+        {% csrf_token %}
 
-    <div class="card p-4">
-        <div class="card-title d-flex justify-content-between w-100">
-            <div><i class="bi bi-search text-primary"></i> Sección B: Datos del Vehículo</div>
-            <span class="badge bg-secondary rounded-pill d-flex align-items-center">Búsqueda Rápida</span>
+        <!-- TÍTULO FUERA DEL CARD -->
+        <div class="page-title-row">
+            <h3 class="page-title">
+                Nuevo Certificado GLP
+            </h3>
         </div>
-        <div class="row g-3 mb-3">
-            <div class="col-md-4">
-                <label class="form-label">Placa del Vehículo</label>
-                <div class="input-group">
-                    {{ form.placa }}
-                    <button class="btn btn-primary" type="button" id="btnConsultarApi">
-                        <i class="bi bi-cloud-download"></i> Consultar API
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <label class="form-label">Nombre del Propietario</label>
-                {{ form.propietario }}
-            </div>
-        </div>
-        <div class="row g-3 mb-3">
-            <div class="col-md-3"><label class="form-label">Categoría</label>{{ form.categoria }}</div>
-            <div class="col-md-3"><label class="form-label">Marca</label>{{ form.marca }}</div>
-            <div class="col-md-3"><label class="form-label">Modelo</label>{{ form.modelo }}</div>
-            <div class="col-md-3"><label class="form-label">Versión</label>{{ form.version }}</div>
-        </div>
-        <div class="row g-3">
-            <div class="col-md-3"><label class="form-label">Año Fab.</label>{{ form.anio_fabricacion }}</div>
-            <div class="col-md-5"><label class="form-label">N° Serie</label>{{ form.vin_serie }}</div>
-            <div class="col-md-4"><label class="form-label">N° Motor</label>{{ form.numero_motor }}</div>
-        </div>
-    </div>
 
-    <div class="card p-4">
-        <div class="card-title"><i class="bi bi-speedometer2 text-primary"></i> Sección C: Especificaciones Técnicas</div>
-        <div class="row g-3 mb-3">
-            <div class="col-md-2"><label class="form-label">Cilindrada</label>{{ form.cilindrada }}</div>
-            <div class="col-md-2"><label class="form-label">Cilindros</label>{{ form.cilindros }}</div>
-            <div class="col-md-2"><label class="form-label">Ejes / Ruedas</label>
-                <div class="d-flex gap-2">{{ form.ejes }} {{ form.ruedas }}</div>
+        <div class="card p-4">
+            <div class="card-title">
+                <i class="bi bi-calendar-check section-icon"></i> Sección A: Control de Emisión
             </div>
-            <div class="col-md-2"><label class="form-label">Asientos / Pas.</label>
-                <div class="d-flex gap-2">{{ form.asientos }} {{ form.pasajeros }}</div>
-            </div>
-            <div class="col-md-2"><label class="form-label">Longitud (m)</label>{{ form.largo }}</div>
-            <div class="col-md-2"><label class="form-label">Ancho (m)</label>{{ form.ancho }}</div>
-        </div>
-        <div class="row g-3">
-            <div class="col-md-3"><label class="form-label">Altura (m)</label>{{ form.alto }}</div>
-            <div class="col-md-3"><label class="form-label">Peso Bruto (kg)</label>{{ form.peso_bruto }}</div>
-            <div class="col-md-3"><label class="form-label">Peso Neto (kg)</label>{{ form.peso_neto }}</div>
-            <div class="col-md-3"><label class="form-label">Carga Útil (kg)</label>{{ form.carga_util }}</div>
-        </div>
-    </div>
-
-    <div class="card p-4">
-        <div class="card-title"><i class="bi bi-plugin text-primary"></i> Sección D: Componentes del Sistema GLP</div>
-        <div class="row">
-            <div class="col-md-5 border-end pe-4">
-                <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-circle-fill small me-2"></i>REDUCTOR / VAPORIZADOR</h6>
-                <div class="row g-2">
-                    <div class="col-4"><label class="form-label">Marca</label>{{ form.reductor_marca }}</div>
-                    <div class="col-4"><label class="form-label">Modelo</label>{{ form.reductor_modelo }}</div>
-                    <div class="col-4"><label class="form-label">Serie</label>{{ form.reductor_serie }}</div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Sede de Inspección</label>
+                    {{ form.sede }}
                 </div>
-            </div>
-            <div class="col-md-7 ps-4">
-                <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-circle-fill small me-2"></i>CILINDRO DE ALMACENAMIENTO</h6>
-                <div class="row g-2 mb-2">
-                    <div class="col-4"><label class="form-label">Marca</label>{{ form.cilindro_marca }}</div>
-                    <div class="col-4"><label class="form-label">Modelo</label>{{ form.cilindro_modelo }}</div>
-                    <div class="col-4"><label class="form-label">Serie</label>{{ form.cilindro_serie }}</div>
+                <div class="col-md-4">
+                    <label class="form-label">Combustible</label>
+                    {{ form.combustible }}
                 </div>
-                <div class="row g-2">
-                    <div class="col-4"><label class="form-label">Capacidad (L)</label>{{ form.cilindro_capacidad }}</div>
-                    <div class="col-8"><label class="form-label">Fecha Fabricación</label>{{ form.cilindro_fecha_fab }}</div>
+                <div class="col-md-4">
+                    <label class="form-label">Fecha de certificación</label>
+                    {{ form.fecha_certificacion }}
                 </div>
             </div>
         </div>
-    </div>
 
-    <button type="submit" class="btn btn-success-custom w-100 text-white rounded-3 fs-5 mb-4 shadow">
-        {% if editando %}
-        <i class="bi bi-save me-2"></i> Guardar Cambios
-        {% else %}
-        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Registrar y Generar PDF
-        {% endif %}
-    </button>
-</form>
+        <div class="card p-4">
+            <div class="card-title d-flex justify-content-between w-100">
+                <div><i class="bi bi-car-front section-icon"></i> Sección B: Datos del Vehículo</div>
+                <span class="badge bg-secondary rounded-pill d-flex align-items-center">Búsqueda Rápida</span>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Placa del Vehículo</label>
+                    <div class="input-group">
+                        {{ form.placa }}
+                        <button class="btn btn-search-orange" type="button" id="btn-buscar-historial">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label">Nombre del Propietario</label>
+                    {{ form.propietario }}
+                </div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-3"><label class="form-label">Categoría</label>{{ form.categoria }}</div>
+                <div class="col-md-3"><label class="form-label">Marca</label>{{ form.marca }}</div>
+                <div class="col-md-3"><label class="form-label">Modelo</label>{{ form.modelo }}</div>
+                <div class="col-md-3"><label class="form-label">Versión</label>{{ form.version }}</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3"><label class="form-label">Año Fab.</label>{{ form.anio_fabricacion }}</div>
+                <div class="col-md-5"><label class="form-label">N° Serie</label>{{ form.vin_serie }}</div>
+                <div class="col-md-4"><label class="form-label">N° Motor</label>{{ form.numero_motor }}</div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="card-title"><i class="bi bi-speedometer2 section-icon"></i> Sección C: Especificaciones Técnicas
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-2"><label class="form-label">Cilindrada</label>{{ form.cilindrada }}</div>
+                <div class="col-md-2"><label class="form-label">Cilindros</label>{{ form.cilindros }}</div>
+                <div class="col-md-2"><label class="form-label">Ejes / Ruedas</label>
+                    <div class="d-flex gap-2">{{ form.ejes }} {{ form.ruedas }}</div>
+                </div>
+                <div class="col-md-2"><label class="form-label">Asientos / Pas.</label>
+                    <div class="d-flex gap-2">{{ form.asientos }} {{ form.pasajeros }}</div>
+                </div>
+                <div class="col-md-2"><label class="form-label">Longitud (m)</label>{{ form.largo }}</div>
+                <div class="col-md-2"><label class="form-label">Ancho (m)</label>{{ form.ancho }}</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3"><label class="form-label">Altura (m)</label>{{ form.alto }}</div>
+                <div class="col-md-3"><label class="form-label">Peso Bruto (kg)</label>{{ form.peso_bruto }}</div>
+                <div class="col-md-3"><label class="form-label">Peso Neto (kg)</label>{{ form.peso_neto }}</div>
+                <div class="col-md-3"><label class="form-label">Carga Útil (kg)</label>{{ form.carga_util }}</div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="card-title"><i class="bi bi-plugin section-icon"></i> Sección D: Componentes del Sistema GLP
+            </div>
+            <div class="row">
+                <div class="col-md-5 border-end pe-4">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-circle-fill small me-2"></i>REDUCTOR / VAPORIZADOR</h6>
+                    <div class="row g-2">
+                        <div class="col-4"><label class="form-label">Marca</label>{{ form.reductor_marca }}</div>
+                        <div class="col-4"><label class="form-label">Modelo</label>{{ form.reductor_modelo }}</div>
+                        <div class="col-4"><label class="form-label">Serie</label>{{ form.reductor_serie }}</div>
+                    </div>
+                </div>
+                <div class="col-md-7 ps-4">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-circle-fill small me-2"></i>CILINDRO DE ALMACENAMIENTO</h6>
+                    <div class="row g-2 mb-2">
+                        <div class="col-4"><label class="form-label">Marca</label>{{ form.cilindro_marca }}</div>
+                        <div class="col-4"><label class="form-label">Modelo</label>{{ form.cilindro_modelo }}</div>
+                        <div class="col-4"><label class="form-label">Serie</label>{{ form.cilindro_serie }}</div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-4"><label class="form-label">Capacidad (L)</label>{{ form.cilindro_capacidad }}
+                        </div>
+                        <div class="col-8"><label class="form-label">Fecha Fabricación</label>{{ form.cilindro_fecha_fab }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-orange w-100 text-white rounded-3 fs-5 mb-4">
+            {% if editando %}
+            <i class="bi bi-save me-2"></i> Guardar Cambios
+            {% else %}
+            <i class="bi bi-file-earmark-pdf-fill me-2"></i> Registrar y Generar PDF
+            {% endif %}
+        </button>
+    </form>
+
+    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-clock-history me-2"></i>Historial Vehicular</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4" id="contenido-historial">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         console.log("Iniciando script de GLP...");
+        const editando = '{{ editando|yesno:"true,false" }}' === 'true';
         const sedeSelect = document.getElementById('id_sede');
         const combustibleSelect = document.getElementById('id_combustible');
-        const fechaInput = document.getElementById('id_fecha_emision');
+        const fechaInput = document.getElementById('id_fecha_certificacion');
         const pesoNetoInput = document.getElementById('id_peso_neto');
         const pesoBrutoInput = document.getElementById('id_peso_bruto');
         const cargaUtilInput = document.getElementById('id_carga_util');
@@ -143,7 +172,7 @@
                 cargaUtilInput.placeholder = "Error: Bruto debe ser mayor";
             } else if (bruto > neto) {
                 pesoBrutoInput.classList.remove('is-invalid');
-                cargaUtilInput.value = (bruto - neto).toFixed(2);
+                cargaUtilInput.value = (bruto - neto).toFixed(0);
                 cargaUtilInput.placeholder = "";
             } else {
                 cargaUtilInput.value = "";
@@ -156,7 +185,7 @@
             pesoBrutoInput.addEventListener('input', calcularCargaUtil);
         }
 
-        
+
         function actualizarFechaAutomatica() {
             const sedeId = sedeSelect.value;
             const combustible = combustibleSelect.value;
@@ -164,10 +193,10 @@
             if (!sedeId || !combustible || !sedesConfig[sedeId]) return;
 
             const combustiblesInicial = [
-                'BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV', 
+                'BI COMB.-GNV', 'BI COMBUSTIBLE GNV', 'BI-GNV', 'DUAL GNV',
                 'GASOL/GNV', 'GASOLINA/GNV', 'GNV', 'GASOLINA', 'GASOLINA PREMIUM SIN PLOMO'
             ];
-            
+
             const tipo = combustiblesInicial.includes(combustible.toUpperCase()) ? 'inicial' : 'anual';
             const regla = tipo === 'anual' ? sedesConfig[sedeId].anual_dias : sedesConfig[sedeId].inicial_dias;
 
@@ -180,13 +209,13 @@
 
             // Si cae domingo cambiazasaso al sábado
             if (d.getDay() === 0) d.setDate(d.getDate() - 1);
-            
+
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
-            
+
             fechaInput.value = `${year}-${month}-${day}`;
-            
+
             // Efecto visual
             fechaInput.style.backgroundColor = "#fff3cd";
             setTimeout(() => fechaInput.style.backgroundColor = "white", 500);
@@ -200,11 +229,11 @@
         // -- PARA LA API que nel está ---
         const btnApi = document.getElementById('btnConsultarApi');
         if (btnApi) {
-            btnApi.addEventListener('click', async function() {
+            btnApi.addEventListener('click', async function () {
                 const placaInput = document.getElementById('id_placa');
                 const placa = placaInput.value.trim();
-                
-                if(placa.length < 6) {
+
+                if (placa.length < 6) {
                     alert("Por favor, ingrese una placa válida.");
                     return;
                 }
@@ -221,7 +250,7 @@
                         }
                     });
 
-                    if(response.ok) {
+                    if (response.ok) {
                         const data = await response.json();
                         document.getElementById('id_propietario').value = data.propietario || '';
                         document.getElementById('id_marca').value = data.marca || '';
@@ -241,5 +270,48 @@
             });
         }
     });
+
+    document.getElementById('btn-buscar-historial').addEventListener('click', function () {
+        const placa = document.getElementById('id_placa').value;
+        const modalElement = new bootstrap.Modal(document.getElementById('modalHistorial'));
+        const contenedor = document.getElementById('contenido-historial');
+
+        if (!placa) {
+            Swal.fire({
+                title: 'Campo vacío',
+                text: 'Por favor, ingrese una placa para consultar el historial.',
+                icon: 'warning',
+                confirmButtonColor: '#FD7401',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        modalElement.show();
+        contenedor.innerHTML = '<div class="spinner-border text-primary"></div>';
+
+        fetch(`/glp/consultar-historial/?placa=${placa}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.encontrado) {
+                    const colorEstado = data.estado === 'VIGENTE' ? 'text-success' : 'text-danger';
+                    contenedor.innerHTML = `
+                    <h2 class="fw-bold text-primary mb-3">${data.placa}</h2>
+                    <p class="mb-1">Último GLP: <strong>${data.fecha_ultima}</strong></p>
+                    <p class="fs-5">Días para expirar: <span class="fw-bold ${colorEstado}">${data.dias_restantes} días</span></p>
+                    <div class="badge p-2 px-3 ${data.estado === 'VIGENTE' ? 'bg-success' : 'bg-danger'}">${data.estado}</div>
+                `;
+                } else {
+                    contenedor.innerHTML = `
+                    <i class="bi bi-info-circle text-warning fs-1"></i>
+                    <p class="mt-3">No se encontraron GLP previas para esta placa.</p>
+                `;
+                }
+            })
+            .catch(error => {
+                contenedor.innerHTML = '<p class="text-danger">Error al consultar los datos.</p>';
+            });
+    });
 </script>
+
 {% endblock %}
