@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 from django.contrib import messages
 from .forms import CertificadoForm  # Asegúrate de que este formulario use el modelo CertificadoConformidad
-from .models import TramiteConformidad
+from .models import TramiteConformidad, CertificadoConformidad
 from django.contrib.auth.decorators import login_required
 from glp.models import SedeConfiguracion
 import json
+from datetime import date, timedelta
+from django.http import JsonResponse
 
 def obtener_sedes_json():
     sedes_queryset = SedeConfiguracion.objects.all()
@@ -69,3 +71,25 @@ def crear_certificado_conformidad(request):
         'form': form,
         'sedes_json': obtener_sedes_json()
     })
+    
+def consultar_ultima_conformidad(request):
+    placa = request.GET.get('placa', None)
+    if not placa:
+        return JsonResponse({'error': 'No se proporcionó placa'}, status=400)
+    
+    # Buscamos la última conformidad por fecha de emisión
+    ultima = CertificadoConformidad.objects.filter(placa=placa).order_by('-fecha_emision').first()
+    
+    if ultima:
+        fecha_expiracion = ultima.fecha_emision + timedelta(days=365)
+        dias_faltantes = (fecha_expiracion - date.today()).days
+        
+        return JsonResponse({
+            'encontrado': True,
+            'placa': ultima.placa,
+            'fecha_ultima': ultima.fecha_emision.strftime('%d/%m/%Y'),
+            'dias_restantes': dias_faltantes if dias_faltantes > 0 else 0,
+            'estado': 'VIGENTE' if dias_faltantes > 0 else 'EXPIRADO'
+        })
+    else:
+        return JsonResponse({'encontrado': False})

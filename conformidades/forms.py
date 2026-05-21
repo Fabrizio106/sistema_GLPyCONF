@@ -2,7 +2,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from .models import CertificadoConformidad, TramiteConformidad
 from glp.models import SedeConfiguracion
-from datetime import date
+from datetime import date, timedelta
 
 class CertificadoForm(forms.ModelForm):
     sede = forms.ModelChoiceField(
@@ -16,7 +16,7 @@ class CertificadoForm(forms.ModelForm):
         # LÓGICA DE FECHA AUTOMÁTICA: 
         # Si el formulario es nuevo (no tiene instancia grabada), ponemos hoy.
         if not self.instance.pk:
-            self.fields['fecha_emision'].initial = date.today()
+            self.fields['fecha_emision'].initial = date.today()- timedelta(days=1)
     
     class Meta:
         model = CertificadoConformidad
@@ -29,7 +29,7 @@ class CertificadoForm(forms.ModelForm):
         widgets = {
             field: forms.TextInput(attrs={'class': 'form-control'}) 
             for field in [
-                'numero_vin', 'placa', 'categoria', 'marca', 'modelo', 
+                'numero_vin', 'categoria', 'marca', 'modelo', 
                 'color', 'numero_serie', 'numero_motor', 'carroceria', 
                 'potencia', 'formula_rodante', 'combustible', 'asientos', 
                 'pasajeros', 'ruedas', 'ejes', 'cilindros', 'cilindrada',
@@ -39,6 +39,13 @@ class CertificadoForm(forms.ModelForm):
         }
         # Los campos numéricos necesitan su propio widget
         widgets.update({
+            'placa': forms.TextInput(attrs={
+                'class': 'form-control',
+                'maxlength': '6',
+                'pattern': '[A-Za-z0-9]{6}',
+                'title': 'La placa debe tener exactamente 6 caracteres alfanuméricos',
+                'style': 'text-transform: uppercase;' # Esto visualmente lo pone en mayúsculas
+            }),
             'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
