@@ -148,8 +148,8 @@ LOGOUT_REDIRECT_URL = 'login'
 # CONFIGURACIÓN DE SEGURIDAD DE SESIONES
 # ==========================================
 
-# 1. Tiempo máximo de inactividad en segundos (1hora)
-SESSION_COOKIE_AGE = 3600 
+# 1. Tiempo máximo de inactividad en segundos (2horas)
+SESSION_COOKIE_AGE = 7200 
 
-# 2. ¡La clave! Renueva las 1 hora cada vez que el usuario carga una página nueva o interactúa
+# 2. ¡La clave! Renueva las 2 horas cada vez que el usuario carga una página nueva o interactúa
 SESSION_SAVE_EVERY_REQUEST = True
