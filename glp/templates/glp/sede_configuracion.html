@@ -101,7 +101,8 @@
                     </h2>
 
                     <div class="table-responsive">
-                        <table class="table table-hover mt-3 admin-table align-middle" style="border: 0.5pt solid #dee2e6;">
+                        <table class="table table-hover mt-3 admin-table align-middle"
+                            style="border: 0.5pt solid #dee2e6;">
                             <thead class="table-light">
                                 <tr>
                                     <th>Sede</th>
@@ -149,16 +150,13 @@
                                     </td>
 
                                     <td class="text-center align-middle">
-                                        <a href="{% url 'editar_sede' s.pk %}"
-                                        class="btn btn-sm btn-table-edit"
-                                        title="Editar">
+                                        <a href="{% url 'editar_sede' s.pk %}" class="btn btn-sm btn-table-edit"
+                                            title="Editar">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        <a href="{% url 'eliminar_sede' s.pk %}"
-                                        class="btn btn-sm btn-outline-danger"
-                                        title="Eliminar"
-                                        onclick="return confirm('¿Eliminar esta sede?')">
+                                        <a href="{% url 'eliminar_sede' s.pk %}" class="btn btn-sm btn-outline-danger"
+                                            title="Eliminar" onclick="return confirm('¿Eliminar esta sede?')">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </td>
