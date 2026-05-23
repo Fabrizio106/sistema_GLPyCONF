@@ -18,7 +18,6 @@ class CertificadoConformidad(models.Model):
     propietario = models.CharField(max_length=300, blank=True, null=True, verbose_name="Titular / Propietario")
     fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
     numero_certificado = models.CharField(max_length=20, unique=True,null=True,blank=True, verbose_name="N° de Certificado")
-    
     # Identificación Básica
     numero_vin = models.CharField(max_length=17, unique=True, verbose_name="Número VIN")
     placa = models.CharField(max_length=100, verbose_name="Placa")

@@ -332,8 +332,13 @@ def descargar_pdf_conformidad(request, pk):
     fecha_str = f"{fecha_pdf.day}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
 
     # Personas o mercancías según categoría
-    categoria      = certificado.categoria or ''
-    tipo_transporte = 'PERSONAS' if categoria.upper().startswith('M') else 'MERCANCÍAS'
+    categoria_final = certificado.categoria or ''
+    for t in tramites:
+        if t.campo_modificado.lower() == 'categoria':
+            categoria_final = t.valor_nuevo
+            break
+
+    tipo_transporte = 'PERSONAS' if categoria_final.upper().startswith('M') else 'MERCANCÍAS'
 
     context = {
         'certificado':    certificado,
@@ -358,13 +363,21 @@ def editar_conformidad(request, pk):
         if form.is_valid():
             try:
                 with transaction.atomic():
+                    tramites_anteriores = list(
+                        certificado.tramites.values('tipo_nombre', 'campo_modificado', 'valor_nuevo')
+                    )
+
                     certificado.tramites.all().delete()
                     editado = form.save(commit=False)
                     editado.usuario = request.user
+                    editado.fecha_emision = timezone.localdate()
                     editado.save()
 
                     mapa_tramites = request.POST.getlist('mapa_tramites[]')
                     tramites_guardados = 0
+
+                    # Trámites enviados por el JS (nuevos o modificados)
+                    tipos_campos_nuevos = set()
                     for item in mapa_tramites:
                         try:
                             tipo, campo = item.split('|')
@@ -376,13 +389,26 @@ def editar_conformidad(request, pk):
                                     campo_modificado=campo,
                                     valor_nuevo=valor_nuevo.strip()
                                 )
+                                tipos_campos_nuevos.add(f'{tipo}|{campo}')
                                 tramites_guardados += 1
                         except ValueError:
                             continue
 
+                    # Restaurar trámites anteriores que NO fueron reenviados por el JS
+                    for t in tramites_anteriores:
+                        clave = f"{t['tipo_nombre']}|{t['campo_modificado']}"
+                        if clave not in tipos_campos_nuevos:
+                            TramiteConformidad.objects.create(
+                                certificado=editado,
+                                tipo_nombre=t['tipo_nombre'],
+                                campo_modificado=t['campo_modificado'],
+                                valor_nuevo=t['valor_nuevo']
+                            )
+                            tramites_guardados += 1
+
                     messages.success(
                         request,
-                        f"Certificado actualizado correctamente. ({tramites_guardados} trámite(s) guardado(s))",
+                        "Certificado actualizado correctamente.",
                         extra_tags='conformidad'
                     )
                     return redirect('historial_conformidades')

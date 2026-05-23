@@ -55,6 +55,10 @@
             </button>
           </div>
         </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary">TITULAR / PROPIETARIO</label>
+              {{ form.propietario }}
+        </div>
         <div class="col-md-3">
           <label class="form-label fw-bold small text-secondary"
             >CATEGORÍA</label
@@ -357,6 +361,9 @@
     </div>
   </div>
 </div>
+<script>
+  const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
+</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -653,10 +660,92 @@
       pb.addEventListener("input", calc);
       pn.addEventListener("input", calc);
     }
+    
+    function cargarTramitesExistentes(tramites) {
+        const grupos = {};
+        tramites.forEach(t => {
+            if (!grupos[t.tipo_nombre]) grupos[t.tipo_nombre] = [];
+            grupos[t.tipo_nombre].push(t);
+        });
 
-    // Arrancar el primer bloque
-    createNewBlock();
-    addBlockBtn.addEventListener("click", createNewBlock);
+        const tiposOrdenados = Object.entries(grupos);
+        let indice = 0;
+
+        function procesarSiguiente() {
+            if (indice >= tiposOrdenados.length) return;
+            const [tipo, items] = tiposOrdenados[indice];
+            indice++;
+
+            createNewBlock();
+            const blocks = document.querySelectorAll('.tramite-block');
+            const block  = blocks[blocks.length - 1];
+            const selector = block.querySelector('.selector-tipo');
+
+            selector.value = tipo;
+            selector.dispatchEvent(new Event('change'));
+
+            function esperarCheckboxes(intentos) {
+                const checkboxes = block.querySelectorAll('.chk-item');
+                if (checkboxes.length === 0 && intentos > 0) {
+                    setTimeout(() => esperarCheckboxes(intentos - 1), 80);
+                    return;
+                }
+                items.forEach(item => {
+                    const chk = block.querySelector(`[data-campo="${item.campo_modificado}"]`);
+                    if (chk) {
+                        chk.checked = true;
+                        chk.dispatchEvent(new Event('change'));
+                    }
+                });
+
+                function esperarInputs(intentos) {
+                  const inputsArea = block.querySelector('.inputs-area');
+                  const inputs = inputsArea ? inputsArea.querySelectorAll('input[type="text"]:not([readonly])') : [];
+                  if (inputs.length === 0 && intentos > 0) {
+                      setTimeout(() => esperarInputs(intentos - 1), 80);
+                      return;
+                  }
+
+                  items.forEach(item => {
+                      const inputsArea = block.querySelector('.inputs-area');
+                      if (!inputsArea) return;
+
+                      // Rellenar el valor nuevo en el input de texto
+                      inputsArea.querySelectorAll(`input[name="valor_${tipo}_${item.campo_modificado}"]`).forEach(inp => {
+                          inp.value = item.valor_nuevo;
+                      });
+
+                      // Asegurarse que el hidden mapa_tramites[] existe para este campo
+                      const hiddenName = `mapa_tramites[]`;
+                      const hiddenValue = `${tipo}|${item.campo_modificado}`;
+                      const existeHidden = inputsArea.querySelector(`input[type="hidden"][value="${hiddenValue}"]`);
+                      if (!existeHidden) {
+                          const hidden = document.createElement('input');
+                          hidden.type = 'hidden';
+                          hidden.name = hiddenName;
+                          hidden.value = hiddenValue;
+                          inputsArea.appendChild(hidden);
+                      }
+                  });
+
+                  updateSelectors();
+                  setTimeout(procesarSiguiente, 100);
+              }
+                setTimeout(() => esperarInputs(10), 80);
+            }
+            setTimeout(() => esperarCheckboxes(10), 100);
+        }
+        procesarSiguiente();
+    }
+
+
+    // Arrancar: si hay trámites guardados los cargamos, si no creamos uno vacío
+    if (TRAMITES_INICIALES.length > 0) {
+        cargarTramitesExistentes(TRAMITES_INICIALES);
+    } else {
+        createNewBlock();
+    }
+    addBlockBtn.addEventListener('click', createNewBlock);
   });
 
   document
