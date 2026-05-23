@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style type="text/css">
+    @page {
+        size: A4 portrait;
+        margin: 3.5cm 1.8cm 3.5cm 2cm;
+    }
+    * { margin: 0; padding: 0; }
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 8.5pt;
+        color: black;
+        line-height: 1.2;
+    }
+
+    .titulo {
+        text-align: center;
+        font-size: 12pt;
+        font-weight: bold;
+        margin-bottom: 3pt;
+        margin-top: 8pt;
+    }
+    .cert-num-wrapper {
+        text-align: right;
+        margin-bottom: 4pt;
+    }
+    .cert-num {
+        font-size: 9.5pt;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    .empresa   { font-weight: bold; margin-bottom: 1pt; font-size: 9.5pt; }
+    .certifica { font-weight: bold; margin-bottom: 2pt; font-size: 9.5pt; }
+    .intro     { text-align: justify; margin-bottom: 3pt; font-size: 8.5pt; }
+
+    table.t-datos {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 4pt;
+        table-layout: fixed;
+    }
+    table.t-datos td {
+        border: 0.5pt solid black;
+        font-size: 7.5pt;
+        padding: 1.5pt 3pt;
+        vertical-align: middle;
+        overflow: hidden;
+    }
+    .c-n   { width: 4%;  text-align: center; font-weight: bold; }
+    .c-lb  { width: 15%; font-weight: bold; }
+    .c-vl  { width: 24%; }
+    .c-n2  { width: 4%;  text-align: center; font-weight: bold; }
+    .c-lb2 { width: 12%; font-weight: bold; }
+    .c-vl2 { width: auto; }
+
+    .tramites-intro { margin-bottom: 2pt; font-size: 8.5pt; }
+
+    .tipo-titulo {
+        text-align: center;
+        font-weight: bold;
+        font-size: 9.5pt;
+        margin-bottom: 1pt;
+        margin-top: 2pt;
+    }
+
+    /* DE: y A: sin separación entre ellos */
+    .de-linea {
+        font-size: 8.5pt;
+        margin-bottom: 0pt;
+        margin-top: 0pt;
+        line-height: 1.3;
+    }
+    .de-linea strong { font-weight: bold; }
+
+    .tramite-extra {
+        font-weight: bold;
+        margin-bottom: 0pt;
+        margin-top: 0pt;
+        font-size: 8.5pt;
+        line-height: 1.3;
+    }
+
+    .parrafo {
+        text-align: justify;
+        margin-bottom: 3pt;
+        margin-top: 3pt;
+        font-size: 8.5pt;
+        line-height: 1.3;
+    }
+
+    .nota-linea {
+        text-align: justify;
+        font-size: 8.5pt;
+        line-height: 1.3;
+        margin-bottom: 0pt;
+        margin-top: 0pt;
+    }
+
+    .transporte {
+        text-align: justify;
+        margin-bottom: 3pt;
+        margin-top: 0pt;
+        font-size: 8.5pt;
+        text-indent: 35pt;
+        line-height: 1.3;
+    }
+
+    .pie {
+        text-align: right;
+        font-size: 8.5pt;
+        margin-top: 4pt;
+    }
+</style>
+</head>
+<body>
+
+<p class="titulo">CERTIFICADO DE CONFORMIDAD DE MODIFICACION</p>
+
+<div class="cert-num-wrapper">
+    <span class="cert-num">CERTIFICADO CDT HR-CON N° {{ certificado.numero_certificado }}</span>
+</div>
+
+<p class="empresa">La Empresa &nbsp;&nbsp; CEDITEV S.A.C</p>
+<p class="certifica">CERTIFICA:</p>
+<p class="intro">Haber efectuado la inspección técnica del vehículo cuyas características
+registradas, actualmente, son las siguientes:</p>
+
+<table class="t-datos">
+    <tr>
+        <td class="c-n">1</td>
+        <td class="c-lb">Titular o Propietario</td>
+        <td colspan="4">{{ certificado.propietario|upper }}</td>
+    </tr>
+    <tr>
+        <td class="c-n">2</td><td class="c-lb">Placa</td>
+        <td class="c-vl">{{ certificado.placa|upper }}</td>
+        <td class="c-n2">13</td><td class="c-lb2">Ejes</td>
+        <td class="c-vl2">{{ certificado.ejes }}</td>
+    </tr>
+    <tr>
+        <td class="c-n">3</td><td class="c-lb">Categoría / Clase</td>
+        <td class="c-vl">{{ certificado.categoria|upper }}</td>
+        <td class="c-n2">14</td><td class="c-lb2">Asientos</td>
+        <td class="c-vl2">{{ certificado.asientos }}</td>
+    </tr>
+    <tr>
+        <td class="c-n">4</td><td class="c-lb">Marca</td>
+        <td class="c-vl">{{ certificado.marca|upper }}</td>
+        <td class="c-n2">15</td><td class="c-lb2">Pasajeros</td>
+        <td class="c-vl2">{{ certificado.pasajeros }}</td>
+    </tr>
+    <tr>
+        <td class="c-n">5</td><td class="c-lb">Modelo</td>
+        <td class="c-vl">{{ certificado.modelo|upper }}</td>
+        <td class="c-n2">16</td><td class="c-lb2">Ruedas</td>
+        <td class="c-vl2">{{ certificado.ruedas }}</td>
+    </tr>
+    <tr>
+        <td class="c-n">6</td><td class="c-lb">Año Fab / Año Mod</td>
+        <td class="c-vl">{{ certificado.anio_fabricacion }} / {{ certificado.anio_modelo }}</td>
+        <td class="c-n2">17</td><td class="c-lb2">Peso Bruto</td>
+        <td class="c-vl2">{{ certificado.peso_bruto|floatformat:0 }} kg</td>
+    </tr>
+    <tr>
+        <td class="c-n">7</td><td class="c-lb">Combustible</td>
+        <td class="c-vl">{{ certificado.combustible|upper }}</td>
+        <td class="c-n2">18</td><td class="c-lb2">Peso Neto</td>
+        <td class="c-vl2">{{ certificado.peso_neto|floatformat:0 }} kg</td>
+    </tr>
+    <tr>
+        <td class="c-n">8</td><td class="c-lb">Tipo de carrocería</td>
+        <td class="c-vl">{{ certificado.carroceria|upper }}</td>
+        <td class="c-n2">19</td><td class="c-lb2">Carga Util</td>
+        <td class="c-vl2">{{ certificado.carga_util|floatformat:0 }} kg</td>
+    </tr>
+    <tr>
+        <td class="c-n">9</td><td class="c-lb">Colores</td>
+        <td class="c-vl">{{ certificado.color|upper }}</td>
+        <td class="c-n2">20</td><td class="c-lb2">Longitud</td>
+        <td class="c-vl2">{{ certificado.longitud }} m.</td>
+    </tr>
+    <tr>
+        <td class="c-n">10</td><td class="c-lb">N° Serie</td>
+        <td class="c-vl">{{ certificado.numero_serie|upper }}</td>
+        <td class="c-n2">21</td><td class="c-lb2">Altura</td>
+        <td class="c-vl2">{{ certificado.altura }} m.</td>
+    </tr>
+    <tr>
+        <td class="c-n">11</td><td class="c-lb">N° Motor</td>
+        <td class="c-vl">{{ certificado.numero_motor|upper }}</td>
+        <td class="c-n2">22</td><td class="c-lb2">Ancho</td>
+        <td class="c-vl2">{{ certificado.ancho }} m.</td>
+    </tr>
+    <tr>
+        <td class="c-n">12</td><td class="c-lb">Cilindros / Cilindrada</td>
+        <td class="c-vl">{{ certificado.cilindros }} / {{ certificado.cilindrada }}</td>
+        <td class="c-n2">23</td><td class="c-lb2">Potencia</td>
+        <td class="c-vl2">{{ certificado.potencia }}</td>
+    </tr>
+</table>
+
+<p class="tramites-intro">Al que se le ha efectuado las siguientes modificaciones y características registrables:</p>
+
+{% for bloque in bloques %}
+    {% if forloop.first %}
+        <p class="tipo-titulo">TIPO DE {{ bloque.tipo }}: {{ bloque.primer_label|upper }}</p>
+        <p class="de-linea"><strong>DE:</strong> {{ bloque.valor_anterior|upper }}</p>
+        <p class="de-linea" style="margin-bottom:3pt;">
+            <strong>A:</strong> {{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}:</strong> {{ ad.valor_nuevo|upper }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+        </p>
+    {% else %}
+        <p class="tramite-extra">
+            {{ bloque.tipo }}: {{ bloque.primer_label|upper }}: {{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / {{ ad.label|upper }}: {{ ad.valor_nuevo|upper }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+        </p>
+    {% endif %}
+{% endfor %}
+
+<p class="parrafo">
+    El vehículo inspeccionado no ha sido objeto de modificación alguna, no se altera o
+    modifica la carrocería original y se respetan los parámetros del fabricante, solo se
+    están actualizando las características de acuerdo a la normatividad vigente.
+</p>
+
+{% if notas %}
+    {% for nota in notas %}
+    <p class="nota-linea">NOTA: {{ nota }}</p>
+    {% endfor %}
+{% endif %}
+
+<p class="parrafo">
+    Conste por el presente documento de acuerdo con el expediente CDT HR-CON
+    N° {{ certificado.numero_certificado }} que la modificación del vehículo, no afectan
+    negativamente la seguridad del mismo, el tránsito terrestre, el medio ambiente o
+    incumplen con las condiciones técnicas establecidas en la normativa vigente en la materia.
+</p>
+
+<p class="transporte">
+    El vehículo materia de evaluación fue originalmente diseñado y construido para
+    destinarlo al transporte de ...{{ tipo_transporte }}...
+</p>
+
+<p class="pie">Se expide el presente certificado en la ciudad de Huaraz el {{ fecha_str }}.</p>
+
+</body>
+</html>

@@ -267,9 +267,10 @@
                   </a>
                 </li>
                 <li>
-                  <a class="nav-link">
-                    <i class="bi bi-clock-history"></i> Historial
-                  </a>
+                    <a href="{% url 'historial_conformidades' %}" class="nav-link
+                        {% if 'historial' in request.path and 'conformidades' in request.path %}active-child{% endif %}">
+                        <i class="bi bi-clock-history"></i> Historial
+                    </a>
                 </li>
               </ul>
             </div>
@@ -343,35 +344,39 @@
     <script>
       // Esperamos a que la página cargue para ejecutar SweetAlert
       window.addEventListener("DOMContentLoaded", () => {
-        const urlHistorial = "{% url 'historial_glp' %}";
+        const urlHistorialGLP          = "{% url 'historial_glp' %}";
+        const urlHistorialConformidad  = "{% url 'historial_conformidades' %}";
         const messageElement = document.getElementById("messages-data");
         if (!messageElement) return;
 
         const messagesData = JSON.parse(messageElement.textContent);
 
         messagesData.forEach((m) => {
-          const isUsuario = m.tags.includes("usuario");
-          const isError = m.tags.includes("error");
+            const isUsuario       = m.tags.includes("usuario");
+            const isError         = m.tags.includes("error");
+            const isConformidad   = m.tags.includes("conformidad");
 
-          Swal.fire({
-            title: isError ? "¡Atención!" : "¡Éxito!",
-            text: m.message,
-            icon: isError ? "error" : "success",
-            showCancelButton: !isUsuario,
-            confirmButtonColor: "#0d6efd",
-            cancelButtonColor: "#6c757d",
-            confirmButtonText: isUsuario ? "OK" : "Ver en Historial",
-            cancelButtonText: "Registrar otro",
-            showConfirmButton: true,
-            timer: isUsuario ? 2000 : null,
-            timerProgressBar: isUsuario,
-          }).then((result) => {
-            if (result.isConfirmed && !isUsuario) {
-              window.location.href = urlHistorial;
-            }
-          });
+            Swal.fire({
+                title: isError ? "¡Atención!" : "¡Éxito!",
+                text: m.message,
+                icon: isError ? "error" : "success",
+                showCancelButton: !isUsuario,
+                confirmButtonColor: "#0d6efd",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: isUsuario ? "OK" : "Ver en Historial",
+                cancelButtonText: "Registrar otro",
+                showConfirmButton: true,
+                timer: isUsuario ? 2000 : null,
+                timerProgressBar: isUsuario,
+            }).then((result) => {
+                if (result.isConfirmed && !isUsuario) {
+                    window.location.href = isConformidad
+                        ? urlHistorialConformidad
+                        : urlHistorialGLP;
+                }
+            });
         });
-      });
+    });
     </script>
     {% endif %} {% block scripts %}{% endblock %}
   </body>

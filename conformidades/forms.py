@@ -46,6 +46,7 @@ class CertificadoForm(forms.ModelForm):
             'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'carga_util': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'propietario': forms.TextInput(attrs={'class': 'form-control'}),
         })
 
 class TramiteForm(forms.ModelForm):
@@ -56,6 +57,7 @@ class TramiteForm(forms.ModelForm):
             'tipo_nombre': forms.Select(attrs={'class': 'form-select'}),
             'campo_modificado': forms.Select(attrs={'class': 'form-select'}), # Cambiado a Select para tu JS
             'valor_nuevo': forms.TextInput(attrs={'class': 'form-control'}),
+            
         }
 
 # ESTE ES EL MOTOR DINÁMICO

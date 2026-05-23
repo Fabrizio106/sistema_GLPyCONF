@@ -15,6 +15,7 @@ class CertificadoConformidad(models.Model):
     )
     
     sede = models.ForeignKey(SedeConfiguracion, on_delete=models.PROTECT, verbose_name="Sede")
+    propietario = models.CharField(max_length=300, blank=True, null=True, verbose_name="Titular / Propietario")
     fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
     numero_certificado = models.CharField(max_length=20, unique=True,null=True,blank=True, verbose_name="N° de Certificado")
     
@@ -67,22 +68,25 @@ class CertificadoConformidad(models.Model):
         return f"{self.placa} - {self.numero_vin}"
     
     def clean(self):
-        """
-        Lógica de autogeneración para Conformidades
-        """
-        # Solo se ejecuta si es un registro nuevo (no tiene pk)
         if not self.pk and not self.numero_certificado:
-            # Buscamos el último número de conformidad en la base de datos
+            from django.utils import timezone
+            year = timezone.now().year
+            prefix = f"000{year}-"
             ultimo = CertificadoConformidad.objects.filter(
-                numero_certificado__gte="10000"
+                numero_certificado__startswith=prefix
             ).order_by('numero_certificado').last()
-            
-            if ultimo and ultimo.numero_certificado.isdigit():
-                # Incrementamos en 1 el valor encontrado
-                self.numero_certificado = str(int(ultimo.numero_certificado) + 1)
+            if ultimo:
+                try:
+                    seq = int(ultimo.numero_certificado.split('-')[1]) + 1
+                except (IndexError, ValueError):
+                    seq = 1
             else:
-                # Si es el primer registro del sistema, empezamos en 10001
-                self.numero_certificado = "10001"
+                seq = 1
+            self.numero_certificado = f"{prefix}{seq:02d}"
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class TramiteConformidad(models.Model):

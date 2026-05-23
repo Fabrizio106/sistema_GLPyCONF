@@ -36,6 +36,7 @@
             </div>
             <div class="row g-3">
                 <div class="col-md-3"><label class="form-label fw-bold small">PLACA</label>{{ form.placa }}</div>
+                <div class="col-md-6"><label class="form-label fw-bold small">TITULAR / PROPIETARIO</label>{{ form.propietario }}</div>
                 <div class="col-md-3"><label class="form-label fw-bold small">CATEGORÍA</label>{{ form.categoria }}</div>
                 <div class="col-md-3"><label class="form-label fw-bold small">MARCA</label>{{ form.marca }}</div>
                 <div class="col-md-3"><label class="form-label fw-bold small">MODELO</label>{{ form.modelo }}</div>
@@ -129,6 +130,10 @@
         </div>
     </div>
 </template>
+
+<script>
+  const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -236,8 +241,89 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSelectors(); // Llamar al crear el bloque
     }
 
-    // Inicializar
-    createNewBlock();
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    function cargarTramitesExistentes(tramites) {
+        const grupos = {};
+        tramites.forEach(t => {
+            if (!grupos[t.tipo_nombre]) grupos[t.tipo_nombre] = [];
+            grupos[t.tipo_nombre].push(t);
+        });
+
+        const tiposOrdenados = Object.entries(grupos);
+        let indice = 0;
+
+        function procesarSiguiente() {
+            if (indice >= tiposOrdenados.length) return;
+
+            const [tipo, items] = tiposOrdenados[indice];
+            indice++;
+
+            createNewBlock();
+
+            const blocks = document.querySelectorAll('.tramite-block');
+            const block  = blocks[blocks.length - 1];
+            const selector = block.querySelector('.selector-tipo');
+
+            selector.value = tipo;
+            selector.dispatchEvent(new Event('change'));
+
+            // Esperamos a que aparezcan los checkboxes
+            function esperarCheckboxes(intentos) {
+                const checkboxes = block.querySelectorAll('.chk-item');
+                if (checkboxes.length === 0 && intentos > 0) {
+                    setTimeout(() => esperarCheckboxes(intentos - 1), 80);
+                    return;
+                }
+
+                items.forEach(item => {
+                    const chk = block.querySelector(`[data-campo="${item.campo_modificado}"]`);
+                    if (chk) {
+                        chk.checked = true;
+                        chk.dispatchEvent(new Event('change'));
+                    }
+                });
+
+                // Esperamos a que aparezcan los inputs y los rellenamos
+                function esperarInputs(intentos) {
+                    const inputsArea = block.querySelector('.inputs-area');
+                    const inputs = inputsArea ? inputsArea.querySelectorAll('input[type="text"]') : [];
+                    if (inputs.length === 0 && intentos > 0) {
+                        setTimeout(() => esperarInputs(intentos - 1), 80);
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const inputsArea = block.querySelector('.inputs-area');
+                        if (!inputsArea) return;
+                        inputsArea.querySelectorAll('input[type="text"]').forEach(inp => {
+                            if (inp.name === `valor_${tipo}_${item.campo_modificado}`) {
+                                inp.value = item.valor_nuevo;
+                            }
+                        });
+                    });
+
+                    updateSelectors();
+                    // Procesar el siguiente grupo
+                    setTimeout(procesarSiguiente, 100);
+                }
+
+                setTimeout(() => esperarInputs(10), 80);
+            }
+
+            setTimeout(() => esperarCheckboxes(10), 100);
+        }
+
+        procesarSiguiente();
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    
+    // Inicializar: si hay trámites guardados los cargamos, si no creamos uno vacío
+    if (TRAMITES_INICIALES.length > 0) {
+        cargarTramitesExistentes(TRAMITES_INICIALES);
+    } else {
+        createNewBlock();
+    }
     addBlockBtn.addEventListener('click', createNewBlock);
 
     // Cálculo Carga Útil
