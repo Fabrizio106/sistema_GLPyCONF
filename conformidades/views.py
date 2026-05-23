@@ -63,7 +63,6 @@ CARROCERIAS_2006 = [
 
 
 def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
-    """Norma: va entre paréntesis al costado del A:"""
     campo_lower  = campo.lower()
     val_nuevo_up = str(valor_nuevo).upper().strip()
 
@@ -80,43 +79,42 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
             return ("(De acuerdo a la directiva RD N° 04848-2006 MTC/15 "
                     "y RD N° 10476-2008-MTC/15)")
         elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
-            return ("(Adecuación a la directiva R.D. N°10476-2008-MTC/15)"
-                    "- NO HA EXISTIDO MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA")
+            return ("(Adecuación acorde a R.D. N°10476-2008-MTC/15 - NO HA EXISTIDO "
+                    "MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA)")
         elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
-            return ("(Adecuación a la directiva R.D. N°04848-2006-MTC/15)"
-                    "- NO HA EXISTIDO MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA")
+            return ("(Adecuación acorde a R.D. N°4848-2006-MTC/15 - NO HA EXISTIDO "
+                    "MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA)")
         else:
             return ("(Adecuación a la directiva RD N° 04848-2006 MTC/15 "
                     "y RD N° 10476-2008-MTC/15)")
 
     if campo_lower == 'combustible':
         if 'DIESEL' in val_nuevo_up:
-            return "(Adecuación a la RD N° 04848-2006 MTC/15)"
+            return "(Adecuación a la RD N 04848-2006 MTC/15)"
 
     return ""
 
 
 def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
-    """Nota: va en párrafo separado debajo."""
     campo_lower  = campo.lower()
     val_nuevo_up = str(valor_nuevo).upper().strip()
     val_ant_up   = str(valor_anterior).upper().strip()
 
     if campo_lower == 'combustible':
-        if tipo == 'RECTIFICACION':
-            return "EL VEHÍCULO NO HA SUFRIDO MODIFICACIÓN ALGUNA CON RESPECTO AL NUMERO DE ASIENTOS."
         if 'GASOLINA' in val_nuevo_up:
             if 'GLP' in val_ant_up:
-                return "EL SISTEMA BI-COMBUSTIBLE GLP HA SIDO DESMONTADO (KIT DE GLP)."
+                return "EL SISTEMA BI-COMBUSTIBLE GLP HA SIDO DESMONTADO (KIT DE GLP)"
             elif 'GNV' in val_ant_up:
                 return "EL VEHICULO YA NO CUENTA CON EL SISTEMA BI-COMBUSTIBLE GNV."
-        if 'GLP' in val_nuevo_up:
-            return "EL VEHICULO CUENTA CON SISTEMA BI-COMBUSTIBLE GLP."
-        if 'GNV' in val_nuevo_up:
-            return "EL VEHICULO MANTIENE EL SISTEMA BI-COMBUSTIBLE GNV."
+        if 'GLP' in val_nuevo_up and 'GLP' not in val_ant_up:
+            return "EL VEHICULO CUENTA CON SISTEMA BI-COMBUSTIBLE GLP"
+        if 'GNV' in val_nuevo_up and 'GNV' not in val_ant_up:
+            return "EL VEHICULO MANTIENE EL SISTEMA BI-COMBUSTIBLE GNV"
+        if tipo == 'RECTIFICACION':
+            return "RECTIFICAR COMBUSTIBLE de acuerdo a la RD N 4848-2006-MTC/15."
 
     elif campo_lower == 'asientos':
-        return "EL VEHÍCULO NO HA SIDO OBJETO DE MODIFICACIÓN FÍSICA ALGUNA CON RESPECTO AL NUMERO DE ASIENTOS."
+        return "EL VEHÍCULO NO HA SUFRIDO MODIFICACIÓN ALGUNA CON RESPECTO AL NUMERO DE ASIENTOS."
 
     elif campo_lower == 'numero_motor':
         return ("EL NUEVO MOTOR ENSAMBLADO TIENE EL MISMO MODELO DEL ANTERIOR MOTOR "
@@ -131,7 +129,7 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
 
     elif campo_lower == 'categoria':
         if tipo == 'RECTIFICACION':
-            return "RECTIFICAR CATEGORÍA de acuerdo a la RD N° 4848-2006-MTC/15."
+            return "RECTIFICAR CATEGORIA de acuerdo a la RD N 4848-2006-MTC/15."
 
     return ""
 def render_to_pdf_conformidad(template_src, context_dict, filename="certificado"):
