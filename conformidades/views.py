@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db import transaction
 from django.contrib import messages
+from .models import TramiteConformidad, CertificadoConformidad
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.utils import timezone
@@ -9,7 +10,8 @@ from xhtml2pdf import pisa
 from datetime import timedelta
 from collections import OrderedDict
 import json
-
+from datetime import date, timedelta
+from django.http import JsonResponse
 from .forms import CertificadoForm
 from .models import TramiteConformidad, CertificadoConformidad
 from glp.models import SedeConfiguracion
@@ -192,7 +194,28 @@ def crear_certificado_conformidad(request):
         'sedes_json': obtener_sedes_json()
     })
 
-
+def consultar_ultima_conformidad(request):
+    placa = request.GET.get('placa', None)
+    if not placa:
+        return JsonResponse({'error': 'No se proporcionó placa'}, status=400)
+    
+    # Buscamos la última conformidad por fecha de emisión
+    ultima = CertificadoConformidad.objects.filter(placa=placa).order_by('-fecha_emision').first()
+    
+    if ultima:
+        fecha_expiracion = ultima.fecha_emision + timedelta(days=365)
+        dias_faltantes = (fecha_expiracion - date.today()).days
+        
+        return JsonResponse({
+            'encontrado': True,
+            'placa': ultima.placa,
+            'fecha_ultima': ultima.fecha_emision.strftime('%d/%m/%Y'),
+            'dias_restantes': dias_faltantes if dias_faltantes > 0 else 0,
+            'estado': 'VIGENTE' if dias_faltantes > 0 else 'EXPIRADO'
+        })
+    else:
+        return JsonResponse({'encontrado': False})
+    
 @login_required
 def historial_conformidades(request):
     certificados = (CertificadoConformidad.objects
