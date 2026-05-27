@@ -224,12 +224,12 @@ registradas, actualmente, son las siguientes:</p>
         <p class="tipo-titulo">TIPO DE {{ bloque.tipo }}: {{ bloque.primer_label|upper }}</p>
         <p class="de-linea"><strong>DE:</strong> {{ bloque.valor_anterior|upper }}</p>
         <p class="de-linea" style="margin-bottom:3pt;">
-            <strong>A:</strong> {{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}:</strong> {{ ad.valor_nuevo|upper }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+            <strong>A:</strong> {{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}:</strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
         </p>
     {% else %}
         <p class="tramite-titulo-extra">{{ bloque.tipo }}:</p>
         <p class="tramite-detalle-extra">
-            <strong>{{ bloque.primer_label|upper }}: </strong>{{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}: </strong> {{ ad.valor_nuevo|upper }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+            <strong>{{ bloque.primer_label|upper }}: </strong>{{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}: </strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
         </p>
     {% endif %}
 {% endfor %}
