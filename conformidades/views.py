@@ -319,13 +319,7 @@ def descargar_pdf_conformidad(request, pk):
         })
 
     # Fecha del PDF = un día antes de emisión; si cae domingo → sábado
-    fecha_emision = certificado.fecha_emision
-    if fecha_emision:
-        fecha_pdf = fecha_emision - timedelta(days=1)
-        if fecha_pdf.weekday() == 6:        # domingo
-            fecha_pdf -= timedelta(days=1)  # retrocede a sábado
-    else:
-        fecha_pdf = timezone.localdate()
+    fecha_pdf = certificado.fecha_emision or timezone.localdate()
 
     fecha_str = f"{fecha_pdf.day}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
 
@@ -361,10 +355,6 @@ def editar_conformidad(request, pk):
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    tramites_anteriores = list(
-                        certificado.tramites.values('tipo_nombre', 'campo_modificado', 'valor_nuevo')
-                    )
-
                     certificado.tramites.all().delete()
                     editado = form.save(commit=False)
                     editado.usuario = request.user
@@ -374,11 +364,15 @@ def editar_conformidad(request, pk):
                     mapa_tramites = request.POST.getlist('mapa_tramites[]')
                     tramites_guardados = 0
 
-                    # Trámites enviados por el JS (nuevos o modificados)
-                    tipos_campos_nuevos = set()
+                    # Eliminar duplicados manteniendo orden
+                    vistos = set()
                     for item in mapa_tramites:
                         try:
                             tipo, campo = item.split('|')
+                            clave = f'{tipo}|{campo}'
+                            if clave in vistos:
+                                continue
+                            vistos.add(clave)
                             valor_nuevo = request.POST.get(f'valor_{tipo}_{campo}')
                             if valor_nuevo and valor_nuevo.strip():
                                 TramiteConformidad.objects.create(
@@ -387,22 +381,9 @@ def editar_conformidad(request, pk):
                                     campo_modificado=campo,
                                     valor_nuevo=valor_nuevo.strip()
                                 )
-                                tipos_campos_nuevos.add(f'{tipo}|{campo}')
                                 tramites_guardados += 1
                         except ValueError:
                             continue
-
-                    # Restaurar trámites anteriores que NO fueron reenviados por el JS
-                    for t in tramites_anteriores:
-                        clave = f"{t['tipo_nombre']}|{t['campo_modificado']}"
-                        if clave not in tipos_campos_nuevos:
-                            TramiteConformidad.objects.create(
-                                certificado=editado,
-                                tipo_nombre=t['tipo_nombre'],
-                                campo_modificado=t['campo_modificado'],
-                                valor_nuevo=t['valor_nuevo']
-                            )
-                            tramites_guardados += 1
 
                     messages.success(
                         request,

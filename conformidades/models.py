@@ -69,19 +69,18 @@ class CertificadoConformidad(models.Model):
     def clean(self):
         if not self.pk and not self.numero_certificado:
             from django.utils import timezone
-            year = timezone.now().year
-            prefix = f"000{year}-"
+            year_suffix = str(timezone.now().year)[-2:]  # "26" para 2026
             ultimo = CertificadoConformidad.objects.filter(
-                numero_certificado__startswith=prefix
+                numero_certificado__endswith=f"-{year_suffix}"
             ).order_by('numero_certificado').last()
             if ultimo:
                 try:
-                    seq = int(ultimo.numero_certificado.split('-')[1]) + 1
+                    seq = int(ultimo.numero_certificado.split('-')[0]) + 1
                 except (IndexError, ValueError):
                     seq = 1
             else:
                 seq = 1
-            self.numero_certificado = f"{prefix}{seq:02d}"
+            self.numero_certificado = f"{seq:07d}-{year_suffix}"
 
     def save(self, *args, **kwargs):
         self.full_clean()
