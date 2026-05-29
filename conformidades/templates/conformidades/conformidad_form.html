@@ -29,7 +29,7 @@
         </div>
         <div class="col-md-6">
           <label class="form-label small fw-bold text-secondary"
-            >FECHA DE EMISIÓN</label
+            >FECHA DE CERTIFICACIÓN</label
           >
           {{ form.fecha_emision }}
         </div>
@@ -54,6 +54,10 @@
               <i class="bi bi-search"></i>
             </button>
           </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary">TITULAR / PROPIETARIO</label>
+              {{ form.propietario }}
         </div>
         <div class="col-md-3">
           <label class="form-label fw-bold small text-secondary"
@@ -227,7 +231,7 @@
 
     <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
       <a
-        href="{% url 'crear_certificado_conformidad' %}"
+        href="{% if editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
         class="btn fw-bold shadow-sm"
         style="
           background-color: #f8f9fa;
@@ -357,6 +361,9 @@
     </div>
   </div>
 </div>
+<script>
+  const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
+</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -653,10 +660,96 @@
       pb.addEventListener("input", calc);
       pn.addEventListener("input", calc);
     }
+    
+    function cargarTramitesExistentes(tramites) {
+        const grupos = {};
+        tramites.forEach(t => {
+            if (!grupos[t.tipo_nombre]) grupos[t.tipo_nombre] = [];
+            grupos[t.tipo_nombre].push(t);
+        });
 
-    // Arrancar el primer bloque
-    createNewBlock();
-    addBlockBtn.addEventListener("click", createNewBlock);
+        const tiposOrdenados = Object.entries(grupos);
+        let indice = 0;
+
+        function procesarSiguiente() {
+            if (indice >= tiposOrdenados.length) return;
+            const [tipo, items] = tiposOrdenados[indice];
+            indice++;
+
+            createNewBlock();
+            const blocks = document.querySelectorAll('.tramite-block');
+            const block  = blocks[blocks.length - 1];
+            const selector  = block.querySelector('.selector-tipo');
+            const checklistArea    = block.querySelector('.checklist-area');
+            const checklistOptions = block.querySelector('.checklist-options');
+            const tabla     = block.querySelector('.tabla-modificaciones');
+            const inputsArea = block.querySelector('.inputs-area');
+
+            // Seleccionar el tipo
+            selector.value = tipo;
+            selector.dispatchEvent(new Event('change'));
+
+            // Esperar a que los checkboxes aparezcan
+            function esperarCheckboxes(intentos) {
+                const checkboxes = block.querySelectorAll('.chk-item');
+                if (checkboxes.length === 0 && intentos > 0) {
+                    setTimeout(() => esperarCheckboxes(intentos - 1), 80);
+                    return;
+                }
+
+                items.forEach(item => {
+                    const campo = item.campo_modificado;
+                    const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
+
+                    // Marcar el checkbox visualmente
+                    const chk = block.querySelector(`[data-campo="${campo}"]`);
+                    if (chk) chk.checked = true;
+
+                    // Obtener valor actual del formulario
+                    const inputOriginal = document.getElementById(`id_${campo}`);
+                    const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+
+                    // Crear la fila directamente sin disparar evento
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="fw-bold text-dark small">${labelStr}</td>
+                        <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
+                        <td>
+                            <input type="text" name="valor_${tipo}_${campo}" class="form-control form-control-sm border-warning shadow-sm" value="${item.valor_nuevo}" placeholder="Ingresar nuevo valor">
+                            <input type="hidden" name="mapa_tramites[]" value="${tipo}|${campo}">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
+                                <i class="bi bi-trash-fill fs-5"></i>
+                            </button>
+                        </td>`;
+                    inputsArea.appendChild(tr);
+                });
+
+                // Mostrar tabla si tiene filas
+                if (inputsArea.children.length > 0) {
+                    tabla.classList.remove('d-none');
+                    checklistArea.classList.remove('d-none');
+                }
+
+                updateSelectors();
+                setTimeout(procesarSiguiente, 100);
+            }
+
+            setTimeout(() => esperarCheckboxes(10), 100);
+        }
+
+        procesarSiguiente();
+    }
+
+
+    // Arrancar: si hay trámites guardados los cargamos, si no creamos uno vacío
+    if (TRAMITES_INICIALES.length > 0) {
+        cargarTramitesExistentes(TRAMITES_INICIALES);
+    } else {
+        createNewBlock();
+    }
+    addBlockBtn.addEventListener('click', createNewBlock);
   });
 
   document

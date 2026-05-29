@@ -15,9 +15,9 @@ class CertificadoConformidad(models.Model):
     )
     
     sede = models.ForeignKey(SedeConfiguracion, on_delete=models.PROTECT, verbose_name="Sede")
+    propietario = models.CharField(max_length=300, blank=True, null=True, verbose_name="Titular / Propietario")
     fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
     numero_certificado = models.CharField(max_length=20, unique=True,null=True,blank=True, verbose_name="N° de Certificado")
-    
     # Identificación Básica
     numero_vin = models.CharField(max_length=17, unique=True, verbose_name="Número VIN")
     placa = models.CharField(max_length=100, verbose_name="Placa")
@@ -67,22 +67,24 @@ class CertificadoConformidad(models.Model):
         return f"{self.placa} - {self.numero_vin}"
     
     def clean(self):
-        """
-        Lógica de autogeneración para Conformidades
-        """
-        # Solo se ejecuta si es un registro nuevo (no tiene pk)
         if not self.pk and not self.numero_certificado:
-            # Buscamos el último número de conformidad en la base de datos
+            from django.utils import timezone
+            year_suffix = str(timezone.now().year)[-2:]  # "26" para 2026
             ultimo = CertificadoConformidad.objects.filter(
-                numero_certificado__gte="10000"
+                numero_certificado__endswith=f"-{year_suffix}"
             ).order_by('numero_certificado').last()
-            
-            if ultimo and ultimo.numero_certificado.isdigit():
-                # Incrementamos en 1 el valor encontrado
-                self.numero_certificado = str(int(ultimo.numero_certificado) + 1)
+            if ultimo:
+                try:
+                    seq = int(ultimo.numero_certificado.split('-')[0]) + 1
+                except (IndexError, ValueError):
+                    seq = 1
             else:
-                # Si es el primer registro del sistema, empezamos en 10001
-                self.numero_certificado = "10001"
+                seq = 1
+            self.numero_certificado = f"{seq:07d}-{year_suffix}"
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class TramiteConformidad(models.Model):

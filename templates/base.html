@@ -103,6 +103,34 @@
                 </div>
                 {% endif %}
 
+          <li class="nav-item w-100 mt-2">
+            <a
+              class="nav-link"
+              data-bs-toggle="collapse"
+              href="#submenuConformidad"
+            >
+              <i class="bi bi-file-earmark-check-fill text-success"></i>
+              <span>Módulo Conformidades</span>
+              <i class="bi bi-chevron-down ms-auto small"></i>
+            </a>
+            <!-- La clase 'show' hace que el menú inicie abierto -->
+            <div class="collapse show" id="submenuConformidad">
+              <ul class="submenu">
+                <li>
+                  <a
+                    href="{% url 'crear_certificado_conformidad' %}"
+                    class="nav-link"
+                  >
+                    <i class="bi bi-plus-circle"></i> Nuevo Certificado
+                  </a>
+                </li>
+                <li>
+                    <a href="{% url 'historial_conformidades' %}" class="nav-link
+                        {% if 'historial' in request.path and 'conformidades' in request.path %}active-child{% endif %}">
+                        <i class="bi bi-clock-history"></i> Historial
+                    </a>
+                </li>
+              </ul>
                 <!-- CONFORMIDADES -->
                 <div class="sidebar-item">
                     <a class="sidebar-link {% if 'conformidades' in request.path %}active-parent{% else %}collapsed{% endif %}"
@@ -214,6 +242,12 @@
     </script>
 
     <script>
+      // Esperamos a que la página cargue para ejecutar SweetAlert
+      window.addEventListener("DOMContentLoaded", () => {
+        const urlHistorialGLP          = "{% url 'historial_glp' %}";
+        const urlHistorialConformidad  = "{% url 'historial_conformidades' %}";
+        const messageElement = document.getElementById("messages-data");
+        if (!messageElement) return;
         // Esperamos a que la página cargue para ejecutar SweetAlert
         window.addEventListener('DOMContentLoaded', () => {
             const urlHistorial = "{% url 'historial_glp' %}";
@@ -222,10 +256,35 @@
 
             const messagesData = JSON.parse(messageElement.textContent);
 
+        messagesData.forEach((m) => {
+            const isUsuario       = m.tags.includes("usuario");
+            const isError         = m.tags.includes("error");
+            const isConformidad   = m.tags.includes("conformidad");
             messagesData.forEach(m => {
                 const isUsuario = m.tags.includes('usuario');
                 const isError = m.tags.includes('error');
 
+            Swal.fire({
+                title: isError ? "¡Atención!" : "¡Éxito!",
+                text: m.message,
+                icon: isError ? "error" : "success",
+                showCancelButton: !isUsuario,
+                confirmButtonColor: "#0d6efd",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: isUsuario ? "OK" : "Ver en Historial",
+                cancelButtonText: "Registrar otro",
+                showConfirmButton: true,
+                timer: isUsuario ? 2000 : null,
+                timerProgressBar: isUsuario,
+            }).then((result) => {
+                if (result.isConfirmed && !isUsuario) {
+                    window.location.href = isConformidad
+                        ? urlHistorialConformidad
+                        : urlHistorialGLP;
+                }
+            });
+        });
+    });
                 Swal.fire({
                     title: isError ? "¡Atención!" : "¡Éxito!",
                     text: m.message,
