@@ -115,7 +115,7 @@
                     <div class="collapse {% if 'conformidades' in request.path %}show{% endif %}"
                         id="submenuConformidades">
                         <div class="sidebar-submenu">
-                            <a href="#"
+                            <a href="{% url 'crear_certificado_conformidad' %}"
                                 class="sidebar-sublink {% if 'nueva-conformidad' in request.path %}active-child{% endif %}">
                                 <span>Nueva conformidad</span>
                             </a>
