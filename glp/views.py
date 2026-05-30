@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+import openpyxl
 from .models import CertificadoGLP, SedeConfiguracion
 from .forms import SedeConfiguracionForm, CertificadoGLPForm
 from datetime import date, timedelta
@@ -277,3 +279,109 @@ def consultar_ultima_conformidad(request):
         })
     else:
         return JsonResponse({'encontrado': False})
+
+def descargar_excel_glp(request):
+    certificados = CertificadoGLP.objects.all()
+
+    # 1. Filtros (Igual que antes)
+    q = request.GET.get('q')
+    sede_id = request.GET.get('sede')
+    fecha = request.GET.get('fecha')
+    inicio = request.GET.get('inicio')
+    fin = request.GET.get('fin')
+
+    if q:
+        certificados = certificados.filter(placa__icontains=q)
+    if sede_id:
+        certificados = certificados.filter(sede_id=sede_id)
+    if fecha:
+        certificados = certificados.filter(fecha_emision=fecha)
+    if inicio and fin:
+        certificados = certificados.filter(fecha_emision__range=[inicio, fin])
+
+    # 2. Crear Excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Reporte GLP"
+
+    # ==========================================
+    # DEFINICIÓN DE ESTILOS (El diseño)
+    # ==========================================
+    # Color de fondo azul (estilo corporativo) para el encabezado
+    color_encabezado = PatternFill(start_color="5B9BD5", end_color="5B9BD5", fill_type="solid")
+    fuente_encabezado = Font(color="FFFFFF", bold=True) # Letra blanca y negrita
+    
+    # Borde negro delgado para todas las celdas (formato cuadro)
+    borde_fino = Border(
+        left=Side(style='thin', color='000000'),
+        right=Side(style='thin', color='000000'),
+        top=Side(style='thin', color='000000'),
+        bottom=Side(style='thin', color='000000')
+    )
+    
+    # Centrado de texto
+    alineacion_centro = Alignment(horizontal="center", vertical="center")
+
+    # ==========================================
+    # CREAR LOS ENCABEZADOS
+    # ==========================================
+    encabezados = ['N°', 'Sede', 'Ciudad', 'Placa', 'Certificador', 'Tipo', 'Fecha Emisión', 'Fecha Certificación', 'Hora']
+    ws.append(encabezados)
+
+    # Aplicar diseño solo a la primera fila (los encabezados)
+    for celda in ws[1]:
+        celda.fill = color_encabezado
+        celda.font = fuente_encabezado
+        celda.alignment = alineacion_centro
+        celda.border = borde_fino
+
+    # ==========================================
+    # LLENAR DATOS CON DISEÑO
+    # ==========================================
+    contador = 1 # Iniciamos el contador
+    
+    for c in certificados:
+        nombre_certificador = str(getattr(c, 'usuario', ''))
+        if c.fecha_registro:
+            hora_exacta = timezone.localtime(c.fecha_registro).strftime('%H:%M:%S')
+        else:
+            hora_exacta = ''
+        fila = [
+            contador,
+            c.sede.nombre_sede if c.sede else 'Sin Sede',
+            c.ciudad_glp_pdf,
+            c.placa,
+            nombre_certificador,
+            c.tipo_certificado,
+            c.fecha_emision.strftime('%d/%m/%Y') if c.fecha_emision else '',
+            c.fecha_certificacion.strftime('%d/%m/%Y') if c.fecha_certificacion else '',
+            hora_exacta
+        ]
+        ws.append(fila)
+        contador += 1 # Aumentamos el contador para la siguiente fila
+
+    # Aplicar el borde y centrado a todas las filas de datos que acabamos de crear
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(encabezados)):
+        for celda in row:
+            celda.border = borde_fino
+            celda.alignment = alineacion_centro
+
+    # (Opcional) Ajustar el ancho de las columnas automáticamente para que no se vea apretado
+    for col in ws.columns:
+        max_length = 0
+        col_letter = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        # Damos un poquito de respiro (+4) al ancho de la columna
+        ws.column_dimensions[col_letter].width = max_length + 4
+
+    # 3. Descargar
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="Reporte_Certificados_GLP.xlsx"'
+    wb.save(response)
+    
+    return response
