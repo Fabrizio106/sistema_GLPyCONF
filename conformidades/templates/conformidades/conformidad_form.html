@@ -1,0 +1,840 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container py-4">
+  <form method="POST" id="certificado-form">
+    {% csrf_token %} {% if form.errors %}
+    <div
+      class="alert alert-danger shadow-sm border-start border-4 border-danger"
+    >
+      <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+        <div>
+          <strong>Por favor corrija los siguientes errores:</strong>
+          {{ form.errors }}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="card p-4 mb-4 shadow-sm">
+      <div class="card-title fw-bold mb-3">
+        <i class="bi bi-gear-fill me-2 text-primary"></i> Sección A: Control de
+        Emisión
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-secondary"
+            >SEDE DE INSPECCIÓN</label
+          >
+          {{ form.sede }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-secondary"
+            >FECHA DE CERTIFICACIÓN</label
+          >
+          {{ form.fecha_emision }}
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 mb-4 shadow-sm">
+      <div class="card-title mb-3 fw-bold">
+        <i class="bi bi-file-earmark-check-fill me-2 text-primary"></i> Sección
+        B: Identificación
+      </div>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary">PLACA</label>
+          <div class="input-group">
+            {{ form.placa }}
+            <button
+              class="btn btn-outline-primary"
+              type="button"
+              id="btn-buscar-historial"
+            >
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary">TITULAR / PROPIETARIO</label>
+              {{ form.propietario }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary"
+            >CATEGORÍA</label
+          >{{ form.categoria }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary">MARCA</label>
+          {{form.marca }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary">MODELO</label
+          >{{ form.modelo }}
+        </div>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary">VERSIÓN</label
+          >{{ form.version }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary">COLOR</label>
+          {{form.color }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary"
+            >AÑO FABRICACIÓN</label
+          >{{ form.anio_fabricacion }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary"
+            >AÑO MODELO</label
+          >{{ form.anio_modelo }}
+        </div>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >NÚMERO VIN</label
+          >{{ form.numero_vin }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >NÚMERO SERIE</label
+          >{{ form.numero_serie }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >NÚMERO MOTOR</label
+          >{{ form.numero_motor }}
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 mb-4 shadow-sm">
+      <div class="card-title mb-3 fw-bold">
+        <i class="bi bi-speedometer2 me-2 text-primary"></i> Sección C:
+        Especificaciones Técnicas
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary"
+            >CARROCERÍA</label
+          >{{ form.carroceria }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small text-secondary"
+            >COMBUSTIBLE</label
+          >{{ form.combustible }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary">POTENCIA</label
+          >{{ form.potencia }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary"
+            >CILINDRADA</label
+          >{{ form.cilindrada }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary"
+            >CILINDROS</label
+          >{{ form.cilindros }}
+        </div>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary">EJES</label>
+          {{form.ejes }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary">RUEDAS</label
+          >{{ form.ruedas }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary">ASIENTOS</label
+          >{{ form.asientos }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold small text-secondary"
+            >PASAJEROS</label
+          >{{ form.pasajeros }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >FÓRMULA RODANTE</label
+          >{{ form.formula_rodante }}
+        </div>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >LONGITUD (m)</label
+          >{{ form.longitud }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >ALTURA (m)</label
+          >{{ form.altura }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >ANCHO (m)</label
+          >{{ form.ancho }}
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >PESO BRUTO (kg)</label
+          >{{ form.peso_bruto }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-secondary"
+            >PESO NETO (kg)</label
+          >{{ form.peso_neto }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small text-success"
+            >CARGA ÚTIL (kg)</label
+          >{{ form.carga_util }}
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 mb-4 shadow-sm">
+      <div
+        class="card-title mb-4 fw-bold d-flex justify-content-between align-items-center"
+      >
+        <span
+          ><i class="bi bi-list-check me-2 text-warning"></i> Sección D:
+          Trámites / Cambios Realizados</span
+        >
+        <span class="badge bg-warning text-dark rounded-pill small"
+          >Configuración Dinámica</span
+        >
+      </div>
+
+      <div id="tramites-master-container"></div>
+
+      <div class="">
+        <button
+          type="button"
+          class="btn btn-outline-warning shadow-sm fw-bold px-4"
+          id="btn-add-tramite-block"
+        >
+          <i class="bi bi-plus-circle-fill me-2"></i> AGREGAR OTRO TRÁMITE
+        </button>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
+      <a
+        href="{% if editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
+        class="btn fw-bold shadow-sm"
+        style="
+          background-color: #f8f9fa;
+          color: #ff7300;
+          border: 1px solid #ff7300;
+          border-radius: 8px;
+          padding: 10px 50px;
+          text-decoration: none;
+          transition: 0.3s;
+        "
+      >
+        Cancelar
+      </a>
+      <button
+        type="submit"
+        class="btn fw-bold text-white shadow"
+        style="
+          background-color: #ff7300;
+          border: none;
+          border-radius: 8px;
+          padding: 10px 50px;
+          transition: 0.3s;
+        "
+        onmouseover="this.style.backgroundColor = '#e66700'"
+        onmouseout="this.style.backgroundColor = '#ff7300'"
+      >
+        Guardar
+      </button>
+    </div>
+  </form>
+</div>
+
+<template id="tramite-block-template">
+  <div
+    class="tramite-block border border-2 rounded-3 p-4 mb-5 shadow-sm bg-white position-relative"
+  >
+    <button
+      type="button"
+      class="btn btn-sm btn-danger position-absolute top-0 end-0 m-3 remove-block-btn"
+      title="Eliminar este trámite"
+    >
+      <i class="bi bi-trash-fill"></i>
+    </button>
+
+    <div class="row g-3 mb-4 border-bottom pb-3">
+      <div class="col-md-5">
+        <label class="form-label small fw-bold text-uppercase"
+          >Tipo de Trámite</label
+        >
+        <select
+          class="form-select border-warning selector-tipo shadow-sm"
+          name="tipo_tramite_multiple[]"
+          required
+        >
+          <option value="">Seleccione tipo</option>
+          <option value="RECTIFICACION">RECTIFICACIÓN</option>
+          <option value="ADECUACION">ADECUACIÓN</option>
+          <option value="INCORPORACION">INCORPORACIÓN</option>
+          <option value="MODIFICACION">MODIFICACIÓN</option>
+        </select>
+      </div>
+      <div class="col-md-7">
+        <label class="form-label small fw-bold text-uppercase"
+          >Campos a modificar (Buscador)</label
+        >
+        <div class="input-group shadow-sm">
+          <span class="input-group-text bg-white border-warning text-warning"
+            ><i class="bi bi-search"></i
+          ></span>
+          <input
+            type="text"
+            class="form-control border-warning buscador-campos"
+            placeholder="Escriba para filtrar campos..."
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-area d-none">
+      <div class="mb-3">
+        <label class="form-label small fw-bold text-muted text-uppercase"
+          >Campos disponibles:</label
+        >
+        <div
+          class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
+          style="max-height: 150px; overflow-y: auto"
+        ></div>
+      </div>
+
+      <div class="table-responsive mt-4">
+        <table
+          class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm"
+        >
+          <thead class="table-warning text-dark small text-uppercase">
+            <tr>
+              <th style="width: 25%">Campo</th>
+              <th style="width: 30%">Valor Actual</th>
+              <th style="width: 35%">Nuevo Valor</th>
+              <th style="width: 10%; text-align: center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="inputs-area"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- MODAL DE BUSQUEDA DE PLACA (HISTORIAL) -->
+<div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-clock-history me-2"></i>Historial Vehicular
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body text-center py-4" id="contenido-historial">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const masterContainer = document.getElementById(
+      "tramites-master-container",
+    );
+    const addBlockBtn = document.getElementById("btn-add-tramite-block");
+    const template = document.getElementById("tramite-block-template");
+
+    // OPCIÓN 1: Diccionario de nombres profesionales
+    const nombresAmigables = {
+      categoria: "CATEGORÍA",
+      marca: "MARCA",
+      modelo: "MODELO",
+      color: "COLOR",
+      numero_vin: "NÚMERO VIN",
+      numero_serie: "NÚMERO SERIE",
+      numero_motor: "NÚMERO MOTOR",
+      anio_fabricacion: "AÑO FABRICACIÓN",
+      anio_modelo: "AÑO MODELO",
+      version: "VERSIÓN",
+      ejes: "EJES",
+      ruedas: "RUEDAS",
+      peso_bruto: "PESO BRUTO",
+      peso_neto: "PESO NETO",
+      carga_util: "CARGA ÚTIL",
+      carroceria: "CARROCERÍA",
+      potencia: "POTENCIA",
+      combustible: "COMBUSTIBLE",
+      formula_rodante: "FÓRMULA RODANTE",
+      cilindrada: "CILINDRADA",
+      asientos: "ASIENTOS",
+      pasajeros: "PASAJEROS",
+      longitud: "LONGITUD",
+      altura: "ALTURA",
+      ancho: "ANCHO",
+      cilindros: "CILINDROS",
+    };
+
+    // Configuración de campos por trámite
+    const config = {
+      RECTIFICACION: [
+        "categoria",
+        "marca",
+        "modelo",
+        "color",
+        "numero_vin",
+        "numero_serie",
+        "numero_motor",
+        "anio_fabricacion",
+        "anio_modelo",
+        "version",
+        "ejes",
+        "ruedas",
+        "peso_bruto",
+        "peso_neto",
+        "carga_util",
+        "carroceria",
+        "potencia",
+        "formula_rodante",
+        "cilindrada",
+        "asientos",
+        "pasajeros",
+        "longitud",
+        "altura",
+        "ancho",
+        "cilindros",
+      ],
+      ADECUACION: ["color", "carroceria", "combustible", "asientos"],
+      INCORPORACION: [
+        "categoria",
+        "marca",
+        "modelo",
+        "color",
+        "numero_vin",
+        "numero_serie",
+        "numero_motor",
+        "anio_modelo",
+        "version",
+        "ejes",
+        "ruedas",
+        "peso_bruto",
+        "peso_neto",
+        "carga_util",
+        "carroceria",
+        "potencia",
+        "combustible",
+        "formula_rodante",
+        "cilindrada",
+        "asientos",
+        "pasajeros",
+        "longitud",
+        "altura",
+        "ancho",
+        "cilindros",
+      ],
+      MODIFICACION: [
+        "categoria",
+        "color",
+        "numero_motor",
+        "ejes",
+        "ruedas",
+        "peso_bruto",
+        "peso_neto",
+        "carga_util",
+        "carroceria",
+        "potencia",
+        "combustible",
+        "formula_rodante",
+        "cilindrada",
+        "asientos",
+        "pasajeros",
+        "longitud",
+        "altura",
+        "ancho",
+        "cilindros",
+      ],
+    };
+
+    // 1. Lógica de bloqueo de opciones duplicadas
+    function updateSelectors() {
+      const allSelectors = document.querySelectorAll(".selector-tipo");
+      const selectedValues = Array.from(allSelectors)
+        .map((s) => s.value)
+        .filter((v) => v !== "");
+
+      allSelectors.forEach((select) => {
+        const currentVal = select.value;
+        select.querySelectorAll("option").forEach((opt) => {
+          if (opt.value !== "") {
+            opt.disabled =
+              selectedValues.includes(opt.value) && opt.value !== currentVal;
+          }
+        });
+      });
+    }
+
+    function createNewBlock() {
+      const currentBlocks = document.querySelectorAll(".tramite-block");
+      if (currentBlocks.length >= Object.keys(config).length) {
+        Swal.fire({
+          title: "Advertencia",
+          text: "No hay más tipos de trámites disponibles.",
+          icon: "warning",
+          confirmButtonColor: "#ff7300",
+          confirmButtonText: "Entendido",
+        });
+        return;
+      }
+
+      const clone = template.content.cloneNode(true);
+      const block = clone.querySelector(".tramite-block");
+      const selector = block.querySelector(".selector-tipo");
+      const buscador = block.querySelector(".buscador-campos");
+      const checklistArea = block.querySelector(".checklist-area");
+      const checklistOptions = block.querySelector(".checklist-options");
+      const tabla = block.querySelector(".tabla-modificaciones");
+      const inputsArea = block.querySelector(".inputs-area");
+      const removeBlockBtn = block.querySelector(".remove-block-btn");
+      const blockId = Date.now() + Math.floor(Math.random() * 100);
+
+      // --- A. BUSCADOR DE CAMPOS (Checkboxes) ---
+      buscador.addEventListener("input", function () {
+        const query = this.value.toLowerCase();
+        const containers = checklistOptions.querySelectorAll(".chk-container");
+        containers.forEach((container) => {
+          const labelText = container
+            .querySelector("label")
+            .innerText.toLowerCase();
+          container.style.display = labelText.includes(query)
+            ? "block"
+            : "none";
+        });
+      });
+
+      // --- B. CAMBIO DE TIPO DE TRÁMITE ---
+      selector.addEventListener("change", function () {
+        const val = this.value;
+        checklistOptions.innerHTML = "";
+        inputsArea.innerHTML = "";
+        tabla.classList.add("d-none");
+        buscador.value = ""; // Limpiar buscador
+
+        if (config[val]) {
+          checklistArea.classList.remove("d-none");
+          config[val].forEach((campo) => {
+            // MODIFICACIÓN OPCIÓN 1: Usar nombre amigable si existe
+            const labelStr =
+              nombresAmigables[campo] || campo.replace(/_/g, " ").toUpperCase();
+
+            const col = document.createElement("div");
+            col.className = "col-md-3 chk-container";
+            col.innerHTML = `
+                        <div class="form-check">
+                            <input class="form-check-input chk-item" type="checkbox" id="chk-${blockId}-${campo}" data-campo="${campo}" data-label="${labelStr}">
+                            <label class="form-check-label small fw-bold" for="chk-${blockId}-${campo}">${labelStr}</label>
+                        </div>`;
+            checklistOptions.appendChild(col);
+          });
+        } else {
+          checklistArea.classList.add("d-none");
+        }
+        updateSelectors();
+      });
+
+      // --- C. LÓGICA DE TABLA (Checklist -> Filas) ---
+      checklistOptions.addEventListener("change", function (e) {
+        if (e.target.classList.contains("chk-item")) {
+          const campo = e.target.dataset.campo;
+          const label = e.target.dataset.label;
+          const tipoActual = selector.value;
+
+          if (e.target.checked) {
+            tabla.classList.remove("d-none");
+
+            const inputOriginal = document.getElementById(`id_${campo}`);
+            let valorActual = "---";
+            if (inputOriginal) {
+              valorActual = inputOriginal.value || "---";
+            }
+
+            const tr = document.createElement("tr");
+            tr.id = `row-${blockId}-${campo}`;
+            tr.className =
+              "animate__animated animate__fadeInUp animate__faster";
+            tr.innerHTML = `
+                        <td class="fw-bold text-dark small">${label}</td>
+                        <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
+                        <td>
+                            <input type="text" name="valor_${tipoActual}_${campo}" class="form-control form-control-sm border-warning shadow-sm" required placeholder="Ingresar nuevo valor">
+                            <input type="hidden" name="mapa_tramites[]" value="${tipoActual}|${campo}">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
+                                <i class="bi bi-trash-fill fs-5"></i>
+                            </button>
+                        </td>`;
+            inputsArea.appendChild(tr);
+          } else {
+            const el = document.getElementById(`row-${blockId}-${campo}`);
+            if (el) el.remove();
+            if (inputsArea.children.length === 0) tabla.classList.add("d-none");
+          }
+        }
+      });
+
+      // --- D. ELIMINAR FILA DESDE LA TABLA (Y desmarcar check) ---
+      inputsArea.addEventListener("click", function (e) {
+        const btn = e.target.closest(".btn-remove-row");
+        if (btn) {
+          const campo = btn.dataset.campo;
+          const checkbox = checklistOptions.querySelector(
+            `#chk-${blockId}-${campo}`,
+          );
+          if (checkbox) checkbox.checked = false; // Desmarcar el check
+          btn.closest("tr").remove(); // Eliminar fila
+          if (inputsArea.children.length === 0) tabla.classList.add("d-none");
+        }
+      });
+
+      // --- E. ELIMINAR BLOQUE ENTERO ---
+      removeBlockBtn.addEventListener("click", () => {
+        if (document.querySelectorAll(".tramite-block").length > 1) {
+          block.remove();
+          updateSelectors();
+        } else {
+          Swal.fire({
+            title: "Advertencia",
+            text: "Debe existir al menos un bloque de trámite.",
+            icon: "warning",
+            confirmButtonColor: "#ff7300",
+            confirmButtonText: "Entendido",
+          });
+          return;
+        }
+      });
+
+      masterContainer.appendChild(block);
+      updateSelectors();
+    }
+
+    // Inicializar cálculos de Carga Útil (Sección B/C)
+    const pb = document.getElementById("id_peso_bruto");
+    const pn = document.getElementById("id_peso_neto");
+    const cu = document.getElementById("id_carga_util");
+
+    function calc() {
+      if (!pb || !pn || !cu) return;
+      const val = (parseFloat(pb.value) || 0) - (parseFloat(pn.value) || 0);
+      cu.value = val > 0 ? val.toFixed(2) : "0.00";
+    }
+
+    if (pb && pn) {
+      pb.addEventListener("input", calc);
+      pn.addEventListener("input", calc);
+    }
+    
+    function cargarTramitesExistentes(tramites) {
+        const grupos = {};
+        tramites.forEach(t => {
+            if (!grupos[t.tipo_nombre]) grupos[t.tipo_nombre] = [];
+            grupos[t.tipo_nombre].push(t);
+        });
+
+        const tiposOrdenados = Object.entries(grupos);
+        let indice = 0;
+
+        function procesarSiguiente() {
+            if (indice >= tiposOrdenados.length) return;
+            const [tipo, items] = tiposOrdenados[indice];
+            indice++;
+
+            createNewBlock();
+            const blocks = document.querySelectorAll('.tramite-block');
+            const block  = blocks[blocks.length - 1];
+            const selector  = block.querySelector('.selector-tipo');
+            const checklistArea    = block.querySelector('.checklist-area');
+            const checklistOptions = block.querySelector('.checklist-options');
+            const tabla     = block.querySelector('.tabla-modificaciones');
+            const inputsArea = block.querySelector('.inputs-area');
+
+            // Seleccionar el tipo
+            selector.value = tipo;
+            selector.dispatchEvent(new Event('change'));
+
+            // Esperar a que los checkboxes aparezcan
+            function esperarCheckboxes(intentos) {
+                const checkboxes = block.querySelectorAll('.chk-item');
+                if (checkboxes.length === 0 && intentos > 0) {
+                    setTimeout(() => esperarCheckboxes(intentos - 1), 80);
+                    return;
+                }
+
+                items.forEach(item => {
+                    const campo = item.campo_modificado;
+                    const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
+
+                    // Marcar el checkbox visualmente
+                    const chk = block.querySelector(`[data-campo="${campo}"]`);
+                    if (chk) chk.checked = true;
+
+                    // Obtener valor actual del formulario
+                    const inputOriginal = document.getElementById(`id_${campo}`);
+                    const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+
+                    // Crear la fila directamente sin disparar evento
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="fw-bold text-dark small">${labelStr}</td>
+                        <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
+                        <td>
+                            <input type="text" name="valor_${tipo}_${campo}" class="form-control form-control-sm border-warning shadow-sm" value="${item.valor_nuevo}" placeholder="Ingresar nuevo valor">
+                            <input type="hidden" name="mapa_tramites[]" value="${tipo}|${campo}">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
+                                <i class="bi bi-trash-fill fs-5"></i>
+                            </button>
+                        </td>`;
+                    inputsArea.appendChild(tr);
+                });
+
+                // Mostrar tabla si tiene filas
+                if (inputsArea.children.length > 0) {
+                    tabla.classList.remove('d-none');
+                    checklistArea.classList.remove('d-none');
+                }
+
+                updateSelectors();
+                setTimeout(procesarSiguiente, 100);
+            }
+
+            setTimeout(() => esperarCheckboxes(10), 100);
+        }
+
+        procesarSiguiente();
+    }
+
+
+    // Arrancar: si hay trámites guardados los cargamos, si no creamos uno vacío
+    if (TRAMITES_INICIALES.length > 0) {
+        cargarTramitesExistentes(TRAMITES_INICIALES);
+    } else {
+        createNewBlock();
+    }
+    addBlockBtn.addEventListener('click', createNewBlock);
+  });
+
+  document
+    .getElementById("btn-buscar-historial")
+    .addEventListener("click", function () {
+      const placa = document.getElementById("id_placa").value;
+      const modalElement = new bootstrap.Modal(
+        document.getElementById("modalHistorial"),
+      );
+      const contenedor = document.getElementById("contenido-historial");
+
+      if (!placa) {
+        Swal.fire({
+          title: "Campo vacío",
+          text: "Por favor, ingrese una placa para consultar el historial.",
+          icon: "warning",
+          confirmButtonColor: "#ff7300",
+          confirmButtonText: "Entendido",
+        });
+        return;
+      }
+
+      modalElement.show();
+      contenedor.innerHTML = '<div class="spinner-border text-primary"></div>';
+
+      fetch(`/conformidades/consultar-historial/?placa=${placa}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.encontrado) {
+            const colorEstado =
+              data.estado === "VIGENTE" ? "text-success" : "text-danger";
+            contenedor.innerHTML = `
+                    <h2 class="fw-bold text-primary mb-3">${data.placa}</h2>
+                    <p class="mb-1">Última conformidad: <strong>${data.fecha_ultima}</strong></p>
+                    <p class="fs-5">Días para expirar: <span class="fw-bold ${colorEstado}">${data.dias_restantes} días</span></p>
+                    <div class="badge p-2 px-3 ${data.estado === "VIGENTE" ? "bg-success" : "bg-danger"}">${data.estado}</div>
+                `;
+          } else {
+            contenedor.innerHTML = `
+                    <i class="bi bi-info-circle text-warning fs-1"></i>
+                    <p class="mt-3">No se encontraron conformidades previas para esta placa.</p>
+                `;
+          }
+        })
+        .catch((error) => {
+          contenedor.innerHTML =
+            '<p class="text-danger">Error al consultar los datos.</p>';
+        });
+    });
+
+  //VALIDADORES DE CAMPOS
+  document.getElementById("id_placa").setAttribute("maxlength", "6");
+  document.getElementById("id_numero_vin").setAttribute("maxlength", "17");
+  document.getElementById("id_numero_serie").setAttribute("maxlength", "17");
+  document.getElementById("id_numero_motor").setAttribute("maxlength", "20");
+  [
+    "id_asientos",
+    "id_pasajeros",
+    "id_ruedas",
+    "id_ejes",
+    "id_cilindros",
+  ].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.setAttribute("maxlength", "3");
+      el.oninput = function () {
+        this.value = this.value.replace(/[^0-9]/g, "");
+      };
+    }
+  });
+  document.getElementById("id_cilindrada").setAttribute("maxlength", "5");
+  document.getElementById("id_cilindrada").oninput = function () {
+    this.value = this.value.replace(/[^0-9]/g, "");
+  };
+  document.getElementById("id_potencia").setAttribute("maxlength", "10");
+  document.getElementById("id_formula_rodante").setAttribute("maxlength", "10");
+  const camposAnio = ["id_anio_fabricacion", "id_anio_modelo"];
+  camposAnio.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.setAttribute("maxlength", "4");
+      el.oninput = function () {
+        this.value = this.value.replace(/[^0-9]/g, "");
+      };
+    }
+  });
+</script>
+{% endblock %}
