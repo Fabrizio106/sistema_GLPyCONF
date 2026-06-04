@@ -41,10 +41,10 @@ class CertificadoForm(forms.ModelForm):
         widgets.update({
             'placa': forms.TextInput(attrs={
                 'class': 'form-control',
-                'maxlength': '6',
-                'pattern': '[A-Za-z0-9]{6}',
-                'title': 'La placa debe tener exactamente 6 caracteres alfanuméricos',
-                'style': 'text-transform: uppercase;' # Esto visualmente lo pone en mayúsculas
+                'maxlength': '10',
+                'pattern': '[A-Za-z0-9]{1,10}',  
+                'title': 'La placa debe tener como máximo 10 caracteres alfanuméricos',
+                'style': 'text-transform: uppercase;'
             }),
             'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
