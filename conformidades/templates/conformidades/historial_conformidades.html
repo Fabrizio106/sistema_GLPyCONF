@@ -145,7 +145,36 @@
                                     <span class="badge bg-secondary">MODIFICACIÓN</span>
                                 {% endif %}
                                 <small class="text-muted ms-1">
-                                    {{ t.campo_modificado|upper }}:
+                                    {% with label=t.campo_modificado %}
+                                    {% if label == 'categoria' %}CATEGORÍA
+                                    {% elif label == 'marca' %}MARCA
+                                    {% elif label == 'modelo' %}MODELO
+                                    {% elif label == 'color' %}COLOR
+                                    {% elif label == 'numero_vin' %}N° VIN
+                                    {% elif label == 'numero_serie' %}N° SERIE
+                                    {% elif label == 'numero_motor' %}N° MOTOR
+                                    {% elif label == 'anio_fabricacion' %}AÑO FABRICACIÓN
+                                    {% elif label == 'anio_modelo' %}AÑO MODELO
+                                    {% elif label == 'version' %}VERSIÓN
+                                    {% elif label == 'ejes' %}EJES
+                                    {% elif label == 'ruedas' %}RUEDAS
+                                    {% elif label == 'peso_bruto' %}PESO BRUTO
+                                    {% elif label == 'peso_neto' %}PESO NETO
+                                    {% elif label == 'carga_util' %}CARGA ÚTIL
+                                    {% elif label == 'carroceria' %}CARROCERÍA
+                                    {% elif label == 'potencia' %}POTENCIA
+                                    {% elif label == 'combustible' %}COMBUSTIBLE
+                                    {% elif label == 'formula_rodante' %}FÓRMULA RODANTE
+                                    {% elif label == 'cilindrada' %}CILINDRADA
+                                    {% elif label == 'asientos' %}ASIENTOS
+                                    {% elif label == 'pasajeros' %}PASAJEROS
+                                    {% elif label == 'longitud' %}LONGITUD
+                                    {% elif label == 'altura' %}ALTURA
+                                    {% elif label == 'ancho' %}ANCHO
+                                    {% elif label == 'cilindros' %}CILINDROS
+                                    {% else %}{{ label|upper }}
+                                    {% endif %}
+                                    {% endwith %}:
                                     <strong>{{ t.valor_nuevo }}</strong>
                                 </small>
                             </div>

@@ -244,6 +244,7 @@ def historial_conformidades(request):
     return render(request, 'conformidades/historial_conformidades.html', {
         'certificados': certificados,
         'sedes': SedeConfiguracion.objects.all(),
+        'campo_labels': CAMPO_LABELS,
     })
 
 
@@ -293,13 +294,13 @@ def descargar_pdf_conformidad(request, pk):
             if certificado.peso_neto:
                 adicionales.append({
                     'label': 'PESO NETO',
-                    'valor_nuevo': f'{float(certificado.peso_neto) - 30:.0f} kg.',
+                    'valor_nuevo': f'{float(certificado.peso_neto) - 30:.0f}kg',
                     'norma': '',
                 })
             if certificado.carga_util:
                 adicionales.append({
                     'label': 'CARGA UTIL',
-                    'valor_nuevo': f'{float(certificado.carga_util) + 30:.0f} kg.',
+                    'valor_nuevo': f'{float(certificado.carga_util) + 30:.0f}kg',
                     'norma': '',
                 })
 
