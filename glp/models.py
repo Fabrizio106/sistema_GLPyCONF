@@ -84,7 +84,6 @@ class CertificadoGLP(models.Model):
     anio_fabricacion = models.CharField(max_length=4, verbose_name="Año de Fab.")
     vin_serie = models.CharField(max_length=50, verbose_name="VIN / N° de serie")
     numero_motor = models.CharField(max_length=50, verbose_name="N° Motor")
-    
     combustible = models.CharField(max_length=50, verbose_name="Combustible", choices=COMBUSTIBLE_CHOICES)
     
     # 3. Especificaciones Técnicas

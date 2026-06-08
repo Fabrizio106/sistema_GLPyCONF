@@ -12,5 +12,6 @@ urlpatterns = [
     path('eliminar/<int:pk>/', views.eliminar_certificado_glp, name='eliminar_glp'),
     path('reportes/', views.reporte_glp_admin, name='reporte_glp_admin'),
     path('consultar-historial/', views.consultar_ultima_conformidad, name='consultar_historial'),
+    path('reporte-excel/', views.descargar_excel_glp, name='descargar_excel_glp'),
 
 ]

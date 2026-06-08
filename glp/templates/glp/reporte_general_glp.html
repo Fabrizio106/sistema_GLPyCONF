@@ -11,12 +11,12 @@
             <p class="page-subtitle">
                 Visualización y filtrado de certificaciones a nivel global
             </p>
-        </div>
+        </div> 
 
-        <button type="button" class="btn btn-orange">
+        <a href="{% url 'descargar_excel_glp' %}?{{ request.GET.urlencode }}" class="btn btn-orange">
             <i class="bi bi-printer"></i>
-            Imprimir Reporte
-        </button>
+            Descargar Excel
+        </a>
     </div>
 
     <!-- MÉTRICAS FUERA DEL CARD -->
@@ -152,9 +152,11 @@
                             <td class="fw-bold">{{ c.numero_certificado }}</td>
 
                             <td>
-                                <span class="badge badge-soft">
-                                    {{ c.placa }}
-                                </span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-semibold small">
+                                        {{ c.placa }}
+                                    </span>
+                                </div>
                             </td>
 
                             <td>
@@ -187,16 +189,26 @@
                                 </div>
 
                                 <div class="text-muted small">
-                                    Emisión: {{ c.fecha_certificacion|date:"d/m/Y" }}
+                                    Cert.: {{ c.fecha_certificacion|date:"d/m/Y" }}
                                 </div>
                             </td>
 
                             <td class="text-end">
-                                <a href="{% url 'descargar_pdf_glp' c.pk %}"
-                                class="btn btn-table-action btn-table-delete"
-                                title="Descargar PDF">
-                                    <i class="bi bi-file-earmark-pdf"></i>
-                                </a>
+                                <div class="btn-group">
+                                    <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-table-action btn-table-delete"
+                                        title="Descargar PDF">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                    <a href="{% url 'editar_glp' c.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                            
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            
                             </td>
                         </tr>
 
@@ -215,5 +227,28 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacion(id, placa) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Vas a eliminar el certificado de la placa " + placa + ". ¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-eliminar-' + id).submit();
+            }
+        })
+    }
+</script> 
 
 {% endblock %}
