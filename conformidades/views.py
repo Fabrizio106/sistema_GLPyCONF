@@ -89,11 +89,9 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
                     "y RD N° 10476-2008-MTC/15)")
 
     if campo_lower == 'combustible':
-        if 'DIESEL' in val_nuevo_up:
-            return "(Adecuación a la RD N 04848-2006 MTC/15)"
+        return "(Adecuación a la RD N° 04848-2006 MTC/15)"
 
     return ""
-
 
 def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
     campo_lower  = campo.lower()
@@ -256,6 +254,20 @@ def eliminar_conformidad(request, pk):
         messages.success(request, "Certificado eliminado correctamente.")
     return redirect('historial_conformidades')
 
+def formatear_valor_con_unidad(campo, valor):
+    """Agrega unidad sin espacio ni punto según el campo."""
+    if not valor or str(valor).strip() == '':
+        return str(valor)
+    campo_lower = campo.lower()
+    if campo_lower in ['longitud', 'altura', 'ancho']:
+        return f"{str(valor).rstrip('0').rstrip('.')}m"
+    if campo_lower in ['peso_neto', 'peso_bruto', 'carga_util']:
+        try:
+            return f"{int(float(str(valor)))}kg"
+        except:
+            return str(valor)
+    return str(valor)
+
 
 @login_required
 def descargar_pdf_conformidad(request, pk):
@@ -269,12 +281,24 @@ def descargar_pdf_conformidad(request, pk):
 
     bloques = []
     notas   = []
+    
+    
+    TIPOS_LABELS = {
+    'INCORPORACION': 'INCORPORACIÓN',
+    'ADECUACION': 'ADECUACIÓN',
+    'RECTIFICACION': 'RECTIFICACIÓN',
+    'MODIFICACION': 'MODIFICACIÓN',
+    }
+
 
     for tipo, items in bloques_dict.items():
         primer         = items[0]
         primer_campo   = primer.campo_modificado
         primer_val_new = primer.valor_nuevo
-        valor_anterior = str(getattr(certificado, primer_campo, '') or '')
+        valor_anterior = formatear_valor_con_unidad(
+            primer_campo,
+            str(getattr(certificado, primer_campo, '') or '')
+        )
 
         adicionales = []
         for item in items[1:]:
@@ -283,7 +307,7 @@ def descargar_pdf_conformidad(request, pk):
                                                 str(getattr(certificado, item.campo_modificado, '') or ''))
             adicionales.append({
                 'label':      CAMPO_LABELS.get(item.campo_modificado, item.campo_modificado.upper()),
-                'valor_nuevo': item.valor_nuevo,
+                'valor_nuevo': formatear_valor_con_unidad(item.campo_modificado, item.valor_nuevo),
                 'norma':      norma_ad,
             })
 
@@ -305,16 +329,27 @@ def descargar_pdf_conformidad(request, pk):
                 })
 
         norma_primer = generar_norma_conformidad(tipo, primer_campo, primer_val_new, valor_anterior)
-        nota  = generar_nota_conformidad(tipo, primer_campo, primer_val_new, valor_anterior)
-        if nota:
-            notas.append(nota)
+        for item in items:
+            valor_ant_item = str(
+                getattr(certificado, item.campo_modificado, '') or ''
+            )
+
+            nota = generar_nota_conformidad(
+                item.tipo_nombre,
+                item.campo_modificado,
+                item.valor_nuevo,
+                valor_ant_item
+            )
+
+            if nota and nota not in notas:
+                notas.append(nota)
 
         bloques.append({
-            'tipo':           tipo,
+            'tipo':           TIPOS_LABELS.get(tipo, tipo),
             'primer_campo':   primer_campo,
             'primer_label':   CAMPO_LABELS.get(primer_campo, primer_campo.upper()),
             'valor_anterior': valor_anterior,
-            'primer_val_new': primer_val_new,
+            'primer_val_new': formatear_valor_con_unidad(primer_campo, primer.valor_nuevo),
             'norma_primer':   norma_primer,
             'adicionales':    adicionales,
         })
@@ -322,7 +357,7 @@ def descargar_pdf_conformidad(request, pk):
     # Fecha del PDF = un día antes de emisión; si cae domingo → sábado
     fecha_pdf = certificado.fecha_emision or timezone.localdate()
 
-    fecha_str = f"{fecha_pdf.day}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
+    fecha_str = f"{fecha_pdf.day:02d}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
 
     # Personas o mercancías según categoría
     categoria_final = certificado.categoria or ''

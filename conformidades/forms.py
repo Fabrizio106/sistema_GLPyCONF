@@ -53,7 +53,7 @@ class CertificadoForm(forms.ModelForm):
             'placa': forms.TextInput(attrs={
                 'class': 'form-control',
                 'maxlength': '10',
-                'pattern': '[A-Za-z0-9]{1,10}',  
+                'pattern': '[A-Za-z0-9-]{1,10}',  
                 'title': 'La placa debe tener como máximo 10 caracteres alfanuméricos',
                 'style': 'text-transform: uppercase;'
             }),

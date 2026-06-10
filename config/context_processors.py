@@ -27,7 +27,7 @@ def menu_context(request):
         },
 
         # Conformidades
-        "nueva_conformidad": {
+        "conformidad_form": {
             "module_title": "Conformidades",
             "module_icon": "bi-list-check",
             "page_title": "Nueva conformidad",

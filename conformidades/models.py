@@ -19,7 +19,7 @@ class CertificadoConformidad(models.Model):
     fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
     numero_certificado = models.CharField(max_length=20, unique=True,null=True,blank=True, verbose_name="N° de Certificado")
     # Identificación Básica
-    numero_vin = models.CharField(max_length=17, unique=True, verbose_name="Número VIN")
+    # numero_vin = models.CharField(max_length=17, unique=True, verbose_name="Número VIN")
     placa = models.CharField(max_length=100, verbose_name="Placa")
     categoria = models.CharField(max_length=20, blank=True, null=True, verbose_name="Categoría")
     marca = models.CharField(max_length=50, blank=True, null=True, verbose_name="Marca")
@@ -64,7 +64,7 @@ class CertificadoConformidad(models.Model):
         verbose_name_plural = "Certificados de Conformidad"
 
     def __str__(self):
-        return f"{self.placa} - {self.numero_vin}"
+        return f"{self.placa} - {self.numero_serie}"
     
     def clean(self):
         if not self.pk and not self.numero_certificado:
