@@ -65,7 +65,7 @@
                     <div class="collapse {% if request.resolver_match.url_name == 'registrar_glp' or request.resolver_match.url_name == 'historial_glp' %}show{% endif %}"
                         id="submenuGLP">
                         <div class="sidebar-submenu">
-                            <a href="{% url 'registrar_glp' %}"
+                            <a href="{% url 'registrar_glp' %}" 
                                 class="sidebar-sublink {% if request.resolver_match.url_name == 'registrar_glp' %}active-child{% endif %}">
                                 <span>Nuevo certificado</span>
                             </a>
@@ -233,7 +233,8 @@
                 text: m.message,
                 icon: isError ? "error" : "success",
                 showCancelButton: !isUsuario,
-                confirmButtonColor: "#0d6efd",
+                iconColor: '#FD7401',
+                confirmButtonColor: "#FD7401",
                 cancelButtonColor: "#6c757d",
                 confirmButtonText: isUsuario ? "OK" : "Ver en Historial",
                 cancelButtonText: "Registrar otro",

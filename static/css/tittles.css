@@ -23,7 +23,7 @@
 
 /* Títulos de cards/secciones */
 .card-title,
-.section-title {
+.section-title  {
     color: var(--brand-blue);
     font-weight: 700;
     font-size: 1.1rem;

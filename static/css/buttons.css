@@ -216,3 +216,13 @@
 .btn-table-delete:hover i {
     color: #ffffff;
 }
+
+.form-check-input:checked {
+    background-color: #FD7401 !important;
+    border-color: #FD7401 !important;
+}
+
+.form-check-input:focus {
+    border-color: #FD7401 !important;
+    box-shadow: 0 0 0 0.25rem rgba(253, 116, 1, 0.25) !important;
+}

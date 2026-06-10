@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+
 <style>
     .tabla-conformidades th {
         white-space: nowrap;
@@ -29,81 +31,91 @@
         min-width: 260px;
     }
 </style>
-{% extends 'base.html' %}
+
 
 {% block content %}
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-primary">
-            <i class="bi bi-clock-history"></i> Historial de Certificados de Conformidad
+<div class="container-fluid">
+    <div class="page-title-row">
+        <h3 class=" page-title">
+            Historial de Certificados de Conformidad
         </h3>
-        <a href="{% url 'crear_certificado_conformidad' %}" class="btn btn-primary">
+        <a href="{% url 'crear_certificado_conformidad' %}" class="btn btn-orange">
             <i class="bi bi-plus-lg"></i> Nuevo Certificado
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
+    <div class="card p-4">
 
-                <div class="col-md-2">
-                    <label class="form-label small text-muted fw-bold">PLACA</label>
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control"
-                               placeholder="ABC-123" value="{{ request.GET.q }}">
-                        <button class="btn btn-outline-secondary" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted fw-bold">PLACA</label>
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="ABC-123"
+                                value="{{ request.GET.q }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-2">
-                    <label class="form-label small text-muted fw-bold">SEDE</label>
-                    <select name="sede" class="form-select">
-                        <option value="">Todas las Sedes</option>
-                        {% for s in sedes %}
-                        <option value="{{ s.id }}"
-                            {% if request.GET.sede == s.id|stringformat:"i" %}selected{% endif %}>
-                            {{ s.nombre_sede }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-md-2">
-                    <label class="form-label small text-muted fw-bold">TIPO DE TRÁMITE</label>
-                    <select name="tipo_tramite" class="form-select">
-                        <option value="">Todos</option>
-                        <option value="RECTIFICACION"  {% if request.GET.tipo_tramite == 'RECTIFICACION'  %}selected{% endif %}>Rectificación</option>
-                        <option value="ADECUACION"     {% if request.GET.tipo_tramite == 'ADECUACION'     %}selected{% endif %}>Adecuación</option>
-                        <option value="INCORPORACION"  {% if request.GET.tipo_tramite == 'INCORPORACION'  %}selected{% endif %}>Incorporación</option>
-                        <option value="MODIFICACION"   {% if request.GET.tipo_tramite == 'MODIFICACION'   %}selected{% endif %}>Modificación</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2">
-                    <label class="form-label small text-muted fw-bold">DÍA ESPECÍFICO</label>
-                    <input type="date" name="fecha" class="form-control" value="{{ request.GET.fecha }}">
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label small text-muted fw-bold">RANGO DE FECHAS</label>
-                    <div class="input-group">
-                        <input type="date" name="inicio" class="form-control" value="{{ request.GET.inicio }}">
-                        <span class="input-group-text">al</span>
-                        <input type="date" name="fin" class="form-control" value="{{ request.GET.fin }}">
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted fw-bold">SEDE</label>
+                        <select name="sede" class="form-select">
+                            <option value="">Todas las Sedes</option>
+                            {% for s in sedes %}
+                            <option value="{{ s.id }}" {% if request.GET.sede == s.id|stringformat:"i" %}selected{% endif %}>
+                                {{ s.nombre_sede }}
+                            </option>
+                            {% endfor %}
+                        </select>
                     </div>
-                </div>
 
-                <div class="col-md-1 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                    <a href="{% url 'historial_conformidades' %}" class="btn btn-light border w-100" title="Limpiar">
-                        <i class="bi bi-eraser"></i>
-                    </a>
-                </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted fw-bold">TIPO DE TRÁMITE</label>
+                        <select name="tipo_tramite" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="RECTIFICACION" {% if request.GET.tipo_tramite == 'RECTIFICACION' %}selected{% endif %}>
+                                Rectificación</option>
+                            <option value="ADECUACION" {% if request.GET.tipo_tramite == 'ADECUACION' %}selected{% endif %}>
+                                Adecuación</option>
+                            <option value="INCORPORACION" {% if request.GET.tipo_tramite == 'INCORPORACION' %}selected{% endif %}>
+                                Incorporación</option>
+                            <option value="MODIFICACION" {% if request.GET.tipo_tramite == 'MODIFICACION' %}selected{% endif %}>
+                                Modificación</option>
+                        </select>
+                    </div>
 
-            </form>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted fw-bold">DÍA ESPECÍFICO</label>
+                        <input type="date" name="fecha" class="form-control" value="{{ request.GET.fecha }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold">RANGO DE FECHAS</label>
+                        <div class="input-group">
+                            <input type="date" name="inicio" class="form-control" value="{{ request.GET.inicio }}">
+                            <span class="input-group-text">al</span>
+                            <input type="date" name="fin" class="form-control" value="{{ request.GET.fin }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        <a href="{% url 'historial_conformidades' %}" class="btn btn-light border w-100"
+                            title="Limpiar">
+                            <i class="bi bi-eraser"></i>
+                        </a>
+                    </div>
+
+                </form>
+            </div>
         </div>
+
+
     </div>
 
     <div class="table-responsive">
@@ -124,7 +136,7 @@
                 <tr>
                     <td class="fw-bold">{{ c.numero_certificado }}</td>
 
-                    <td><span class="badge bg-info text-dark">{{ c.placa }}</span></td>
+                    <td><span class="badge badge-placa">{{ c.placa }}</span></td>
 
                     <td>{{ c.sede.nombre_sede }}</td>
 
@@ -134,47 +146,45 @@
 
                     <td style="min-width:220px;">
                         {% for t in c.tramites.all %}
-                            <div class="mb-1">
-                                {% if t.tipo_nombre == 'RECTIFICACION' %}
-                                    <span class="badge bg-warning text-dark">RECTIFICACIÓN</span>
-                                {% elif t.tipo_nombre == 'ADECUACION' %}
-                                    <span class="badge bg-primary">ADECUACIÓN</span>
-                                {% elif t.tipo_nombre == 'INCORPORACION' %}
-                                    <span class="badge bg-success">INCORPORACIÓN</span>
-                                {% elif t.tipo_nombre == 'MODIFICACION' %}
-                                    <span class="badge bg-secondary">MODIFICACIÓN</span>
-                                {% endif %}
-                                <small class="text-muted ms-1">
-                                    {{ t.campo_modificado|upper }}:
-                                    <strong>{{ t.valor_nuevo }}</strong>
-                                </small>
-                            </div>
+                        <div class="mb-1">
+                            {% if t.tipo_nombre == 'RECTIFICACION' %}
+                            <span class="badge bg-warning text-dark">RECTIFICACIÓN</span>
+                            {% elif t.tipo_nombre == 'ADECUACION' %}
+                            <span class="badge bg-primary">ADECUACIÓN</span>
+                            {% elif t.tipo_nombre == 'INCORPORACION' %}
+                            <span class="badge bg-success">INCORPORACIÓN</span>
+                            {% elif t.tipo_nombre == 'MODIFICACION' %}
+                            <span class="badge bg-secondary">MODIFICACIÓN</span>
+                            {% endif %}
+                            <small class="text-muted ms-1">
+                                {{ t.campo_modificado|upper }}:
+                                <strong>{{ t.valor_nuevo }}</strong>
+                            </small>
+                        </div>
                         {% empty %}
-                            <span class="text-muted small">Sin trámites</span>
+                        <span class="text-muted small">Sin trámites</span>
                         {% endfor %}
                     </td>
 
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
-                            
+
                             <a href="{% url 'pdf_conformidad' c.pk %}"
                                 class="btn btn-danger btn-sm d-inline-flex align-items-center px-3">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> PDF
                             </a>
-                            <a href="{% url 'editar_conformidad' c.pk %}"
-                                class="btn btn-sm btn-outline-primary" title="Editar">
+                            <a href="{% url 'editar_conformidad' c.pk %}" class="btn btn-sm btn-outline-primary"
+                                title="Editar">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
                             <button type="button" class="btn btn-sm btn-outline-danger"
-                                onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')"
-                                title="Eliminar">
+                                onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')" title="Eliminar">
                                 <i class="bi bi-trash"></i>
                             </button>
 
-                            <form id="form-eliminar-{{ c.pk }}"
-                                  action="{% url 'eliminar_conformidad' c.pk %}"
-                                  method="POST" style="display:none;">
+                            <form id="form-eliminar-{{ c.pk }}" action="{% url 'eliminar_conformidad' c.pk %}"
+                                method="POST" style="display:none;">
                                 {% csrf_token %}
                             </form>
                         </div>

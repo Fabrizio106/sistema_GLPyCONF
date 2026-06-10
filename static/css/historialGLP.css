@@ -144,6 +144,13 @@
     color: #111827;
 }
 
+.badge-placa{
+    background:#F1F5F9;
+    color:#475569;
+    border:1px solid #E2E8F0;
+    text-transform: uppercase;
+}
+
 @media (max-width: 1200px) {
     .filters-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));

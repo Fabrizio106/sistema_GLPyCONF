@@ -17,6 +17,17 @@ class CertificadoForm(forms.ModelForm):
         # Si el formulario es nuevo (no tiene instancia grabada), ponemos hoy.
         if not self.instance.pk:
             self.fields['fecha_emision'].initial = date.today()- timedelta(days=1)
+        
+        # Mostrar enteros al editar
+        if self.instance and self.instance.pk:
+            if self.instance.peso_bruto is not None:
+                self.initial['peso_bruto'] = int(self.instance.peso_bruto)
+
+            if self.instance.peso_neto is not None:
+                self.initial['peso_neto'] = int(self.instance.peso_neto)
+
+            if self.instance.carga_util is not None:
+                self.initial['carga_util'] = int(self.instance.carga_util)
     
     class Meta:
         model = CertificadoConformidad
@@ -52,7 +63,7 @@ class CertificadoForm(forms.ModelForm):
             'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'carga_util': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'carga_util': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}),
             'propietario': forms.TextInput(attrs={'class': 'form-control'}),
         })
 

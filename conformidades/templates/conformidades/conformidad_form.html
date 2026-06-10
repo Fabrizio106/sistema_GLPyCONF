@@ -1,10 +1,8 @@
 {% extends 'base.html' %} {% block content %}
-<div class="container py-4">
+<div class="container">
   <form method="POST" id="certificado-form">
     {% csrf_token %} {% if form.errors %}
-    <div
-      class="alert alert-danger shadow-sm border-start border-4 border-danger"
-    >
+    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
       <div class="d-flex align-items-center">
         <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
         <div>
@@ -15,22 +13,24 @@
     </div>
     {% endif %}
 
+    <!-- TÍTULO FUERA DEL CARD -->
+    <div class="page-title-row">
+      <h3 class="page-title">
+        Nueva Conformidad
+      </h3>
+    </div>
+
     <div class="card p-4 mb-4 shadow-sm">
-      <div class="card-title fw-bold mb-3">
-        <i class="bi bi-gear-fill me-2 text-primary"></i> Sección A: Control de
-        Emisión
+      <div class="card-title">
+        <i class="bi bi-calendar-check section-icon"></i> Sección A: Control de Emisión
       </div>
       <div class="row g-3">
         <div class="col-md-6">
-          <label class="form-label small fw-bold text-secondary"
-            >SEDE DE INSPECCIÓN</label
-          >
+          <label class="form-label small fw-bold text-secondary">SEDE DE INSPECCIÓN</label>
           {{ form.sede }}
         </div>
         <div class="col-md-6">
-          <label class="form-label small fw-bold text-secondary"
-            >FECHA DE CERTIFICACIÓN</label
-          >
+          <label class="form-label small fw-bold text-secondary">FECHA DE CERTIFICACIÓN</label>
           {{ form.fecha_emision }}
         </div>
       </div>
@@ -38,109 +38,78 @@
 
     <div class="card p-4 mb-4 shadow-sm">
       <div class="card-title mb-3 fw-bold">
-        <i class="bi bi-file-earmark-check-fill me-2 text-primary"></i> Sección
-        B: Identificación
+        <i class="bi bi-car-front section-icon"></i> Sección B: Datos del Vehículo
       </div>
       <div class="row g-3">
         <div class="col-md-3">
           <label class="form-label fw-bold small text-secondary">PLACA</label>
           <div class="input-group">
             {{ form.placa }}
-            <button
-              class="btn btn-outline-primary"
-              type="button"
-              id="btn-buscar-historial"
-            >
+            <button class="btn btn-search-orange" type="button" id="btn-buscar-historial">
               <i class="bi bi-search"></i>
             </button>
           </div>
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold small text-secondary">TITULAR / PROPIETARIO</label>
-              {{ form.propietario }}
+          {{ form.propietario }}
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary"
-            >CATEGORÍA</label
-          >{{ form.categoria }}
+          <label class="form-label fw-bold small text-secondary">CATEGORÍA</label>{{ form.categoria }}
         </div>
         <div class="col-md-3">
           <label class="form-label fw-bold small text-secondary">MARCA</label>
           {{form.marca }}
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">MODELO</label
-          >{{ form.modelo }}
+          <label class="form-label fw-bold small text-secondary">MODELO</label>{{ form.modelo }}
         </div>
       </div>
       <div class="row g-3 mt-1">
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">VERSIÓN</label
-          >{{ form.version }}
+          <label class="form-label fw-bold small text-secondary">VERSIÓN</label>{{ form.version }}
         </div>
         <div class="col-md-3">
           <label class="form-label fw-bold small text-secondary">COLOR</label>
           {{form.color }}
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary"
-            >AÑO FABRICACIÓN</label
-          >{{ form.anio_fabricacion }}
+          <label class="form-label fw-bold small text-secondary">AÑO FABRICACIÓN</label>{{ form.anio_fabricacion }}
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary"
-            >AÑO MODELO</label
-          >{{ form.anio_modelo }}
+          <label class="form-label fw-bold small text-secondary">AÑO MODELO</label>{{ form.anio_modelo }}
         </div>
       </div>
       <div class="row g-3 mt-1">
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >NÚMERO VIN</label
-          >{{ form.numero_vin }}
+          <label class="form-label fw-bold small text-secondary">NÚMERO SERIE</label>{{ form.numero_serie }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >NÚMERO SERIE</label
-          >{{ form.numero_serie }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >NÚMERO MOTOR</label
-          >{{ form.numero_motor }}
+          <label class="form-label fw-bold small text-secondary">NÚMERO MOTOR</label>{{ form.numero_motor }}
         </div>
       </div>
     </div>
 
     <div class="card p-4 mb-4 shadow-sm">
       <div class="card-title mb-3 fw-bold">
-        <i class="bi bi-speedometer2 me-2 text-primary"></i> Sección C:
+        <i class="bi bi-speedometer2 section-icon"></i> Sección C:
         Especificaciones Técnicas
       </div>
       <div class="row g-3 mb-3">
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary"
-            >CARROCERÍA</label
-          >{{ form.carroceria }}
+          <label class="form-label fw-bold small text-secondary">CARROCERÍA</label>{{ form.carroceria }}
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary"
-            >COMBUSTIBLE</label
-          >{{ form.combustible }}
+          <label class="form-label fw-bold small text-secondary">COMBUSTIBLE</label>{{ form.combustible }}
         </div>
         <div class="col-md-2">
-          <label class="form-label fw-bold small text-secondary">POTENCIA</label
-          >{{ form.potencia }}
+          <label class="form-label fw-bold small text-secondary">POTENCIA</label>{{ form.potencia }}
         </div>
         <div class="col-md-2">
-          <label class="form-label fw-bold small text-secondary"
-            >CILINDRADA</label
-          >{{ form.cilindrada }}
+          <label class="form-label fw-bold small text-secondary">CILINDRADA</label>{{ form.cilindrada }}
         </div>
         <div class="col-md-2">
-          <label class="form-label fw-bold small text-secondary"
-            >CILINDROS</label
-          >{{ form.cilindros }}
+          <label class="form-label fw-bold small text-secondary">CILINDROS</label>{{ form.cilindros }}
         </div>
       </div>
       <div class="row g-3 mb-3">
@@ -149,115 +118,64 @@
           {{form.ejes }}
         </div>
         <div class="col-md-2">
-          <label class="form-label fw-bold small text-secondary">RUEDAS</label
-          >{{ form.ruedas }}
+          <label class="form-label fw-bold small text-secondary">RUEDAS</label>{{ form.ruedas }}
         </div>
         <div class="col-md-2">
-          <label class="form-label fw-bold small text-secondary">ASIENTOS</label
-          >{{ form.asientos }}
+          <label class="form-label fw-bold small text-secondary">ASIENTOS</label>{{ form.asientos }}
         </div>
         <div class="col-md-2">
-          <label class="form-label fw-bold small text-secondary"
-            >PASAJEROS</label
-          >{{ form.pasajeros }}
+          <label class="form-label fw-bold small text-secondary">PASAJEROS</label>{{ form.pasajeros }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >FÓRMULA RODANTE</label
-          >{{ form.formula_rodante }}
+          <label class="form-label fw-bold small text-secondary">FÓRMULA RODANTE</label>{{ form.formula_rodante }}
         </div>
       </div>
       <div class="row g-3 mb-3">
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >LONGITUD (m)</label
-          >{{ form.longitud }}
+          <label class="form-label fw-bold small text-secondary">LONGITUD (m)</label>{{ form.longitud }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >ALTURA (m)</label
-          >{{ form.altura }}
+          <label class="form-label fw-bold small text-secondary">ALTURA (m)</label>{{ form.altura }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >ANCHO (m)</label
-          >{{ form.ancho }}
+          <label class="form-label fw-bold small text-secondary">ANCHO (m)</label>{{ form.ancho }}
         </div>
       </div>
       <div class="row g-3">
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >PESO BRUTO (kg)</label
-          >{{ form.peso_bruto }}
+          <label class="form-label fw-bold small text-secondary">PESO BRUTO (kg)</label>{{ form.peso_bruto }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary"
-            >PESO NETO (kg)</label
-          >{{ form.peso_neto }}
+          <label class="form-label fw-bold small text-secondary">PESO NETO (kg)</label>{{ form.peso_neto }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-success"
-            >CARGA ÚTIL (kg)</label
-          >{{ form.carga_util }}
+          <label class="form-label fw-bold small text-success">CARGA ÚTIL (kg)</label>{{ form.carga_util }}
         </div>
       </div>
     </div>
 
-    <div class="card p-4 mb-4 shadow-sm">
-      <div
-        class="card-title mb-4 fw-bold d-flex justify-content-between align-items-center"
-      >
-        <span
-          ><i class="bi bi-list-check me-2 text-warning"></i> Sección D:
-          Trámites / Cambios Realizados</span
-        >
-        <span class="badge bg-warning text-dark rounded-pill small"
-          >Configuración Dinámica</span
-        >
+    <div class="card p-4">
+      <div class="card-title d-flex justify-content-between w-100">
+        <div class="card-title mb-3 fw-bold"><i class="bi bi-list-check section-icon"></i> Sección D:
+          Trámites / Cambios Realizados</div>
+        <span class="badge bg-warning text-dark rounded-pill small">Configuración Dinámica</span>
       </div>
 
       <div id="tramites-master-container"></div>
 
       <div class="">
-        <button
-          type="button"
-          class="btn btn-outline-warning shadow-sm fw-bold px-4"
-          id="btn-add-tramite-block"
-        >
+        <button type="button" class="btn btn-outline-orange shadow-sm fw-bold px-4" id="btn-add-tramite-block">
           <i class="bi bi-plus-circle-fill me-2"></i> AGREGAR OTRO TRÁMITE
         </button>
       </div>
     </div>
 
     <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
-      <a
-        href="{% if editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
-        class="btn fw-bold shadow-sm"
-        style="
-          background-color: #f8f9fa;
-          color: #ff7300;
-          border: 1px solid #ff7300;
-          border-radius: 8px;
-          padding: 10px 50px;
-          text-decoration: none;
-          transition: 0.3s;
-        "
-      >
+      <a href="{% if editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
+        class="btn btn-outline-orange">
         Cancelar
       </a>
-      <button
-        type="submit"
-        class="btn fw-bold text-white shadow"
-        style="
-          background-color: #ff7300;
-          border: none;
-          border-radius: 8px;
-          padding: 10px 50px;
-          transition: 0.3s;
-        "
-        onmouseover="this.style.backgroundColor = '#e66700'"
-        onmouseout="this.style.backgroundColor = '#ff7300'"
-      >
+      <button type="submit" class="btn btn-orange">
         Guardar
       </button>
     </div>
@@ -265,27 +183,16 @@
 </div>
 
 <template id="tramite-block-template">
-  <div
-    class="tramite-block border border-2 rounded-3 p-4 mb-5 shadow-sm bg-white position-relative"
-  >
-    <button
-      type="button"
-      class="btn btn-sm btn-danger position-absolute top-0 end-0 m-3 remove-block-btn"
-      title="Eliminar este trámite"
-    >
+  <div class="tramite-block border border-2 rounded-3 p-4 mb-5 shadow-sm bg-white position-relative">
+    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-3 remove-block-btn"
+      title="Eliminar este trámite">
       <i class="bi bi-trash-fill"></i>
     </button>
 
     <div class="row g-3 mb-4 border-bottom pb-3">
       <div class="col-md-5">
-        <label class="form-label small fw-bold text-uppercase"
-          >Tipo de Trámite</label
-        >
-        <select
-          class="form-select border-warning selector-tipo shadow-sm"
-          name="tipo_tramite_multiple[]"
-          required
-        >
+        <label class="form-label small fw-bold text-uppercase">Tipo de Trámite</label>
+        <select class="form-select border-warning selector-tipo shadow-sm" name="tipo_tramite_multiple[]" required>
           <option value="">Seleccione tipo</option>
           <option value="RECTIFICACION">RECTIFICACIÓN</option>
           <option value="ADECUACION">ADECUACIÓN</option>
@@ -294,37 +201,24 @@
         </select>
       </div>
       <div class="col-md-7">
-        <label class="form-label small fw-bold text-uppercase"
-          >Campos a modificar (Buscador)</label
-        >
+        <label class="form-label small fw-bold text-uppercase">Campos a modificar (Buscador)</label>
         <div class="input-group shadow-sm">
-          <span class="input-group-text bg-white border-warning text-warning"
-            ><i class="bi bi-search"></i
-          ></span>
-          <input
-            type="text"
-            class="form-control border-warning buscador-campos"
-            placeholder="Escriba para filtrar campos..."
-          />
+          <span class="input-group-text bg-white border-warning text-warning"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control border-warning buscador-campos"
+            placeholder="Escriba para filtrar campos..." />
         </div>
       </div>
     </div>
 
     <div class="checklist-area d-none">
       <div class="mb-3">
-        <label class="form-label small fw-bold text-muted text-uppercase"
-          >Campos disponibles:</label
-        >
-        <div
-          class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
-          style="max-height: 150px; overflow-y: auto"
-        ></div>
+        <label class="form-label small fw-bold text-muted text-uppercase">Campos disponibles:</label>
+        <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
+          style="max-height: 150px; overflow-y: auto"></div>
       </div>
 
       <div class="table-responsive mt-4">
-        <table
-          class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm"
-        >
+        <table class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm">
           <thead class="table-warning text-dark small text-uppercase">
             <tr>
               <th style="width: 25%">Campo</th>
@@ -348,12 +242,7 @@
         <h5 class="modal-title fw-bold">
           <i class="bi bi-clock-history me-2"></i>Historial Vehicular
         </h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center py-4" id="contenido-historial">
         <div class="spinner-border text-primary" role="status"></div>
@@ -653,65 +542,65 @@
     function calc() {
       if (!pb || !pn || !cu) return;
       const val = (parseFloat(pb.value) || 0) - (parseFloat(pn.value) || 0);
-      cu.value = val > 0 ? val.toFixed(2) : "0.00";
+      cu.value = val > 0 ? Math.round(val) : 0;
     }
 
     if (pb && pn) {
       pb.addEventListener("input", calc);
       pn.addEventListener("input", calc);
     }
-    
+
     function cargarTramitesExistentes(tramites) {
-        const grupos = {};
-        tramites.forEach(t => {
-            if (!grupos[t.tipo_nombre]) grupos[t.tipo_nombre] = [];
-            grupos[t.tipo_nombre].push(t);
-        });
+      const grupos = {};
+      tramites.forEach(t => {
+        if (!grupos[t.tipo_nombre]) grupos[t.tipo_nombre] = [];
+        grupos[t.tipo_nombre].push(t);
+      });
 
-        const tiposOrdenados = Object.entries(grupos);
-        let indice = 0;
+      const tiposOrdenados = Object.entries(grupos);
+      let indice = 0;
 
-        function procesarSiguiente() {
-            if (indice >= tiposOrdenados.length) return;
-            const [tipo, items] = tiposOrdenados[indice];
-            indice++;
+      function procesarSiguiente() {
+        if (indice >= tiposOrdenados.length) return;
+        const [tipo, items] = tiposOrdenados[indice];
+        indice++;
 
-            createNewBlock();
-            const blocks = document.querySelectorAll('.tramite-block');
-            const block  = blocks[blocks.length - 1];
-            const selector  = block.querySelector('.selector-tipo');
-            const checklistArea    = block.querySelector('.checklist-area');
-            const checklistOptions = block.querySelector('.checklist-options');
-            const tabla     = block.querySelector('.tabla-modificaciones');
-            const inputsArea = block.querySelector('.inputs-area');
+        createNewBlock();
+        const blocks = document.querySelectorAll('.tramite-block');
+        const block = blocks[blocks.length - 1];
+        const selector = block.querySelector('.selector-tipo');
+        const checklistArea = block.querySelector('.checklist-area');
+        const checklistOptions = block.querySelector('.checklist-options');
+        const tabla = block.querySelector('.tabla-modificaciones');
+        const inputsArea = block.querySelector('.inputs-area');
 
-            // Seleccionar el tipo
-            selector.value = tipo;
-            selector.dispatchEvent(new Event('change'));
+        // Seleccionar el tipo
+        selector.value = tipo;
+        selector.dispatchEvent(new Event('change'));
 
-            // Esperar a que los checkboxes aparezcan
-            function esperarCheckboxes(intentos) {
-                const checkboxes = block.querySelectorAll('.chk-item');
-                if (checkboxes.length === 0 && intentos > 0) {
-                    setTimeout(() => esperarCheckboxes(intentos - 1), 80);
-                    return;
-                }
+        // Esperar a que los checkboxes aparezcan
+        function esperarCheckboxes(intentos) {
+          const checkboxes = block.querySelectorAll('.chk-item');
+          if (checkboxes.length === 0 && intentos > 0) {
+            setTimeout(() => esperarCheckboxes(intentos - 1), 80);
+            return;
+          }
 
-                items.forEach(item => {
-                    const campo = item.campo_modificado;
-                    const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
+          items.forEach(item => {
+            const campo = item.campo_modificado;
+            const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
 
-                    // Marcar el checkbox visualmente
-                    const chk = block.querySelector(`[data-campo="${campo}"]`);
-                    if (chk) chk.checked = true;
+            // Marcar el checkbox visualmente
+            const chk = block.querySelector(`[data-campo="${campo}"]`);
+            if (chk) chk.checked = true;
 
-                    // Obtener valor actual del formulario
-                    const inputOriginal = document.getElementById(`id_${campo}`);
-                    const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+            // Obtener valor actual del formulario
+            const inputOriginal = document.getElementById(`id_${campo}`);
+            const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
 
-                    // Crear la fila directamente sin disparar evento
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+            // Crear la fila directamente sin disparar evento
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
                         <td class="fw-bold text-dark small">${labelStr}</td>
                         <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
                         <td>
@@ -723,31 +612,31 @@
                                 <i class="bi bi-trash-fill fs-5"></i>
                             </button>
                         </td>`;
-                    inputsArea.appendChild(tr);
-                });
+            inputsArea.appendChild(tr);
+          });
 
-                // Mostrar tabla si tiene filas
-                if (inputsArea.children.length > 0) {
-                    tabla.classList.remove('d-none');
-                    checklistArea.classList.remove('d-none');
-                }
+          // Mostrar tabla si tiene filas
+          if (inputsArea.children.length > 0) {
+            tabla.classList.remove('d-none');
+            checklistArea.classList.remove('d-none');
+          }
 
-                updateSelectors();
-                setTimeout(procesarSiguiente, 100);
-            }
-
-            setTimeout(() => esperarCheckboxes(10), 100);
+          updateSelectors();
+          setTimeout(procesarSiguiente, 100);
         }
 
-        procesarSiguiente();
+        setTimeout(() => esperarCheckboxes(10), 100);
+      }
+
+      procesarSiguiente();
     }
 
 
     // Arrancar: si hay trámites guardados los cargamos, si no creamos uno vacío
     if (TRAMITES_INICIALES.length > 0) {
-        cargarTramitesExistentes(TRAMITES_INICIALES);
+      cargarTramitesExistentes(TRAMITES_INICIALES);
     } else {
-        createNewBlock();
+      createNewBlock();
     }
     addBlockBtn.addEventListener('click', createNewBlock);
   });

@@ -169,24 +169,3 @@ p {
     min-width: 40px;
 }
 
-.badge-inicial {
-    background-color: #FFF3EA !important; /* Fondo naranja muy suave */
-    color: #FD7401 !important;            /* Texto naranja corporativo */
-    padding: 6px 14px;
-    border-radius: 50px;                  /* Hace que sea un óvalo perfecto */
-    font-weight: 700;                     /* Corregido guion medio */
-    display: inline-block;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-}
-
-.badge-anual {
-    background-color: #EEF2FF !important; /* Fondo azul muy suave */
-    color: #2F49CF !important;            /* Texto azul corporativo */
-    padding: 6px 14px;
-    border-radius: 50px;                  /* Hace que sea un óvalo perfecto */
-    font-weight: 700;                     /* Corregido guion medio */
-    display: inline-block;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-}
