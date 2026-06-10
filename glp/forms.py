@@ -13,10 +13,10 @@ class CertificadoGLPForm(forms.ModelForm):
     
     class Meta:
         model = CertificadoGLP
-        exclude = ['tipo_certificado', 'ciudad_glp_pdf', 'numero_certificado'] 
+        exclude = ['tipo_certificado', 'ciudad_glp_pdf', 'numero_certificado', 'fecha_emision'] 
         
         widgets = {
-            'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),   
+            'fecha_certificacion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'combustible': forms.Select(attrs={'class': 'form-select'}),
 
             # Campos del vehículo
@@ -40,8 +40,8 @@ class CertificadoGLPForm(forms.ModelForm):
             'largo': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'alto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
-            'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
-            'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '1'}),
+            'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '1'}),
             'carga_util': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}),
             
             # Equipos GLP
@@ -54,6 +54,16 @@ class CertificadoGLPForm(forms.ModelForm):
             'cilindro_capacidad': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'cilindro_fecha_fab': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            if self.instance.peso_neto is not None:
+                self.initial['peso_neto'] = int(self.instance.peso_neto)
+            if self.instance.peso_bruto is not None:
+                self.initial['peso_bruto'] = int(self.instance.peso_bruto)
+            if self.instance.carga_util is not None:
+                self.initial['carga_util'] = int(self.instance.carga_util)
 
 class SedeConfiguracionForm(forms.ModelForm):
     class Meta:

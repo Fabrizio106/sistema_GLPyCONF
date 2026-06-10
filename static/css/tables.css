@@ -1,0 +1,32 @@
+.badge-config {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+/* Mismo día = azul */
+.badge-config-blue {
+    background-color: #EEF2FF;
+    color: #2F49CF;
+    border-color: #C7D2FE;
+}
+
+/* Un día antes = naranja */
+.badge-config-orange {
+    background-color: #FFF3EA;
+    color: #FD7401;
+    border-color: #FFD2B0;
+}
+
+.city-badge-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}

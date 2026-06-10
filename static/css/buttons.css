@@ -1,0 +1,218 @@
+.btn-orange {
+    background-color: #FD7401;
+    border: 1px solid #FD7401;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 10px 18px;
+    box-shadow: 0 4px 10px rgba(253, 116, 1, 0.18);
+    transition: all 0.2s ease;
+}
+
+.btn-orange:hover {
+    background-color: #E66800;
+    border-color: #E66800;
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(253, 116, 1, 0.24);
+    transform: translateY(-1px);
+}
+
+.btn-orange:active {
+    background-color: #C95800;
+    border-color: #C95800;
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+/* Controles de filtros */
+.filter-control {
+    height: 38px;
+    min-height: 38px;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+/* Botón Filtrar */
+.btn-filter {
+    height: 38px;
+    min-height: 38px;
+    min-width: 88px;
+    padding: 0 16px;
+    border-radius: 6px;
+    background-color: transparent;
+    border: 1px solid #FD7401;
+    color: #FD7401;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+.btn-filter:hover {
+    background-color: #FFF3EA;
+    border-color: #FD7401;
+    color: #FD7401;
+}
+
+/* Botón limpiar */
+.btn-clean-filter {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    padding: 0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    border: 1px solid #d9dee7;
+    color: #111827;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+.btn-clean-filter:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #111827;
+}
+
+.btn-outline-orange {
+    background-color: transparent;
+    border: 1px solid #FD7401;
+    color: #FD7401;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 10px 18px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-orange:hover {
+    background-color: #FFF3EA;
+    border-color: #FD7401;
+    color: #FD7401;
+}
+
+.btn-outline-orange:active {
+    background-color: #FFE3CC;
+    border-color: #FD7401;
+    color: #FD7401;
+}
+
+.btn-input-search {
+    width: 42px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+}
+
+.btn-input-search i {
+    font-size: 15px;
+}
+
+.input-group .btn-search-orange {
+    width: 46px;
+    height: 38px;
+    min-width: 46px;
+    padding: 0;
+    background-color: #ffffff !important;
+    border: 1px solid #FD7401 !important;
+    color: #FD7401 !important;
+
+    /* Unido al input */
+    margin-left: 0 !important;
+
+    /* Izquierda cuadrada, derecha redondeada */
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+}
+
+.input-group .btn-search-orange i {
+    color: #FD7401 !important;
+    font-size: 17px;
+    line-height: 1;
+}
+
+.input-group .btn-search-orange:hover {
+    background-color: #FD7401 !important;
+    border-color: #FD7401 !important;
+    color: #ffffff !important;
+}
+
+.input-group .btn-search-orange:hover i {
+    color: #ffffff !important;
+}
+
+/* Base para botones de acciones en tablas */
+.btn-table-action {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    padding: 0;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+/* Editar - outline naranja */
+.btn-table-edit {
+    background-color: #ffffff;
+    border: 1px solid #FD7401;
+    color: #FD7401;
+}
+
+.btn-table-edit i {
+    color: #FD7401;
+}
+
+/* Hover editar - naranja sólido */
+.btn-table-edit:hover {
+    background-color: #FD7401;
+    border-color: #FD7401;
+    color: #ffffff;
+}
+
+.btn-table-edit:hover i {
+    color: #ffffff;
+}
+
+/* Eliminar - outline rojo */
+.btn-table-delete {
+    background-color: #ffffff;
+    border: 1px solid #DC3545;
+    color: #DC3545;
+}
+
+.btn-table-delete i {
+    color: #DC3545;
+}
+
+/* Hover eliminar - rojo sólido */
+.btn-table-delete:hover {
+    background-color: #DC3545;
+    border-color: #DC3545;
+    color: #ffffff;
+}
+
+.btn-table-delete:hover i {
+    color: #ffffff;
+}

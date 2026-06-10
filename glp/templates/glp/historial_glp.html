@@ -1,28 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-primary"><i class="bi bi-clock-history"></i> Historial de Certificados GLP</h3>
-        <a href="{% url 'registrar_glp' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo Certificado</a>
+<div class="container-fluid">
+    <!-- TÍTULO FUERA DEL CARD -->
+    <div class="page-title-row">
+        <h3 class="page-title">
+            Historial de Certificados GLP
+        </h3>
+
+        <a href="{% url 'registrar_glp' %}" class="btn btn-orange">
+            <i class="bi bi-plus-lg"></i>
+            Nuevo Certificado
+        </a>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
+    <!-- CARD SOLO PARA FILTROS Y TABLA -->
+    <div class="card historial-card">
+        
         <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-3">
+            <form method="GET" class="filters-grid">
+
+                <div class="filter-field filter-placa">
                     <label class="form-label small text-muted fw-bold">PLACA</label>
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="ABC-123" value="{{ request.GET.q }}">
-                        <button class="btn btn-outline-secondary" type="submit">
+                        <input type="text"
+                            name="q"
+                            class="form-control filter-control"
+                            placeholder="ABC-123"
+                            value="{{ request.GET.q }}">
+
+                        <button class="btn btn-search-filter" type="submit">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
                 </div>
-    
-                <div class="col-md-2">
+
+                <div class="filter-field filter-sede">
                     <label class="form-label small text-muted fw-bold">SEDE</label>
-                    <select name="sede" class="form-select">
+                    <select name="sede" class="form-select filter-control">
                         <option value="">Todas las Sedes</option>
                         {% for s in sedes %}
                         <option value="{{ s.id }}" {% if request.GET.sede == s.id|stringformat:"i" %}selected{% endif %}>
@@ -31,29 +46,42 @@
                         {% endfor %}
                     </select>
                 </div>
-    
-                <div class="col-md-2">
+
+                <div class="filter-field filter-dia">
                     <label class="form-label small text-muted fw-bold">DÍA ESPECÍFICO</label>
-                    <input type="date" name="fecha" class="form-control" value="{{ request.GET.fecha }}">
+                    <input type="date"
+                        name="fecha"
+                        class="form-control filter-control"
+                        value="{{ request.GET.fecha }}">
                 </div>
-    
-                <div class="col-md-3">
+
+                <div class="filter-field filter-rango">
                     <label class="form-label small text-muted fw-bold">RANGO DE FECHAS</label>
-                    <div class="input-group">
-                        <input type="date" name="inicio" class="form-control" value="{{ request.GET.inicio }}">
-                        <span class="input-group-text">al</span>
-                        <input type="date" name="fin" class="form-control" value="{{ request.GET.fin }}">
+                    <div class="input-group filter-date-range">
+                        <input type="date"
+                            name="inicio"
+                            class="form-control filter-control"
+                            value="{{ request.GET.inicio }}">
+
+                        <span class="input-group-text filter-control filter-range-separator">al</span>
+
+                        <input type="date"
+                            name="fin"
+                            class="form-control filter-control"
+                            value="{{ request.GET.fin }}">
                     </div>
                 </div>
-    
-                <div class="col-md-2 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary w-100">
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-filter">
                         Filtrar
                     </button>
-                    <a href="{% url 'historial_glp' %}" class="btn btn-light border w-100" title="Limpiar filtros">
+
+                    <a href="{% url 'historial_glp' %}" class="btn btn-clean-filter" title="Limpiar filtros">
                         <i class="bi bi-eraser"></i>
                     </a>
                 </div>
+
             </form>
         </div>
     </div>
@@ -85,7 +113,10 @@
                             <span class="badge bg-success">ANUAL</span>
                         {% endif %}
                     </td>
-                    <td>{{ c.fecha_emision|date:"d/m/Y" }}</td> 
+                    <td>
+                        <div class="fw-bold text-dark">{{ c.fecha_emision|date:"d/m/Y" }}</div>
+                        <small class="text-muted" style="font-size: 0.75rem;">F.C: {{ c.fecha_certificacion|date:"d/m/Y" }}</small>
+                    </td>
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-danger d-inline-flex align-items-center px-3">
