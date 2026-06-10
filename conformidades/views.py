@@ -89,11 +89,9 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
                     "y RD N° 10476-2008-MTC/15)")
 
     if campo_lower == 'combustible':
-        if 'DIESEL' in val_nuevo_up:
-            return "(Adecuación a la RD N 04848-2006 MTC/15)"
+        return "(Adecuación a la RD N° 04848-2006 MTC/15)"
 
     return ""
-
 
 def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
     campo_lower  = campo.lower()
@@ -283,6 +281,15 @@ def descargar_pdf_conformidad(request, pk):
 
     bloques = []
     notas   = []
+    
+    
+    TIPOS_LABELS = {
+    'INCORPORACION': 'INCORPORACIÓN',
+    'ADECUACION': 'ADECUACIÓN',
+    'RECTIFICACION': 'RECTIFICACIÓN',
+    'MODIFICACION': 'MODIFICACIÓN',
+    }
+
 
 
     for tipo, items in bloques_dict.items():
@@ -323,12 +330,23 @@ def descargar_pdf_conformidad(request, pk):
                 })
 
         norma_primer = generar_norma_conformidad(tipo, primer_campo, primer_val_new, valor_anterior)
-        nota  = generar_nota_conformidad(tipo, primer_campo, primer_val_new, valor_anterior)
-        if nota:
-            notas.append(nota)
+        for item in items:
+            valor_ant_item = str(
+                getattr(certificado, item.campo_modificado, '') or ''
+            )
+
+            nota = generar_nota_conformidad(
+                item.tipo_nombre,
+                item.campo_modificado,
+                item.valor_nuevo,
+                valor_ant_item
+            )
+
+            if nota and nota not in notas:
+                notas.append(nota)
 
         bloques.append({
-            'tipo':           tipo,
+            'tipo':           TIPOS_LABELS.get(tipo, tipo),
             'primer_campo':   primer_campo,
             'primer_label':   CAMPO_LABELS.get(primer_campo, primer_campo.upper()),
             'valor_anterior': valor_anterior,
@@ -340,7 +358,7 @@ def descargar_pdf_conformidad(request, pk):
     # Fecha del PDF = un día antes de emisión; si cae domingo → sábado
     fecha_pdf = certificado.fecha_emision or timezone.localdate()
 
-    fecha_str = f"{fecha_pdf.day}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
+    fecha_str = f"{fecha_pdf.day:02d}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
 
     # Personas o mercancías según categoría
     categoria_final = certificado.categoria or ''

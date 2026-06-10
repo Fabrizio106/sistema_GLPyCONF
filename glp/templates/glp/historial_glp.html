@@ -103,14 +103,15 @@
                 {% for c in certificados %}
                 <tr>
                     <td class="fw-bold">{{ c.numero_certificado }}</td>
-                    <td><span class="badge bg-info text-dark">{{ c.placa }}</span></td>
+                    
+                    <td><span class="badge badge-placa">{{ c.placa }}</span></td>
                     <td>{{ c.sede.nombre_sede }}</td>
                     <td>{{ c.propietario }}</td>
                     <td>
                         {% if c.tipo_certificado == 'INICIAL' %}
-                            <span class="badge bg-warning text-dark">INICIAL</span>
+                            <span class="badge badge-config-orange bg-warning text-dark">INICIAL</span>
                         {% else %}
-                            <span class="badge bg-success">ANUAL</span>
+                            <span class="badge badge-config-blue bg-success">ANUAL</span>
                         {% endif %}
                     </td>
                     <td>
@@ -120,7 +121,7 @@
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-danger d-inline-flex align-items-center px-3">
-                                <i class="bi bi-file-earmark-pdf me-2"></i> PDF
+                                <i class="bi bi-file-earmark-pdf"></i>
                             </a>
                         
                             <div class="btn-group">
@@ -170,5 +171,6 @@
             }
         })
     }
-</script>
+</script> 
+
 {% endblock %}

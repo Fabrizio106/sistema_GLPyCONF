@@ -9,20 +9,30 @@
     line-height: 1.2;
     border: 1px solid transparent;
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
-/* Mismo día = azul */
 .badge-config-blue {
-    background-color: #EEF2FF;
-    color: #2F49CF;
-    border-color: #C7D2FE;
+    background-color: #EEF2FF !important; /* Fondo azul muy suave */
+    color: #2F49CF !important;            /* Texto azul corporativo */
+    padding: 6px 14px;
+    border-radius: 50px;                  /* Hace que sea un óvalo perfecto */
+    font-weight: 700;                     /* Corregido guion medio */
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.5px;
 }
 
-/* Un día antes = naranja */
+/* Mismo día = azul EEF2FF*/
 .badge-config-orange {
-    background-color: #FFF3EA;
-    color: #FD7401;
-    border-color: #FFD2B0;
+    background-color: #FFF3EA !important; /* Fondo naranja muy suave */
+    color: #FD7401 !important;            /* Texto naranja corporativo */
+    padding: 6px 14px;
+    border-radius: 50px;                  /* Hace que sea un óvalo perfecto */
+    font-weight: 700;                     /* Corregido guion medio */
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.5px;
 }
 
 .city-badge-group {
@@ -30,3 +40,4 @@
     align-items: center;
     gap: 12px;
 }
+
