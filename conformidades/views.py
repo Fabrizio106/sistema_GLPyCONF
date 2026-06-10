@@ -78,6 +78,19 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
         if tipo == 'RECTIFICACION':
             return ("(De acuerdo a la directiva RD N° 04848-2006 MTC/15 "
                     "y RD N° 10476-2008-MTC/15)")
+        elif tipo == 'ADECUACION':
+            if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
+                return ("(Adecuación de acuerdo a la directiva RD N° 10476-2008-MTC/15 - "
+                        "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU "
+                        "ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA)")
+            elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
+                return ("(Adecuación de acuerdo a la directiva RD N° 04848-2006 MTC/15 - "
+                        "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU "
+                        "ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA)")
+            else:
+                return ("(Adecuación de acuerdo a la directiva RD N° 04848-2006 MTC/15 "
+                        "y RD N° 10476-2008-MTC/15)")
+            
         elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
             return ("(Adecuación acorde a R.D. N°10476-2008-MTC/15 - NO HA EXISTIDO "
                     "MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA)")
@@ -90,6 +103,9 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
 
     if campo_lower == 'combustible':
         return "(Adecuación a la RD N° 04848-2006 MTC/15)"
+    if campo_lower == 'categoria':
+        if tipo == 'ADECUACION':
+            return "(Adecuación de acuerdo a la RD N° 04848-2006 MTC/15)"
 
     return ""
 
