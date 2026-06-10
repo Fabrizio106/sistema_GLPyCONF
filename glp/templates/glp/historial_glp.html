@@ -16,17 +16,14 @@
 
     <!-- CARD SOLO PARA FILTROS Y TABLA -->
     <div class="card historial-card">
-        
+
         <div class="card-body">
             <form method="GET" class="filters-grid">
 
                 <div class="filter-field filter-placa">
                     <label class="form-label small text-muted fw-bold">PLACA</label>
                     <div class="input-group">
-                        <input type="text"
-                            name="q"
-                            class="form-control filter-control"
-                            placeholder="ABC-123"
+                        <input type="text" name="q" class="form-control filter-control" placeholder="ABC-123"
                             value="{{ request.GET.q }}">
 
                         <button class="btn btn-search-filter" type="submit">
@@ -49,26 +46,18 @@
 
                 <div class="filter-field filter-dia">
                     <label class="form-label small text-muted fw-bold">DÍA ESPECÍFICO</label>
-                    <input type="date"
-                        name="fecha"
-                        class="form-control filter-control"
-                        value="{{ request.GET.fecha }}">
+                    <input type="date" name="fecha" class="form-control filter-control" value="{{ request.GET.fecha }}">
                 </div>
 
                 <div class="filter-field filter-rango">
                     <label class="form-label small text-muted fw-bold">RANGO DE FECHAS</label>
                     <div class="input-group filter-date-range">
-                        <input type="date"
-                            name="inicio"
-                            class="form-control filter-control"
+                        <input type="date" name="inicio" class="form-control filter-control"
                             value="{{ request.GET.inicio }}">
 
                         <span class="input-group-text filter-control filter-range-separator">al</span>
 
-                        <input type="date"
-                            name="fin"
-                            class="form-control filter-control"
-                            value="{{ request.GET.fin }}">
+                        <input type="date" name="fin" class="form-control filter-control" value="{{ request.GET.fin }}">
                     </div>
                 </div>
 
@@ -103,15 +92,15 @@
                 {% for c in certificados %}
                 <tr>
                     <td class="fw-bold">{{ c.numero_certificado }}</td>
-                    
+
                     <td><span class="badge badge-placa">{{ c.placa }}</span></td>
                     <td>{{ c.sede.nombre_sede }}</td>
                     <td>{{ c.propietario }}</td>
                     <td>
                         {% if c.tipo_certificado == 'INICIAL' %}
-                            <span class="badge badge-config-orange bg-warning text-dark">INICIAL</span>
+                        <span class="badge badge-config-orange bg-warning text-dark">INICIAL</span>
                         {% else %}
-                            <span class="badge badge-config-blue bg-success">ANUAL</span>
+                        <span class="badge badge-config-blue bg-success">ANUAL</span>
                         {% endif %}
                     </td>
                     <td>
@@ -119,25 +108,30 @@
                         <small class="text-muted" style="font-size: 0.75rem;">F.C: {{ c.fecha_certificacion|date:"d/m/Y" }}</small>
                     </td>
                     <td class="text-end">
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-danger d-inline-flex align-items-center px-3">
+                        <div class="table-actions-wrapper">
+
+                            <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-pdf-action">
                                 <i class="bi bi-file-earmark-pdf"></i>
                             </a>
-                        
-                            <div class="btn-group">
-                                <a href="{% url 'editar_glp' c.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+
+                            <div class="btn-action-group">
+
+                                <a href="{% url 'editar_glp' c.pk %}" class="btn btn-edit-action" title="Editar">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                        
-                                <button type="button" class="btn btn-sm btn-outline-secondary"
+
+                                <button type="button" class="btn btn-delete-action"
                                     onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')" title="Eliminar">
                                     <i class="bi bi-trash"></i>
                                 </button>
+
                             </div>
-                        
-                            <form id="form-eliminar-{{ c.pk }}" action="{% url 'eliminar_glp' c.pk %}" method="POST" style="display:none;">
+
+                            <form id="form-eliminar-{{ c.pk }}" action="{% url 'eliminar_glp' c.pk %}" method="POST"
+                                style="display:none;">
                                 {% csrf_token %}
                             </form>
+
                         </div>
                     </td>
                 </tr>
@@ -171,6 +165,6 @@
             }
         })
     }
-</script> 
+</script>
 
 {% endblock %}

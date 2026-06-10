@@ -1,0 +1,38 @@
+.tramite-header{
+    background:#f8fafc;
+}
+
+.tramite-title{
+    font-size:15px;
+    font-weight:700;
+    color:#111827;
+}
+
+.btn-delete-action{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    height:38px;
+    padding:0 12px;
+
+    background:#fff;
+    border:1px solid #dc3545;
+    color:#dc3545;
+
+    border-radius:8px;
+
+    font-size:13px;
+    font-weight:600;
+
+    transition:.2s;
+}
+
+.btn-delete-action:hover{
+    background:#dc3545;
+    color:#fff;
+}
+
+.btn-delete-action:hover i{
+    color:#fff;
+}

@@ -226,3 +226,141 @@
     border-color: #FD7401 !important;
     box-shadow: 0 0 0 0.25rem rgba(253, 116, 1, 0.25) !important;
 }
+
+
+/* ==========================
+   BOTONES DE ACCIONES TABLA
+   ========================== */
+
+/* ===================================
+   ACCIONES DE TABLA - CEDITEV
+   =================================== */
+
+.table-actions-wrapper{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:8px;
+}
+
+/* PDF */
+
+.btn-pdf-action{
+    width:40px;
+    height:40px;
+    border-radius:8px !important;
+    background:#dc3545;
+    border:1px solid #dc3545;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    transition:.2s ease;
+}
+
+.btn-pdf-action i{
+    color:#fff;
+    font-size:16px;
+}
+
+.btn-pdf-action:hover{
+    background:#c82333;
+    border-color:#c82333;
+}
+
+.btn-pdf-action:hover i{
+    color:#fff;
+}
+
+/* Grupo editar/eliminar */
+
+.btn-action-group{
+    display:flex;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    overflow:hidden;
+    background:#fff;
+}
+
+/* Botones internos */
+
+.btn-action-group .btn{
+    width:40px;
+    height:40px;
+    padding:0;
+    border:none;
+    border-radius:0 !important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s ease;
+}
+
+/* Separador */
+
+.btn-action-group .btn:first-child{
+    border-right:1px solid #d1d5db;
+}
+
+/* Editar */
+
+.btn-edit-action{
+    background:#fff;
+}
+
+.btn-edit-action i{
+    color:#0d6efd;
+    font-size:18px;
+}
+
+.btn-edit-action:hover{
+    background:#eff6ff;
+}
+
+.btn-edit-action:hover i{
+    color:#0d6efd;
+}
+
+/* Eliminar */
+
+.btn-delete-action{
+    background:#fff;
+}
+
+.btn-delete-action i{
+    color:#dc3545;
+    font-size:18px;
+}
+
+.btn-delete-action:hover{
+    background:#fff5f5;
+}
+
+.btn-delete-action:hover i{
+    color:#dc3545;
+}
+
+.action-group-duo{
+    display:inline-flex;
+    align-items:center;
+    border:1px solid #cfd6e0;
+    border-radius:10px;
+    overflow:hidden;
+    background:#fff;
+}
+
+.action-group-duo .btn{
+    width:40px;
+    height:40px;
+    padding:0;
+    border:none;
+    border-radius:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.action-group-duo .btn:first-child{
+    border-right:1px solid #cfd6e0;
+}

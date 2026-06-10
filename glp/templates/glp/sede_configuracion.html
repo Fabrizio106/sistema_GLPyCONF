@@ -150,15 +150,19 @@
                                     </td>
 
                                     <td class="text-center align-middle">
-                                        <a href="{% url 'editar_sede' s.pk %}" class="btn btn-sm btn-table-edit"
-                                            title="Editar">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
+                                        <div class="action-group-duo">
 
-                                        <a href="{% url 'eliminar_sede' s.pk %}" class="btn btn-sm btn-outline-danger"
-                                            title="Eliminar" onclick="return confirm('¿Eliminar esta sede?')">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                            <a href="{% url 'editar_sede' s.pk %}" class="btn btn-edit-action"
+                                                title="Editar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+
+                                            <a href="{% url 'eliminar_sede' s.pk %}" class="btn btn-delete-action"
+                                                title="Eliminar" onclick="return confirm('¿Eliminar esta sede?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+
+                                        </div>
                                     </td>
                                 </tr>
 

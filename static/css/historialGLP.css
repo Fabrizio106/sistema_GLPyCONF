@@ -41,6 +41,13 @@
     align-items: end;
 }
 
+.filters-grid-conformidades {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1.8fr auto;
+    gap: 20px;
+    align-items: end;
+}
+
 .filter-field {
     min-width: 0;
 }

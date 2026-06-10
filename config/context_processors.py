@@ -27,11 +27,12 @@ def menu_context(request):
         },
 
         # Conformidades
-        "conformidad_form": {
+        "crear_certificado_conformidad": {
             "module_title": "Conformidades",
             "module_icon": "bi-list-check",
             "page_title": "Nueva conformidad",
         },
+        
         "historial_conformidades": {
             "module_title": "Conformidades",
             "module_icon": "bi-list-check",

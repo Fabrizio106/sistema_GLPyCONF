@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/tittles.css' %}">
     <link rel="stylesheet" href="{% static 'css/reporte.css' %}">
     <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/conformidad.css' %}">
     <style>
         :root {
             font-display: swap;
@@ -179,11 +180,24 @@
                     <span class="breadcrumb-page">{{ page_title }}</span>
                 </div>
 
-                <div class="d-flex gap-3 text-muted fs-5">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="small fw-bold">{{ request.user.username }}</span>
-                        <i class="bi bi-person-circle"></i>
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="text-end">
+                        <div class="fw-bold lh-sm">
+                            {{ request.user.username|upper }}
+                        </div>
+
+                        <small class="text-muted lh-sm d-block">
+                            {% if request.user.groups.first %}
+                                {{ request.user.groups.first.name }}
+                            {% else %}
+                                Usuario
+                            {% endif %}
+                        </small>
                     </div>
+
+                    <i class="bi bi-person-circle fs-3"></i>
+
                 </div>
             </div>
 

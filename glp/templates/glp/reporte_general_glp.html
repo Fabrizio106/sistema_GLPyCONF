@@ -11,10 +11,10 @@
             <p class="page-subtitle">
                 Visualización y filtrado de certificaciones a nivel global
             </p>
-        </div> 
+        </div>
 
         <a href="{% url 'descargar_excel_glp' %}?{{ request.GET.urlencode }}" class="btn btn-orange">
-            <i class="bi bi-printer"></i>
+            <i class="bi bi-file-earmark-excel"></i>
             Descargar Excel
         </a>
     </div>
@@ -63,10 +63,7 @@
 
                 <div class="filter-field">
                     <label class="form-label">Buscar placa</label>
-                    <input type="text"
-                        name="q"
-                        class="form-control filter-control"
-                        placeholder="Ej: ABC-123"
+                    <input type="text" name="q" class="form-control filter-control" placeholder="Ej: ABC-123"
                         value="{{ request.GET.q }}">
                 </div>
 
@@ -96,26 +93,18 @@
 
                 <div class="filter-field">
                     <label class="form-label">Día exacto</label>
-                    <input type="date"
-                        name="fecha"
-                        class="form-control filter-control"
-                        value="{{ request.GET.fecha }}">
+                    <input type="date" name="fecha" class="form-control filter-control" value="{{ request.GET.fecha }}">
                 </div>
 
                 <div class="filter-field filter-rango">
                     <label class="form-label">Rango de fechas</label>
                     <div class="input-group filter-date-range">
-                        <input type="date"
-                            name="inicio"
-                            class="form-control filter-control"
+                        <input type="date" name="inicio" class="form-control filter-control"
                             value="{{ request.GET.inicio }}">
 
                         <span class="input-group-text filter-range-separator">al</span>
 
-                        <input type="date"
-                            name="fin"
-                            class="form-control filter-control"
-                            value="{{ request.GET.fin }}">
+                        <input type="date" name="fin" class="form-control filter-control" value="{{ request.GET.fin }}">
                     </div>
                 </div>
 
@@ -172,9 +161,9 @@
 
                             <td>
                                 {% if c.tipo_certificado == 'INICIAL' %}
-                                    <span class="badge badge-config-orange">INICIAL</span>
+                                <span class="badge badge-config-orange">INICIAL</span>
                                 {% else %}
-                                    <span class="badge badge-config-blue">ANUAL</span>
+                                <span class="badge badge-config-blue">ANUAL</span>
                                 {% endif %}
                             </td>
 
@@ -194,21 +183,29 @@
                             </td>
 
                             <td class="text-end">
-                                <div class="btn-group">
-                                    <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-table-action btn-table-delete"
+                                <div class="table-actions-wrapper">
+
+                                    <a href="{% url 'descargar_pdf_glp' c.pk %}" class="btn btn-pdf-action"
                                         title="Descargar PDF">
                                         <i class="bi bi-file-earmark-pdf"></i>
                                     </a>
-                                    <a href="{% url 'editar_glp' c.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                            
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')" title="Eliminar">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+
+                                    <div class="btn-action-group">
+
+                                        <a href="{% url 'editar_glp' c.pk %}" class="btn btn-edit-action"
+                                            title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <button type="button" class="btn btn-delete-action"
+                                            onclick="confirmarEliminacion('{{ c.pk }}', '{{ c.placa }}')"
+                                            title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+
+                                    </div>
+
                                 </div>
-                            
                             </td>
                         </tr>
 
@@ -249,6 +246,6 @@
             }
         })
     }
-</script> 
+</script>
 
 {% endblock %}

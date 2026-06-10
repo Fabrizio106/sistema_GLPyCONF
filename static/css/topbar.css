@@ -35,3 +35,27 @@
     color: #6b7280;
     font-weight: 500;
 }
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-user-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1.1;
+}
+
+.topbar-user-role {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.1;
+}
+
+.topbar-user-icon {
+    font-size: 2rem;
+    color: #475569;
+}

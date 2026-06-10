@@ -38,57 +38,83 @@
 
     <div class="card p-4 mb-4 shadow-sm">
       <div class="card-title mb-3 fw-bold">
-        <i class="bi bi-car-front section-icon"></i> Sección B: Datos del Vehículo
+          <i class="bi bi-car-front section-icon"></i>
+          Sección B: Datos del Vehículo
       </div>
+
+      <!-- FILA 1 -->
       <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">PLACA</label>
-          <div class="input-group">
-            {{ form.placa }}
-            <button class="btn btn-search-orange" type="button" id="btn-buscar-historial">
-              <i class="bi bi-search"></i>
-            </button>
+          <div class="col-md-4">
+              <label class="form-label fw-bold small text-secondary">
+                  PLACA
+              </label>
+              <div class="input-group">
+                  {{ form.placa }}
+                  <button class="btn btn-search-orange" type="button" id="btn-buscar-historial">
+                      <i class="bi bi-search"></i>
+                  </button>
+              </div>
           </div>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-bold small text-secondary">TITULAR / PROPIETARIO</label>
-          {{ form.propietario }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">CATEGORÍA</label>{{ form.categoria }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">MARCA</label>
-          {{form.marca }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">MODELO</label>{{ form.modelo }}
-        </div>
+
+          <div class="col-md-8">
+              <label class="form-label fw-bold small text-secondary">
+                  TITULAR / PROPIETARIO
+              </label>
+              {{ form.propietario }}
+          </div>
       </div>
+
+      <!-- FILA 2 -->
       <div class="row g-3 mt-1">
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">VERSIÓN</label>{{ form.version }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">COLOR</label>
-          {{form.color }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">AÑO FABRICACIÓN</label>{{ form.anio_fabricacion }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">AÑO MODELO</label>{{ form.anio_modelo }}
-        </div>
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">CATEGORÍA</label>
+              {{ form.categoria }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">MARCA</label>
+              {{ form.marca }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">MODELO</label>
+              {{ form.modelo }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">VERSIÓN</label>
+              {{ form.version }}
+          </div>
       </div>
+
+      <!-- FILA 3 -->
       <div class="row g-3 mt-1">
-        <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary">NÚMERO SERIE</label>{{ form.numero_serie }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-bold small text-secondary">NÚMERO MOTOR</label>{{ form.numero_motor }}
-        </div>
+          <div class="col-md-2">
+              <label class="form-label fw-bold small text-secondary">COLOR</label>
+              {{ form.color }}
+          </div>
+
+          <div class="col-md-2">
+              <label class="form-label fw-bold small text-secondary">AÑO FABRICACIÓN</label>
+              {{ form.anio_fabricacion }}
+          </div>
+
+          <div class="col-md-2">
+              <label class="form-label fw-bold small text-secondary">AÑO MODELO</label>
+              {{ form.anio_modelo }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">NÚMERO SERIE</label>
+              {{ form.numero_serie }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">NÚMERO MOTOR</label>
+              {{ form.numero_motor }}
+          </div>
       </div>
-    </div>
+  </div>
 
     <div class="card p-4 mb-4 shadow-sm">
       <div class="card-title mb-3 fw-bold">
@@ -154,7 +180,7 @@
       </div>
     </div>
 
-    <div class="card p-4">
+    <div class="card p-4 mb-4 shadow-sm">
       <div class="card-title d-flex justify-content-between w-100">
         <div class="card-title mb-3 fw-bold"><i class="bi bi-list-check section-icon"></i> Sección D:
           Trámites / Cambios Realizados</div>
@@ -183,54 +209,93 @@
 </div>
 
 <template id="tramite-block-template">
-  <div class="tramite-block border border-2 rounded-3 p-4 mb-5 shadow-sm bg-white position-relative">
-    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-3 remove-block-btn"
-      title="Eliminar este trámite">
-      <i class="bi bi-trash-fill"></i>
-    </button>
+  <div class="tramite-block border border-2 rounded-3 mb-5 shadow-sm bg-white overflow-hidden">
 
-    <div class="row g-3 mb-4 border-bottom pb-3">
-      <div class="col-md-5">
-        <label class="form-label small fw-bold text-uppercase">Tipo de Trámite</label>
-        <select class="form-select border-warning selector-tipo shadow-sm" name="tipo_tramite_multiple[]" required>
-          <option value="">Seleccione tipo</option>
-          <option value="RECTIFICACION">RECTIFICACIÓN</option>
-          <option value="ADECUACION">ADECUACIÓN</option>
-          <option value="INCORPORACION">INCORPORACIÓN</option>
-          <option value="MODIFICACION">MODIFICACIÓN</option>
-        </select>
-      </div>
-      <div class="col-md-7">
-        <label class="form-label small fw-bold text-uppercase">Campos a modificar (Buscador)</label>
-        <div class="input-group shadow-sm">
-          <span class="input-group-text bg-white border-warning text-warning"><i class="bi bi-search"></i></span>
-          <input type="text" class="form-control border-warning buscador-campos"
-            placeholder="Escriba para filtrar campos..." />
+    <!-- CABECERA -->
+    <div class="tramite-header d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+      <span class="tramite-title">
+        Trámite
+      </span>
+
+      <button type="button"
+        class="btn-delete-action remove-block-btn"
+        title="Eliminar trámite">
+        <i class="bi bi-trash"></i>
+        <span>Eliminar</span>
+      </button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="p-4">
+
+      <div class="row g-3 mb-4">
+
+        <div class="col-md-5">
+          <label class="form-label small fw-bold text-uppercase">
+            Tipo de Trámite
+          </label>
+
+          <select class="form-select selector-tipo shadow-sm"
+                  name="tipo_tramite_multiple[]"
+                  required>
+            <option value="">Seleccione tipo</option>
+            <option value="RECTIFICACION">RECTIFICACIÓN</option>
+            <option value="ADECUACION">ADECUACIÓN</option>
+            <option value="INCORPORACION">INCORPORACIÓN</option>
+            <option value="MODIFICACION">MODIFICACIÓN</option>
+          </select>
         </div>
+
+        <div class="col-md-7">
+          <label class="form-label small fw-bold text-uppercase">
+            Campos a modificar (Buscador)
+          </label>
+
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+
+            <input type="text"
+                   class="form-control buscador-campos"
+                   placeholder="Buscar campos por nombre...">
+          </div>
+        </div>
+
       </div>
+
+      <div class="checklist-area d-none">
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-muted text-uppercase">
+            Campos disponibles:
+          </label>
+
+          <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
+               style="max-height:150px; overflow-y:auto">
+          </div>
+        </div>
+
+        <div class="table-responsive mt-4">
+          <table class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm">
+            <thead class="table-warning text-dark small text-uppercase">
+              <tr>
+                <th style="width:25%">Campo</th>
+                <th style="width:30%">Valor Actual</th>
+                <th style="width:35%">Nuevo Valor</th>
+                <th style="width:10%; text-align:center">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody class="inputs-area"></tbody>
+
+          </table>
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="checklist-area d-none">
-      <div class="mb-3">
-        <label class="form-label small fw-bold text-muted text-uppercase">Campos disponibles:</label>
-        <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
-          style="max-height: 150px; overflow-y: auto"></div>
-      </div>
-
-      <div class="table-responsive mt-4">
-        <table class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm">
-          <thead class="table-warning text-dark small text-uppercase">
-            <tr>
-              <th style="width: 25%">Campo</th>
-              <th style="width: 30%">Valor Actual</th>
-              <th style="width: 35%">Nuevo Valor</th>
-              <th style="width: 10%; text-align: center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="inputs-area"></tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -261,6 +326,13 @@
     );
     const addBlockBtn = document.getElementById("btn-add-tramite-block");
     const template = document.getElementById("tramite-block-template");
+
+    function actualizarNumeracionTramites() {
+            document.querySelectorAll('.tramite-block').forEach((block, index) => {
+                block.querySelector('.tramite-title').textContent =
+                    `Trámite #${index + 1}`;
+            });
+        }
 
     // OPCIÓN 1: Diccionario de nombres profesionales
     const nombresAmigables = {
@@ -405,6 +477,12 @@
 
       const clone = template.content.cloneNode(true);
       const block = clone.querySelector(".tramite-block");
+
+      const numeroTramite = document.querySelectorAll('.tramite-block').length + 1;
+
+      block.querySelector('.tramite-title').textContent =
+          `Trámite #${numeroTramite}`;
+
       const selector = block.querySelector(".selector-tipo");
       const buscador = block.querySelector(".buscador-campos");
       const checklistArea = block.querySelector(".checklist-area");
@@ -517,6 +595,7 @@
       removeBlockBtn.addEventListener("click", () => {
         if (document.querySelectorAll(".tramite-block").length > 1) {
           block.remove();
+          actualizarNumeracionTramites()
           updateSelectors();
         } else {
           Swal.fire({
@@ -531,6 +610,7 @@
       });
 
       masterContainer.appendChild(block);
+      actualizarNumeracionTramites()
       updateSelectors();
     }
 
