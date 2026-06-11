@@ -132,7 +132,7 @@
 </head>
 <body>
 
-<p class="titulo">CERTIFICADO DE CONFORMIDAD DE MODIFICACIÓN</p>
+<p class="titulo">CERTIFICADO DE CONFORMIDAD DE MODIFICACION</p>
 
 <div class="cert-num-wrapper">
     <span class="cert-num">CERTIFICADO CDT HR-CON N° {{ certificado.numero_certificado }}</span>
@@ -206,11 +206,11 @@ registradas, actualmente, son las siguientes:</p>
     <tr>
         <td class="c-n">11</td><td class="c-lb">N° Motor</td>
         <td class="c-vl">{{ certificado.numero_motor|upper }}</td>
-        <td class="c-n2">22</td><td class="c-lb2">Carga Útil</td>
+        <td class="c-n2">22</td><td class="c-lb2">Carga Util</td>
         <td class="c-vl2">{{ certificado.carga_util|floatformat:0 }}kg</td>
     </tr>
     <tr>
-        <td class="c-n">12</td><td class="c-lb">Cilindros / Cilindrada</td>
+        <td class="c-n">12</td><td class="c-lb">Cilindros/Cilindrada</td>
         <td class="c-vl">{{ certificado.cilindros }} / {{ certificado.cilindrada }}</td>
         <td class="c-n2">23</td><td class="c-lb2">Potencia</td>
         <td class="c-vl2">{{ certificado.potencia }}</td>
@@ -221,31 +221,16 @@ registradas, actualmente, son las siguientes:</p>
 
 {% for bloque in bloques %}
     {% if forloop.first %}
-        <p class="tipo-titulo">TIPO DE {{ bloque.tipo }}: {{ bloque.primer_label}}</p>
+        <p class="tipo-titulo">TIPO DE {{ bloque.tipo }}: {{ bloque.primer_label|upper }}</p>
         <p class="de-linea"><strong>DE:</strong> {{ bloque.valor_anterior|upper }}</p>
         <p class="de-linea" style="margin-bottom:3pt;">
-            <strong>A:</strong> {{ bloque.primer_val_new }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}:</strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+            <strong>A:</strong> {{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}:</strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
         </p>
     {% else %}
         <p class="tramite-titulo-extra">{{ bloque.tipo }}:</p>
-
         <p class="tramite-detalle-extra">
-            <strong>{{ bloque.primer_label|upper }}:</strong>
-            {{ bloque.primer_val_new }}
-            {% if bloque.norma_primer %}
-                {{ bloque.norma_primer }}
-            {% endif %}
+            <strong>{{ bloque.primer_label|upper }}: </strong>{{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}: </strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
         </p>
-
-        {% for ad in bloque.adicionales %}
-        <p class="tramite-detalle-extra">
-            <strong>{{ ad.label|upper }}:</strong>
-            {{ ad.valor_nuevo }}
-            {% if ad.norma %}
-                {{ ad.norma }}
-            {% endif %}
-        </p>
-        {% endfor %}
     {% endif %}
 {% endfor %}
 
