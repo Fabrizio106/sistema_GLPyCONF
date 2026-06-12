@@ -411,7 +411,7 @@ def editar_conformidad(request, pk):
                     certificado.tramites.all().delete()
                     editado = form.save(commit=False)
                     editado.usuario = request.user
-                    editado.fecha_emision = timezone.localdate()
+                    # editado.fecha_emision = timezone.localdate()
                     editado.save()
 
                     mapa_tramites = request.POST.getlist('mapa_tramites[]')
