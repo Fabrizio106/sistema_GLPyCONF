@@ -62,7 +62,7 @@ CARROCERIAS_2006 = [
 ]
 
 
-def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
+""" def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
     campo_lower  = campo.lower()
     val_nuevo_up = str(valor_nuevo).upper().strip()
 
@@ -78,6 +78,19 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
         if tipo == 'RECTIFICACION':
             return ("(De acuerdo a la directiva RD N° 04848-2006 MTC/15 "
                     "y RD N° 10476-2008-MTC/15)")
+        elif tipo == 'ADECUACION':
+            if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
+                return ("(Adecuación de acuerdo a la directiva RD N° 10476-2008-MTC/15 - "
+                        "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU "
+                        "ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA)")
+            elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
+                return ("(Adecuación de acuerdo a la directiva RD N° 04848-2006 MTC/15 - "
+                        "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU "
+                        "ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA)")
+            else:
+                return ("(Adecuación de acuerdo a la directiva RD N° 04848-2006 MTC/15 "
+                        "y RD N° 10476-2008-MTC/15)")
+            
         elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
             return ("(Adecuación acorde a R.D. N°10476-2008-MTC/15 - NO HA EXISTIDO "
                     "MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA)")
@@ -90,6 +103,40 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
 
     if campo_lower == 'combustible':
         return "(Adecuación a la RD N° 04848-2006 MTC/15)"
+    if campo_lower == 'categoria':
+        if tipo == 'ADECUACION':
+            return "(Adecuación de acuerdo a la RD N° 04848-2006 MTC/15)"
+
+    return "" """
+
+def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
+    if tipo != 'ADECUACION':
+        return ""
+
+    campo_lower = campo.lower()
+    val_nuevo_up = str(valor_nuevo).upper().strip()
+
+    if campo_lower == 'carroceria':
+        TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
+                     'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
+                     'REMOLCADOR','GRUA','PANEL','CARGOBUS',
+                     'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
+        TIPO_2006 = ['STATION WAGON','HATCH BACK','HATCHBACK','SUV',
+                     'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
+                     'PLATAFORMA','VOLQUETE','M1']
+
+        if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
+            return "(Adecuación acorde a R.D. N°10476-2008-MTC/15)"
+        elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
+            return "(Adecuación acorde a R.D. N°4848-2006-MTC/15)"
+        else:
+            return "(Adecuación a la directiva RD N° 04848-2006 MTC/15 y RD N° 10476-2008-MTC/15)"
+
+    if campo_lower == 'combustible':
+        return "(Adecuación a la RD N° 04848-2006 MTC/15)"
+
+    if campo_lower == 'categoria':
+        return "(Adecuación de acuerdo a la RD N° 04848-2006 MTC/15)"
 
     return ""
 
@@ -97,6 +144,17 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
     campo_lower  = campo.lower()
     val_nuevo_up = str(valor_nuevo).upper().strip()
     val_ant_up   = str(valor_anterior).upper().strip()
+
+    if campo_lower == 'carroceria' and tipo == 'ADECUACION':
+        TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
+                     'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
+                     'REMOLCADOR','GRUA','PANEL','CARGOBUS',
+                     'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
+        TIPO_2006 = ['STATION WAGON','HATCH BACK','HATCHBACK','SUV',
+                     'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
+                     'PLATAFORMA','VOLQUETE','M1']
+        if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008 + TIPO_2006]):
+            return "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA."
 
     if campo_lower == 'combustible':
         if 'GASOLINA' in val_nuevo_up:
@@ -130,6 +188,8 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
             return "RECTIFICAR CATEGORIA de acuerdo a la RD N 4848-2006-MTC/15."
 
     return ""
+
+
 def render_to_pdf_conformidad(template_src, context_dict, filename="certificado"):
     template = get_template(template_src)
     html     = template.render(context_dict)
@@ -284,11 +344,12 @@ def descargar_pdf_conformidad(request, pk):
     
     
     TIPOS_LABELS = {
-    'INCORPORACION': 'INCORPORACIÓN',
-    'ADECUACION': 'ADECUACIÓN',
-    'RECTIFICACION': 'RECTIFICACIÓN',
-    'MODIFICACION': 'MODIFICACIÓN',
+        'INCORPORACION': 'INCORPORACIÓN',
+        'ADECUACION': 'ADECUACIÓN',
+        'RECTIFICACION': 'RECTIFICACIÓN',
+        'MODIFICACION': 'MODIFICACIÓN',
     }
+
 
 
     for tipo, items in bloques_dict.items():
@@ -346,6 +407,7 @@ def descargar_pdf_conformidad(request, pk):
 
         bloques.append({
             'tipo':           TIPOS_LABELS.get(tipo, tipo),
+            'tipo_raw':       tipo,
             'primer_campo':   primer_campo,
             'primer_label':   CAMPO_LABELS.get(primer_campo, primer_campo.upper()),
             'valor_anterior': valor_anterior,
@@ -394,7 +456,7 @@ def editar_conformidad(request, pk):
                     certificado.tramites.all().delete()
                     editado = form.save(commit=False)
                     editado.usuario = request.user
-                    editado.fecha_emision = timezone.localdate()
+                    # editado.fecha_emision = timezone.localdate()
                     editado.save()
 
                     mapa_tramites = request.POST.getlist('mapa_tramites[]')
