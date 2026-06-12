@@ -1,17 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <form method="POST" id="certificado-form">
-    {% csrf_token %} {% if form.errors %}
-    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
-      <div class="d-flex align-items-center">
-        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-        <div>
-          <strong>Por favor corrija los siguientes errores:</strong>
-          {{ form.errors }}
-        </div>
-      </div>
-    </div>
-    {% endif %}
+    {% csrf_token %} 
 
     <!-- TÍTULO FUERA DEL CARD -->
     <div class="page-title-row">
@@ -319,6 +309,10 @@
   const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
 </script>
 
+{% if form.errors %}
+  {{ form.errors|json_script:"django-errors-data" }}
+{% endif %}
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const masterContainer = document.getElementById(
@@ -326,6 +320,39 @@
     );
     const addBlockBtn = document.getElementById("btn-add-tramite-block");
     const template = document.getElementById("tramite-block-template");
+
+    // --- EMISIÓN DE ERRORES DE DJANGO VÍA SWEETALERT2 ---
+    const errorsTag = document.getElementById("django-errors-data");
+    
+    if (errorsTag) {
+      // Convertimos el JSON de Django a un objeto JS
+      const errorsObj = JSON.parse(errorsTag.textContent);
+      let errorMgs = "";
+
+      // Recorremos el objeto de errores para armar el HTML limpio
+      for (const field in errorsObj) {
+        errorsObj[field].forEach(errorText => {
+          const message = (typeof errorText === 'object' && errorText.message) ? errorText.message : errorText;
+          
+          if (field === '__all__') {
+            errorMgs += `• ${message}<br>`;
+          } else {
+            // Convertimos el campo a MAYÚSCULAS y lo envolvemos entre comillas ""
+            const fieldUpper = `"${field.toUpperCase()}"`;
+            errorMgs += `<strong>${fieldUpper}:</strong> ${message}<br>`;
+          }
+        });
+      }
+
+      // Lanzamos la alerta de SweetAlert2
+      Swal.fire({
+        title: 'Verifique el formulario',
+        html: '<div style="text-align: left;">' + errorMgs + '</div>',
+        icon: 'warning',
+        confirmButtonColor: '#ff7300',
+        confirmButtonText: 'Corregir'
+      });
+    }
 
     function actualizarNumeracionTramites() {
             document.querySelectorAll('.tramite-block').forEach((block, index) => {
@@ -368,6 +395,7 @@
     const config = {
       RECTIFICACION: [
         "categoria",
+        "combustible",
         "marca",
         "modelo",
         "color",

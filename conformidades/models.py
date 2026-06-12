@@ -42,9 +42,9 @@ class CertificadoConformidad(models.Model):
     cilindros = models.CharField(max_length=10, blank=True, null=True, verbose_name="Cilindros")
     
     # Medidas (DecimalField para precisión técnica)
-    longitud = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, verbose_name="Longitud (m)")
-    altura = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, verbose_name="Altura (m)")
-    ancho = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, verbose_name="Ancho (m)")
+    longitud = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="Longitud (m)")
+    altura = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="Altura (m)")
+    ancho = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="Ancho (m)")
     cilindrada = models.CharField(max_length=20, blank=True, null=True, verbose_name="Cilindrada")
     
     # Pesos
