@@ -166,16 +166,45 @@ def crear_certificado_conformidad(request):
                     certificado.usuario = request.user
                     certificado.save()
 
+                    # Capturamos todas las notas del formulario (vienen en el orden de los bloques visibles)
+                    notas_bloques = request.POST.getlist('nota_modificacion_tramite[]')
+                    
+                    # Capturamos todos los tipos de trámites en orden
+                    tipos_tramites_generales = request.POST.getlist('tipo_tramite[]')
+
                     mapa_tramites = request.POST.getlist('mapa_tramites[]')
+                    
                     for item in mapa_tramites:
                         tipo, campo = item.split('|')
                         valor_nuevo = request.POST.get(f'valor_{tipo}_{campo}')
+                        
                         if valor_nuevo:
+                            nota_para_este_tramite = None
+                            
+                            # Si es una MODIFICACIÓN y requiere nota obligatoria
+                            if tipo == 'MODIFICACION' and campo in ['combustible', 'numero_motor']:
+                                try:
+                                    # Encontramos en qué posición de los bloques generales se encuentra esta MODIFICACION
+                                    # Para saber qué caja de texto (textarea) le corresponde.
+                                    indices_modificacion = [i for i, x in enumerate(tipos_tramites_generales) if x == 'MODIFICACION']
+                                    
+                                    if indices_modificacion:
+                                        # Tomamos el índice del primer bloque de modificación que coincida
+                                        bloque_index = indices_modificacion[0] 
+                                        
+                                        if bloque_index < len(notas_bloques):
+                                            nota_input = notas_bloques[bloque_index].strip()
+                                            nota_para_este_tramite = nota_input if nota_input else None
+                                except Exception as index_err:
+                                    nota_para_este_tramite = None
+
+                            # Guardamos el trámite enlazado al certificado con su respectiva nota
                             TramiteConformidad.objects.create(
                                 certificado=certificado,
                                 tipo_nombre=tipo,
                                 campo_modificado=campo,
-                                valor_nuevo=valor_nuevo
+                                valor_nuevo=valor_nuevo,
+                                nota=nota_para_este_tramite 
                             )
 
                     messages.success(request, "¡Certificado y trámites registrados con éxito!", extra_tags='conformidad')
@@ -391,16 +420,19 @@ def editar_conformidad(request, pk):
         if form.is_valid():
             try:
                 with transaction.atomic():
+                    # Eliminamos los trámites anteriores para recrearlos con los nuevos cambios
                     certificado.tramites.all().delete()
                     editado = form.save(commit=False)
                     editado.usuario = request.user
+                    # Si deseas mantener la fecha original de emisión al editar, comenta la siguiente línea:
                     editado.fecha_emision = timezone.localdate()
                     editado.save()
 
+                    # NUEVO: Volvemos a capturar las notas y tipos generales en orden
+                    notas_bloques = request.POST.getlist('nota_modificacion_tramite[]')
+                    tipos_tramites_generales = request.POST.getlist('tipo_tramite[]')
                     mapa_tramites = request.POST.getlist('mapa_tramites[]')
-                    tramites_guardados = 0
-
-                    # Eliminar duplicados manteniendo orden
+                    
                     vistos = set()
                     for item in mapa_tramites:
                         try:
@@ -409,23 +441,34 @@ def editar_conformidad(request, pk):
                             if clave in vistos:
                                 continue
                             vistos.add(clave)
+                            
                             valor_nuevo = request.POST.get(f'valor_{tipo}_{campo}')
                             if valor_nuevo and valor_nuevo.strip():
+                                nota_para_este_tramite = None
+                                
+                                # Aplicamos la misma lógica quirúrgica de asignación de notas
+                                if tipo == 'MODIFICACION' and campo in ['combustible', 'numero_motor']:
+                                    try:
+                                        indices_modificacion = [i for i, x in enumerate(tipos_tramites_generales) if x == 'MODIFICACION']
+                                        if indices_modificacion:
+                                            bloque_index = indices_modificacion[0]
+                                            if bloque_index < len(notas_bloques):
+                                                nota_input = notas_bloques[bloque_index].strip()
+                                                nota_para_este_tramite = nota_input if nota_input else None
+                                    except:
+                                        nota_para_este_tramite = None
+
                                 TramiteConformidad.objects.create(
                                     certificado=editado,
                                     tipo_nombre=tipo,
                                     campo_modificado=campo,
-                                    valor_nuevo=valor_nuevo.strip()
+                                    valor_nuevo=valor_nuevo.strip(),
+                                    nota=nota_para_este_tramite # <-- Guardará la nota editada
                                 )
-                                tramites_guardados += 1
                         except ValueError:
                             continue
 
-                    messages.success(
-                        request,
-                        "Certificado actualizado correctamente.",
-                        extra_tags='conformidad'
-                    )
+                    messages.success(request, "Certificado actualizado correctamente.", extra_tags='conformidad')
                     return redirect('historial_conformidades')
             except Exception as e:
                 form.add_error(None, f"Error al guardar: {e}")
@@ -433,8 +476,9 @@ def editar_conformidad(request, pk):
         form = CertificadoForm(instance=certificado)
 
     import json as _json
+    # CORRECCIÓN AQUÍ: Agregamos 'nota' a la extracción de datos para el JS
     tramites_existentes = list(
-        certificado.tramites.values('tipo_nombre', 'campo_modificado', 'valor_nuevo')
+        certificado.tramites.values('tipo_nombre', 'campo_modificado', 'valor_nuevo', 'nota')
     )
 
     return render(request, 'conformidades/conformidad_form.html', {

@@ -5,6 +5,17 @@ from glp.models import SedeConfiguracion
 from datetime import date, timedelta
 
 class CertificadoForm(forms.ModelForm):
+    
+    nota_modificacion = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 3, 
+            'class': 'form-control', 
+            'placeholder': 'Escriba una nota sobre la modificación de motor/combustible...'
+        }),
+        required=False,
+        label="Nota"
+    )
+    
     sede = forms.ModelChoiceField(
         queryset=SedeConfiguracion.objects.all(),
         empty_label="Seleccione una Sede",

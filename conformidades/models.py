@@ -121,6 +121,12 @@ class TramiteConformidad(models.Model):
         verbose_name="Nuevo Valor"
     )
     
+    nota = models.TextField(
+        blank=True, 
+        null=True, 
+        verbose_name="Nota de la Modificación"
+    )
+    
     fecha_tramite = models.DateField(auto_now_add=True, verbose_name="Fecha del Trámite")
 
     class Meta:
