@@ -508,29 +508,52 @@
       if (!selectorTipo || !contenedorNota || !textareaNota) return;
 
       let mostrarNota = false;
+      let combustibleMarcado = false;
+      let motorMarcado = false;
 
       // Condición estricta: Tipo es MODIFICACIÓN
       if (selectorTipo.value === "MODIFICACION") {
         const chkCombustible = block.querySelector('.chk-item[data-campo="combustible"]');
         const chkMotor = block.querySelector('.chk-item[data-campo="numero_motor"]');
 
-        const combustibleMarcado = chkCombustible ? chkCombustible.checked : false;
-        const motorMarcado = chkMotor ? chkMotor.checked : false;
+        combustibleMarcado = chkCombustible ? chkCombustible.checked : false;
+        motorMarcado = chkMotor ? chkMotor.checked : false;
 
-        // Si cualquiera de los dos (o ambos) está marcado
         if (combustibleMarcado || motorMarcado) {
           mostrarNota = true;
         }
       }
 
+      // Textos predefinidos base
+      const textoCombustible = "EL SISTEMA BI-COMBUSTIBLE GLP HA SIDO DESMONTADO (KIT DE GLP)";
+      const textoMotor = "EL NUEVO MOTOR ENSAMBLADO TIENE EL MISMO MODELO DEL ANTERIOR MOTOR POR LO CUAL, EL COMBUSTIBLE, CILINDRADA Y CILINDROS NO SE VEN AFECTADOS POR ESTE CAMBIO";
+      const textoMixto = `${textoCombustible}.\n\n${textoMotor}`;
+
       // Cambios visuales y de requerimiento en base al bloque modificado
       if (mostrarNota) {
         contenedorNota.style.display = "block";
         textareaNota.required = true;
+
+        // =================================================================
+        // SOLUCIÓN DINÁMICA: Sincroniza el texto según la combinación exacta
+        // =================================================================
+        const valorActual = textareaNota.value.trim();
+
+        // Solo automatizamos si el campo está vacío, o si contiene exactamente uno de nuestros textos por defecto
+        if (valorActual === "" || valorActual === textoCombustible || valorActual === textoMotor || valorActual === textoMixto) {
+          if (combustibleMarcado && motorMarcado) {
+            textareaNota.value = textoMixto;
+          } else if (combustibleMarcado) {
+            textareaNota.value = textoCombustible;
+          } else if (motorMarcado) {
+            textareaNota.value = textoMotor;
+          }
+        }
+        
       } else {
         contenedorNota.style.display = "none";
         textareaNota.required = false;
-        textareaNota.value = ""; // Limpiamos si se desmarca
+        textareaNota.value = ""; // Limpiamos si se desmarca todo
       }
     }
 
