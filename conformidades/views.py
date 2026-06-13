@@ -284,12 +284,18 @@ def descargar_pdf_conformidad(request, pk):
 
         for item in items:
             valor_ant_item = str(getattr(certificado, item.campo_modificado, '') or '')
-            nota_auto = generar_nota_conformidad(item.tipo_nombre, item.campo_modificado, item.valor_nuevo, valor_ant_item)
-            if nota_auto and nota_auto not in notas:
-                notas.append(nota_auto)
-            # Nota manual del textarea de Estefano
-            if item.nota and item.nota.strip() and item.nota.strip() not in notas:
-                notas.append(item.nota.strip())
+            
+            # Si es MODIFICACION de combustible o motor Y tiene nota manual, solo usa la manual
+            if (item.tipo_nombre == 'MODIFICACION' 
+                    and item.campo_modificado in ['combustible', 'numero_motor']
+                    and item.nota and item.nota.strip()):
+                if item.nota.strip() not in notas:
+                    notas.append(item.nota.strip())
+            else:
+                # Para todo lo demás, usa la nota automática normal
+                nota_auto = generar_nota_conformidad(item.tipo_nombre, item.campo_modificado, item.valor_nuevo, valor_ant_item)
+                if nota_auto and nota_auto not in notas:
+                    notas.append(nota_auto)
 
         bloques.append({
             'tipo': TIPOS_LABELS.get(tipo, tipo),
