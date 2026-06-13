@@ -1,17 +1,8 @@
+conformidad_form.html:
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <form method="POST" id="certificado-form">
-    {% csrf_token %} {% if form.errors %}
-    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
-      <div class="d-flex align-items-center">
-        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-        <div>
-          <strong>Por favor corrija los siguientes errores:</strong>
-          {{ form.errors }}
-        </div>
-      </div>
-    </div>
-    {% endif %}
+    {% csrf_token %}
 
     <!-- TÍTULO FUERA DEL CARD -->
     <div class="page-title-row">
@@ -183,52 +174,61 @@
 </div>
 
 <template id="tramite-block-template">
-  <div class="tramite-block border border-2 rounded-3 p-4 mb-5 shadow-sm bg-white position-relative">
-    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-3 remove-block-btn"
-      title="Eliminar este trámite">
-      <i class="bi bi-trash-fill"></i>
-    </button>
-
-    <div class="row g-3 mb-4 border-bottom pb-3">
-      <div class="col-md-5">
-        <label class="form-label small fw-bold text-uppercase">Tipo de Trámite</label>
-        <select class="form-select border-warning selector-tipo shadow-sm" name="tipo_tramite_multiple[]" required>
-          <option value="">Seleccione tipo</option>
-          <option value="RECTIFICACION">RECTIFICACIÓN</option>
-          <option value="ADECUACION">ADECUACIÓN</option>
-          <option value="INCORPORACION">INCORPORACIÓN</option>
-          <option value="MODIFICACION">MODIFICACIÓN</option>
-        </select>
-      </div>
-      <div class="col-md-7">
-        <label class="form-label small fw-bold text-uppercase">Campos a modificar (Buscador)</label>
-        <div class="input-group shadow-sm">
-          <span class="input-group-text bg-white border-warning text-warning"><i class="bi bi-search"></i></span>
-          <input type="text" class="form-control border-warning buscador-campos"
-            placeholder="Escriba para filtrar campos..." />
+  <div class="tramite-block border border-2 rounded-3 mb-5 shadow-sm bg-white overflow-hidden">
+    <div class="tramite-header d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-light">
+      <span class="tramite-title fw-bold text-dark">Trámite</span>
+      <button type="button" class="btn btn-sm btn-outline-danger remove-block-btn" title="Eliminar trámite">
+        <i class="bi bi-trash"></i> Eliminar
+      </button>
+    </div>
+    <div class="p-4">
+      <div class="row g-3 mb-4">
+        <div class="col-md-5">
+          <label class="form-label small fw-bold text-uppercase">Tipo de Trámite</label>
+          <select class="form-select border-warning selector-tipo shadow-sm" name="tipo_tramite[]" required>
+            <option value="">Seleccione tipo</option>
+            <option value="RECTIFICACION">RECTIFICACIÓN</option>
+            <option value="ADECUACION">ADECUACIÓN</option>
+            <option value="INCORPORACION">INCORPORACIÓN</option>
+            <option value="MODIFICACION">MODIFICACIÓN</option>
+          </select>
+        </div>
+        <div class="col-md-7">
+          <label class="form-label small fw-bold text-uppercase">Campos a modificar (Buscador)</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-white border-warning text-warning"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-warning buscador-campos" placeholder="Escriba para filtrar campos..."/>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="checklist-area d-none">
-      <div class="mb-3">
-        <label class="form-label small fw-bold text-muted text-uppercase">Campos disponibles:</label>
-        <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
-          style="max-height: 150px; overflow-y: auto"></div>
-      </div>
+      <div class="checklist-area d-none">
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-muted text-uppercase">Campos disponibles:</label>
+          <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0" style="max-height:150px; overflow-y:auto"></div>
+        </div>
+        <div class="table-responsive mt-4">
+          <table class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm">
+            <thead class="table-warning text-dark small text-uppercase">
+              <tr>
+                <th style="width:25%">Campo</th>
+                <th style="width:30%">Valor Actual</th>
+                <th style="width:35%">Nuevo Valor</th>
+                <th style="width:10%; text-align:center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="inputs-area"></tbody>
+          </table>
 
-      <div class="table-responsive mt-4">
-        <table class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm">
-          <thead class="table-warning text-dark small text-uppercase">
-            <tr>
-              <th style="width: 25%">Campo</th>
-              <th style="width: 30%">Valor Actual</th>
-              <th style="width: 35%">Nuevo Valor</th>
-              <th style="width: 10%; text-align: center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="inputs-area"></tbody>
-        </table>
+          <!-- Nota manual — solo aparece en MODIFICACIÓN con combustible o motor -->
+          <div class="contenedor-nota-tramite mt-4 p-3 bg-light border-start border-warning border-3 rounded-3" style="display:none;">
+            <label class="form-label small fw-bold text-dark text-uppercase">
+              <i class="bi bi-pencil-square text-warning me-1"></i> Nota de Modificación Adicional
+            </label>
+            <p class="text-muted small mb-2">Detalle el motivo de la modificación de combustible y/o motor.</p>
+            <textarea name="nota_modificacion_tramite[]" class="form-control text-nota-tramite" rows="2" placeholder="Describa los cambios..."></textarea>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -254,10 +254,47 @@
   const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
 </script>
 
+{% if form.errors %}
+  {{ form.errors|json_script:"django-errors-data" }}
+{% endif %}
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+
+        // --- EMISIÓN DE ERRORES DE DJANGO VÍA SWEETALERT2 ---
+    const errorsTag = document.getElementById("django-errors-data");
+
+    if (errorsTag) {
+      const errorsObj = JSON.parse(errorsTag.textContent);
+      let errorMgs = "";
+
+      for (const field in errorsObj) {
+        errorsObj[field].forEach(errorText => {
+
+          const message =
+            (typeof errorText === 'object' && errorText.message)
+              ? errorText.message
+              : errorText;
+
+          if (field === '__all__') {
+            errorMgs += `• ${message}<br>`;
+          } else {
+            const fieldUpper = `"${field.toUpperCase()}"`;
+            errorMgs += `<strong>${fieldUpper}:</strong> ${message}<br>`;
+          }
+        });
+      }
+
+      Swal.fire({
+        title: 'Verifique el formulario',
+        html: '<div style="text-align:left;">' + errorMgs + '</div>',
+        icon: 'warning',
+        confirmButtonColor: '#ff7300',
+        confirmButtonText: 'Corregir'
+      });
+    }
     const masterContainer = document.getElementById(
-      "tramites-master-container",
+      "tramites-master-container",  
     );
     const addBlockBtn = document.getElementById("btn-add-tramite-block");
     const template = document.getElementById("tramite-block-template");
@@ -371,6 +408,52 @@
         "cilindros",
       ],
     };
+    function actualizarNumeracionTramites() {
+        document.querySelectorAll('.tramite-block').forEach((block, index) => {
+            const title = block.querySelector('.tramite-title');
+
+            if (title) {
+                title.textContent = `Trámite #${index + 1}`;
+            }
+        });
+    }
+
+    function evaluarNotaDelBloque(block) {
+
+        const selectorTipo = block.querySelector('.selector-tipo');
+        const contenedorNota = block.querySelector('.contenedor-nota-tramite');
+        const textareaNota = block.querySelector('.text-nota-tramite');
+
+        if (!selectorTipo || !contenedorNota || !textareaNota) return;
+
+        let mostrar = false;
+
+        if (selectorTipo.value === 'MODIFICACION') {
+
+            const chkCombustible = block.querySelector(
+                '.chk-item[data-campo="combustible"]'
+            );
+
+            const chkMotor = block.querySelector(
+                '.chk-item[data-campo="numero_motor"]'
+            );
+
+            if (
+                (chkCombustible && chkCombustible.checked) ||
+                (chkMotor && chkMotor.checked)
+            ) {
+                mostrar = true;
+            }
+        }
+
+        contenedorNota.style.display = mostrar ? 'block' : 'none';
+
+        textareaNota.required = mostrar;
+
+        if (!mostrar) {
+            textareaNota.value = '';
+        }
+    }
 
     // 1. Lógica de bloqueo de opciones duplicadas
     function updateSelectors() {
@@ -456,6 +539,7 @@
           checklistArea.classList.add("d-none");
         }
         updateSelectors();
+        evaluarNotaDelBloque(block);
       });
 
       // --- C. LÓGICA DE TABLA (Checklist -> Filas) ---
@@ -497,6 +581,7 @@
             if (inputsArea.children.length === 0) tabla.classList.add("d-none");
           }
         }
+        evaluarNotaDelBloque(block);
       });
 
       // --- D. ELIMINAR FILA DESDE LA TABLA (Y desmarcar check) ---
@@ -518,6 +603,7 @@
         if (document.querySelectorAll(".tramite-block").length > 1) {
           block.remove();
           updateSelectors();
+          actualizarNumeracionTramites();
         } else {
           Swal.fire({
             title: "Advertencia",
@@ -531,7 +617,9 @@
       });
 
       masterContainer.appendChild(block);
+
       updateSelectors();
+      actualizarNumeracionTramites();
     }
 
     // Inicializar cálculos de Carga Útil (Sección B/C)
@@ -620,6 +708,22 @@
             tabla.classList.remove('d-none');
             checklistArea.classList.remove('d-none');
           }
+          const notaGuardada = items.find(
+              i => i.nota && i.nota.trim()
+          );
+
+          if (notaGuardada) {
+
+              const textarea =
+                  block.querySelector('.text-nota-tramite');
+
+              if (textarea) {
+                  textarea.value = notaGuardada.nota;
+              }
+          }
+
+          evaluarNotaDelBloque(block);
+
 
           updateSelectors();
           setTimeout(procesarSiguiente, 100);

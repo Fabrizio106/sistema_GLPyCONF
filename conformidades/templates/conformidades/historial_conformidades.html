@@ -1,21 +1,30 @@
 {% extends 'base.html' %}
 
 <style>
-    .tabla-conformidades th {
-        white-space: nowrap;
-        font-size: 14px;
-        padding: 14px 12px;
+    .tabla-conformidades th{
+        white-space: nowrap !important;
+        font-size: 12px;
+        padding: 10px 8px;
     }
 
-    .tabla-conformidades td {
-        font-size: 14px;
+    .tabla-conformidades td{
+        font-size: 13px;
         vertical-align: middle;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .tabla-conformidades {
+        min-width: 1200px;
     }
 
     /* columna número certificado */
     .tabla-conformidades th:nth-child(1),
     .tabla-conformidades td:nth-child(1) {
-        min-width: 150px;
+        min-width: 180px;
+        width: 180px;
     }
 
     /* columna fecha certificación */
@@ -29,6 +38,27 @@
     .tabla-conformidades th:nth-child(6),
     .tabla-conformidades td:nth-child(6) {
         min-width: 260px;
+    }
+    .tabla-conformidades th:nth-child(7),
+    .tabla-conformidades td:nth-child(7) {
+        min-width: 140px;
+        width: 140px;
+    }
+    .card-body .form-label{
+        font-size: 11px;
+        white-space: nowrap;
+        margin-bottom: 4px;
+    }
+
+    .card-body .form-control,
+    .card-body .form-select{
+        font-size: 13px;
+        height: 38px;
+    }
+
+    .card-body .input-group-text{
+        font-size: 12px;
+        padding: .375rem .5rem;
     }
 </style>
 
@@ -44,12 +74,12 @@
         </a>
     </div>
 
-    <div class="card p-4">
+    <div class="card p-2">
 
 
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-0 shadow-sm mb-2">
             <div class="card-body">
-                <form method="GET" class="row g-3">
+                <form method="GET" class="row g-2">
 
                     <div class="col-md-2">
                         <label class="form-label small text-muted fw-bold">PLACA</label>
@@ -103,10 +133,14 @@
                         </div>
                     </div>
 
-                    <div class="col-md-1 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                        <a href="{% url 'historial_conformidades' %}" class="btn btn-light border w-100"
-                            title="Limpiar">
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-1">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+
+                        <a href="{% url 'historial_conformidades' %}"
+                        class="btn btn-light border"
+                        title="Limpiar">
                             <i class="bi bi-eraser"></i>
                         </a>
                     </div>
@@ -122,13 +156,13 @@
         <table class="table table-hover align-middle tabla-conformidades">
             <thead class="table-light">
                 <tr>
-                    <th>N° Conformidad</th>
+                    <th>N°&nbsp;Conformidad</th>
                     <th>Placa</th>
                     <th>Sede</th>
                     <th>Marca / Modelo</th>
-                    <th>Fecha Certificación</th>
-                    <th>Trámites Realizados</th>
-                    <th class="text-end">Acciones</th>
+                    <th>Fecha</th>
+                    <th>Trámites</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
