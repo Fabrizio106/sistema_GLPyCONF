@@ -13,109 +13,31 @@ import json
 from datetime import date, timedelta
 from django.http import JsonResponse
 from .forms import CertificadoForm
-from .models import TramiteConformidad, CertificadoConformidad
 from glp.models import SedeConfiguracion
 
-
-# ──────────────────────────────────────────
-#  CONSTANTES Y HELPERS PARA EL PDF
-# ──────────────────────────────────────────
-
 CAMPO_LABELS = {
-    'categoria': 'Categoría',
-    'marca': 'Marca',
-    'modelo': 'Modelo',
-    'color': 'Color',
-    'numero_vin': 'N° VIN',
-    'numero_serie': 'N° Serie',
-    'numero_motor': 'N° Motor',
-    'anio_fabricacion': 'Año Fabricación',
-    'anio_modelo': 'Año Modelo',
-    'ejes': 'Ejes',
-    'ruedas': 'Ruedas',
-    'peso_bruto': 'Peso Bruto',
-    'peso_neto': 'Peso Neto',
-    'carga_util': 'Carga Útil',
-    'carroceria': 'Carrocería',
-    'potencia': 'Potencia',
-    'combustible': 'Combustible',
-    'formula_rodante': 'Fórmula Rodante',
-    'cilindrada': 'Cilindrada',
-    'asientos': 'Asientos',
-    'pasajeros': 'Pasajeros',
-    'longitud': 'Longitud',
-    'altura': 'Altura',
-    'ancho': 'Ancho',
-    'cilindros': 'Cilindros',
+    'categoria': 'Categoría', 'marca': 'Marca', 'modelo': 'Modelo',
+    'color': 'Color', 'numero_vin': 'N° VIN', 'numero_serie': 'N° Serie',
+    'numero_motor': 'N° Motor', 'anio_fabricacion': 'Año Fabricación',
+    'anio_modelo': 'Año Modelo', 'ejes': 'Ejes', 'ruedas': 'Ruedas',
+    'peso_bruto': 'Peso Bruto', 'peso_neto': 'Peso Neto', 'carga_util': 'Carga Útil',
+    'carroceria': 'Carrocería', 'potencia': 'Potencia', 'combustible': 'Combustible',
+    'formula_rodante': 'Fórmula Rodante', 'cilindrada': 'Cilindrada',
+    'asientos': 'Asientos', 'pasajeros': 'Pasajeros', 'longitud': 'Longitud',
+    'altura': 'Altura', 'ancho': 'Ancho', 'cilindros': 'Cilindros',
 }
 
-CARROCERIAS_2008 = [
-    'PICK UP', 'BARANDA', 'MINIBUS', 'MICROBÚS', 'MICROBUS',
-    'OMNIBUS URBANO', 'OMNIBUS INTERURBANO', 'OMNIBUS PANORAMICO',
-    'REMOLCADOR', 'GRUA', 'PANEL', 'CARGOBUS',
-    'TRIMOTO PASAJEROS', 'TRIMOTO CARGA',
-]
+TIPOS_LABELS = {
+    'INCORPORACION': 'INCORPORACIÓN', 'ADECUACION': 'ADECUACIÓN',
+    'RECTIFICACION': 'RECTIFICACIÓN', 'MODIFICACION': 'MODIFICACIÓN',
+}
 
-CARROCERIAS_2006 = [
-    'STATION WAGON', 'HATCH BACK', 'HATCHBACK', 'SUV',
-    'COUPE', 'MULTIPROPÓSITO', 'MULTIPROPOSITO', 'SEDAN',
-]
-
-
-""" def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
-    campo_lower  = campo.lower()
-    val_nuevo_up = str(valor_nuevo).upper().strip()
-
-    if campo_lower == 'carroceria':
-        TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
-                     'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
-                     'REMOLCADOR','GRUA','PANEL','CARGOBUS',
-                     'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
-        TIPO_2006 = ['STATION WAGON','HATCH BACK','HATCHBACK','SUV',
-                     'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
-                     'PLATAFORMA','VOLQUETE','M1']
-
-        if tipo == 'RECTIFICACION':
-            return ("(De acuerdo a la directiva RD N° 04848-2006 MTC/15 "
-                    "y RD N° 10476-2008-MTC/15)")
-        elif tipo == 'ADECUACION':
-            if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
-                return ("(Adecuación de acuerdo a la directiva RD N° 10476-2008-MTC/15 - "
-                        "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU "
-                        "ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA)")
-            elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
-                return ("(Adecuación de acuerdo a la directiva RD N° 04848-2006 MTC/15 - "
-                        "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU "
-                        "ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA)")
-            else:
-                return ("(Adecuación de acuerdo a la directiva RD N° 04848-2006 MTC/15 "
-                        "y RD N° 10476-2008-MTC/15)")
-            
-        elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
-            return ("(Adecuación acorde a R.D. N°10476-2008-MTC/15 - NO HA EXISTIDO "
-                    "MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA)")
-        elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
-            return ("(Adecuación acorde a R.D. N°4848-2006-MTC/15 - NO HA EXISTIDO "
-                    "MODIFICACIÓN ESTRUCTURAL EN CHASIS Y CARROCERÍA)")
-        else:
-            return ("(Adecuación a la directiva RD N° 04848-2006 MTC/15 "
-                    "y RD N° 10476-2008-MTC/15)")
-
-    if campo_lower == 'combustible':
-        return "(Adecuación a la RD N° 04848-2006 MTC/15)"
-    if campo_lower == 'categoria':
-        if tipo == 'ADECUACION':
-            return "(Adecuación de acuerdo a la RD N° 04848-2006 MTC/15)"
-
-    return "" """
 
 def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
     if tipo != 'ADECUACION':
         return ""
-
     campo_lower = campo.lower()
     val_nuevo_up = str(valor_nuevo).upper().strip()
-
     if campo_lower == 'carroceria':
         TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
                      'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
@@ -124,26 +46,23 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
         TIPO_2006 = ['STATION WAGON','HATCH BACK','HATCHBACK','SUV',
                      'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
                      'PLATAFORMA','VOLQUETE','M1']
-
         if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
             return "(Adecuación acorde a R.D. N°10476-2008-MTC/15)"
         elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
             return "(Adecuación acorde a R.D. N°4848-2006-MTC/15)"
         else:
             return "(Adecuación a la directiva RD N° 04848-2006 MTC/15 y RD N° 10476-2008-MTC/15)"
-
     if campo_lower == 'combustible':
         return "(Adecuación a la RD N° 04848-2006 MTC/15)"
-
     if campo_lower == 'categoria':
         return "(Adecuación de acuerdo a la RD N° 04848-2006 MTC/15)"
-
     return ""
 
+
 def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
-    campo_lower  = campo.lower()
+    campo_lower = campo.lower()
     val_nuevo_up = str(valor_nuevo).upper().strip()
-    val_ant_up   = str(valor_anterior).upper().strip()
+    val_ant_up = str(valor_anterior).upper().strip()
 
     if campo_lower == 'carroceria' and tipo == 'ADECUACION':
         TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
@@ -168,31 +87,25 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
             return "EL VEHICULO MANTIENE EL SISTEMA BI-COMBUSTIBLE GNV"
         if tipo == 'RECTIFICACION':
             return "RECTIFICAR COMBUSTIBLE de acuerdo a la RD N 4848-2006-MTC/15."
-
     elif campo_lower == 'asientos':
         return "EL VEHÍCULO NO HA SUFRIDO MODIFICACIÓN ALGUNA CON RESPECTO AL NUMERO DE ASIENTOS."
-
     elif campo_lower == 'numero_motor':
         return ("EL NUEVO MOTOR ENSAMBLADO TIENE EL MISMO MODELO DEL ANTERIOR MOTOR "
-                "POR LO CUAL, EL COMBUSTIBLE, CILINDRADA Y CILINDROS NO SE VEN "
-                "AFECTADOS POR ESTE CAMBIO.")
-
+                "POR LO CUAL, EL COMBUSTIBLE, CILINDRADA Y CILINDROS NO SE VEN AFECTADOS POR ESTE CAMBIO.")
     elif campo_lower == 'ruedas':
         if 'EXTRA' in val_ant_up or 'BALON' in val_ant_up:
             return "EL VEHICULO HA MODIFICADO DE RUEDAS TIPO EXTRA ANCHAS A RUEDAS TIPO CONVENCIONALES."
         else:
             return "EL VEHICULO HA MODIFICADO DE RUEDAS CONVENCIONALES A TIPO EXTRA ANCHAS (LLANTAS BALON)."
-
     elif campo_lower == 'categoria':
         if tipo == 'RECTIFICACION':
             return "RECTIFICAR CATEGORIA de acuerdo a la RD N 4848-2006-MTC/15."
-
     return ""
 
 
 def render_to_pdf_conformidad(template_src, context_dict, filename="certificado"):
     template = get_template(template_src)
-    html     = template.render(context_dict)
+    html = template.render(context_dict)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}_conformidad.pdf"'
     pisa_status = pisa.CreatePDF(html, dest=response)
@@ -201,18 +114,26 @@ def render_to_pdf_conformidad(template_src, context_dict, filename="certificado"
     return response
 
 
-# ──────────────────────────────────────────
-#  VISTAS
-# ──────────────────────────────────────────
-
 def obtener_sedes_json():
     sedes_data = {
-        str(s.id): {
-            'anual_dias': s.fecha_anual,
-            'inicial_dias': s.fecha_inicial
-        } for s in SedeConfiguracion.objects.all()
+        str(s.id): {'anual_dias': s.fecha_anual, 'inicial_dias': s.fecha_inicial}
+        for s in SedeConfiguracion.objects.all()
     }
     return json.dumps(sedes_data)
+
+
+def formatear_valor_con_unidad(campo, valor):
+    if not valor or str(valor).strip() == '':
+        return str(valor)
+    campo_lower = campo.lower()
+    if campo_lower in ['longitud', 'altura', 'ancho']:
+        return f"{str(valor).rstrip('0').rstrip('.')}m"
+    if campo_lower in ['peso_neto', 'peso_bruto', 'carga_util']:
+        try:
+            return f"{int(float(str(valor)))}kg"
+        except:
+            return str(valor)
+    return str(valor)
 
 
 @login_required
@@ -279,42 +200,36 @@ def crear_certificado_conformidad(request):
         'sedes_json': obtener_sedes_json()
     })
 
+
 def consultar_ultima_conformidad(request):
     placa = request.GET.get('placa', None)
     if not placa:
         return JsonResponse({'error': 'No se proporcionó placa'}, status=400)
-    
-    # Buscamos la última conformidad por fecha de emisión
     ultima = CertificadoConformidad.objects.filter(placa=placa).order_by('-fecha_emision').first()
-    
     if ultima:
         fecha_expiracion = ultima.fecha_emision + timedelta(days=365)
         dias_faltantes = (fecha_expiracion - date.today()).days
-        
         return JsonResponse({
-            'encontrado': True,
-            'placa': ultima.placa,
+            'encontrado': True, 'placa': ultima.placa,
             'fecha_ultima': ultima.fecha_emision.strftime('%d/%m/%Y'),
             'dias_restantes': dias_faltantes if dias_faltantes > 0 else 0,
             'estado': 'VIGENTE' if dias_faltantes > 0 else 'EXPIRADO'
         })
-    else:
-        return JsonResponse({'encontrado': False})
-    
+    return JsonResponse({'encontrado': False})
+
+
 @login_required
 def historial_conformidades(request):
     certificados = (CertificadoConformidad.objects
                     .filter(usuario=request.user)
                     .order_by('-id')
                     .prefetch_related('tramites'))
-
-    query        = request.GET.get('q')
-    sede_id      = request.GET.get('sede')
-    fecha_unica  = request.GET.get('fecha')
-    f_inicio     = request.GET.get('inicio')
-    f_fin        = request.GET.get('fin')
+    query = request.GET.get('q')
+    sede_id = request.GET.get('sede')
+    fecha_unica = request.GET.get('fecha')
+    f_inicio = request.GET.get('inicio')
+    f_fin = request.GET.get('fin')
     tipo_tramite = request.GET.get('tipo_tramite')
-
     if query:
         certificados = certificados.filter(placa__icontains=query)
     if sede_id:
@@ -324,10 +239,7 @@ def historial_conformidades(request):
     elif f_inicio and f_fin:
         certificados = certificados.filter(fecha_emision__range=[f_inicio, f_fin])
     if tipo_tramite:
-        certificados = certificados.filter(
-            tramites__tipo_nombre=tipo_tramite
-        ).distinct()
-
+        certificados = certificados.filter(tramites__tipo_nombre=tipo_tramite).distinct()
     return render(request, 'conformidades/historial_conformidades.html', {
         'certificados': certificados,
         'sedes': SedeConfiguracion.objects.all(),
@@ -343,114 +255,78 @@ def eliminar_conformidad(request, pk):
         messages.success(request, "Certificado eliminado correctamente.")
     return redirect('historial_conformidades')
 
-def formatear_valor_con_unidad(campo, valor):
-    """Agrega unidad sin espacio ni punto según el campo."""
-    if not valor or str(valor).strip() == '':
-        return str(valor)
-    campo_lower = campo.lower()
-    if campo_lower in ['longitud', 'altura', 'ancho']:
-        return f"{str(valor).rstrip('0').rstrip('.')}m"
-    if campo_lower in ['peso_neto', 'peso_bruto', 'carga_util']:
-        try:
-            return f"{int(float(str(valor)))}kg"
-        except:
-            return str(valor)
-    return str(valor)
-
 
 @login_required
 def descargar_pdf_conformidad(request, pk):
     certificado = get_object_or_404(CertificadoConformidad, pk=pk)
-    tramites    = list(certificado.tramites.all())
+    tramites = list(certificado.tramites.all())
 
-    # Agrupar trámites por tipo, manteniendo el orden de inserción
     bloques_dict = OrderedDict()
     for t in tramites:
         bloques_dict.setdefault(t.tipo_nombre, []).append(t)
 
     bloques = []
-    notas   = []
-    
-    
-    TIPOS_LABELS = {
-        'INCORPORACION': 'INCORPORACIÓN',
-        'ADECUACION': 'ADECUACIÓN',
-        'RECTIFICACION': 'RECTIFICACIÓN',
-        'MODIFICACION': 'MODIFICACIÓN',
-    }
-
-
+    notas = []
 
     for tipo, items in bloques_dict.items():
-        primer         = items[0]
-        primer_campo   = primer.campo_modificado
+        primer = items[0]
+        primer_campo = primer.campo_modificado
         primer_val_new = primer.valor_nuevo
         valor_anterior = formatear_valor_con_unidad(
-            primer_campo,
-            str(getattr(certificado, primer_campo, '') or '')
+            primer_campo, str(getattr(certificado, primer_campo, '') or '')
         )
 
         adicionales = []
         for item in items[1:]:
-            norma_ad = generar_norma_conformidad(item.tipo_nombre, item.campo_modificado,
-                                                item.valor_nuevo,
-                                                str(getattr(certificado, item.campo_modificado, '') or ''))
+            norma_ad = generar_norma_conformidad(
+                item.tipo_nombre, item.campo_modificado, item.valor_nuevo,
+                str(getattr(certificado, item.campo_modificado, '') or '')
+            )
             adicionales.append({
-                'label':      CAMPO_LABELS.get(item.campo_modificado, item.campo_modificado.upper()),
+                'label': CAMPO_LABELS.get(item.campo_modificado, item.campo_modificado.upper()),
                 'valor_nuevo': formatear_valor_con_unidad(item.campo_modificado, item.valor_nuevo),
-                'norma':      norma_ad,
+                'norma': norma_ad,
             })
 
-        # Ajuste pesos si combustible → GASOLINA desde GLP/GNV
         if (primer_campo.lower() == 'combustible'
                 and 'GASOLINA' in str(primer_val_new).upper()
                 and ('GLP' in valor_anterior.upper() or 'GNV' in valor_anterior.upper())):
             if certificado.peso_neto:
-                adicionales.append({
-                    'label': 'PESO NETO',
-                    'valor_nuevo': f'{float(certificado.peso_neto) - 30:.0f}kg',
-                    'norma': '',
-                })
+                adicionales.append({'label': 'PESO NETO', 'valor_nuevo': f'{float(certificado.peso_neto) - 30:.0f}kg', 'norma': ''})
             if certificado.carga_util:
-                adicionales.append({
-                    'label': 'CARGA UTIL',
-                    'valor_nuevo': f'{float(certificado.carga_util) + 30:.0f}kg',
-                    'norma': '',
-                })
+                adicionales.append({'label': 'CARGA UTIL', 'valor_nuevo': f'{float(certificado.carga_util) + 30:.0f}kg', 'norma': ''})
 
         norma_primer = generar_norma_conformidad(tipo, primer_campo, primer_val_new, valor_anterior)
+
         for item in items:
-            valor_ant_item = str(
-                getattr(certificado, item.campo_modificado, '') or ''
-            )
-
-            nota = generar_nota_conformidad(
-                item.tipo_nombre,
-                item.campo_modificado,
-                item.valor_nuevo,
-                valor_ant_item
-            )
-
-            if nota and nota not in notas:
-                notas.append(nota)
+            valor_ant_item = str(getattr(certificado, item.campo_modificado, '') or '')
+            
+            # Si es MODIFICACION de combustible o motor Y tiene nota manual, solo usa la manual
+            if (item.tipo_nombre == 'MODIFICACION' 
+                    and item.campo_modificado in ['combustible', 'numero_motor']
+                    and item.nota and item.nota.strip()):
+                if item.nota.strip() not in notas:
+                    notas.append(item.nota.strip())
+            else:
+                # Para todo lo demás, usa la nota automática normal
+                nota_auto = generar_nota_conformidad(item.tipo_nombre, item.campo_modificado, item.valor_nuevo, valor_ant_item)
+                if nota_auto and nota_auto not in notas:
+                    notas.append(nota_auto)
 
         bloques.append({
-            'tipo':           TIPOS_LABELS.get(tipo, tipo),
-            'tipo_raw':       tipo,
-            'primer_campo':   primer_campo,
-            'primer_label':   CAMPO_LABELS.get(primer_campo, primer_campo.upper()),
+            'tipo': TIPOS_LABELS.get(tipo, tipo),
+            'tipo_raw': tipo,
+            'primer_campo': primer_campo,
+            'primer_label': CAMPO_LABELS.get(primer_campo, primer_campo.upper()),
             'valor_anterior': valor_anterior,
             'primer_val_new': formatear_valor_con_unidad(primer_campo, primer.valor_nuevo),
-            'norma_primer':   norma_primer,
-            'adicionales':    adicionales,
+            'norma_primer': norma_primer,
+            'adicionales': adicionales,
         })
 
-    # Fecha del PDF = un día antes de emisión; si cae domingo → sábado
     fecha_pdf = certificado.fecha_emision or timezone.localdate()
-
     fecha_str = f"{fecha_pdf.day:02d}-{fecha_pdf.month:02d}-{fecha_pdf.year}"
 
-    # Personas o mercancías según categoría
     categoria_final = certificado.categoria or ''
     for t in tramites:
         if t.campo_modificado.lower() == 'categoria':
@@ -459,24 +335,16 @@ def descargar_pdf_conformidad(request, pk):
 
     tipo_transporte = 'PERSONAS' if categoria_final.upper().startswith('M') else 'MERCANCÍAS'
 
-    context = {
-        'certificado':    certificado,
-        'bloques':        bloques,
-        'notas':          notas,
-        'fecha_str':      fecha_str,
-        'tipo_transporte': tipo_transporte,
-    }
-
     return render_to_pdf_conformidad(
         'conformidades/pdf_conformidad.html',
-        context,
+        {'certificado': certificado, 'bloques': bloques, 'notas': notas, 'fecha_str': fecha_str, 'tipo_transporte': tipo_transporte},
         filename=certificado.placa or 'certificado'
     )
+
 
 @login_required
 def editar_conformidad(request, pk):
     certificado = get_object_or_404(CertificadoConformidad, pk=pk)
-
     if request.method == 'POST':
         form = CertificadoForm(request.POST, instance=certificado)
         if form.is_valid():
@@ -486,47 +354,38 @@ def editar_conformidad(request, pk):
                     certificado.tramites.all().delete()
                     editado = form.save(commit=False)
                     editado.usuario = request.user
-                    # Si deseas mantener la fecha original de emisión al editar, comenta la siguiente línea:
-                    editado.fecha_emision = timezone.localdate()
+                    # editado.fecha_emision = timezone.localdate()
                     editado.save()
 
-                    # NUEVO: Volvemos a capturar las notas y tipos generales en orden
-                    notas_bloques = request.POST.getlist('nota_modificacion_tramite[]')
-                    tipos_tramites_generales = request.POST.getlist('tipo_tramite[]')
-                    mapa_tramites = request.POST.getlist('mapa_tramites[]')
-                    
+                    mapa_tramites = request. POST. getlist( 'mapa_tramites []')
+                    notas_bloques = request. POST. getlist('nota_modificacion_tramite[]')
+                    tipos_generales = request.POST. getlist('tipo_tramite[]')
                     vistos = set()
+
                     for item in mapa_tramites:
                         try:
                             tipo, campo = item.split('|')
-                            clave = f'{tipo}|{campo}'
+                            clave = f'{tipo} | {campo}'
                             if clave in vistos:
                                 continue
                             vistos.add(clave)
-                            
                             valor_nuevo = request.POST.get(f'valor_{tipo}_{campo}')
                             if valor_nuevo and valor_nuevo.strip():
-                                nota_para_este_tramite = None
-                                
-                                # Aplicamos la misma lógica quirúrgica de asignación de notas
+                                nota = None
                                 if tipo == 'MODIFICACION' and campo in ['combustible', 'numero_motor']:
                                     try:
-                                        indices_modificacion = [i for i, x in enumerate(tipos_tramites_generales) if x == 'MODIFICACION']
-                                        if indices_modificacion:
-                                            bloque_index = indices_modificacion[0]
-                                            if bloque_index < len(notas_bloques):
-                                                nota_input = notas_bloques[bloque_index].strip()
-                                                nota_para_este_tramite = nota_input if nota_input else None
+                                        indices = [i for i, x in enumerate(tipos_generales) if x == 'MODIFICACION']
+                                        if indices and indices[0] < len(notas_bloques):
+                                            nota_txt = notas_bloques[indices[0]].strip()
+                                            nota = nota_txt if nota_txt else None
                                     except:
-                                        nota_para_este_tramite = None
+                                        nota = None
 
-                                TramiteConformidad.objects.create(
-                                    certificado=editado,
-                                    tipo_nombre=tipo,
-                                    campo_modificado=campo,
-                                    valor_nuevo=valor_nuevo.strip(),
-                                    nota=nota_para_este_tramite # <-- Guardará la nota editada
-                                )
+                            TramiteConformidad. objects. create(
+                                certificado=editado, tipo_nombre=tipo,
+                                campo_modificado=campo, valor_nuevo=valor_nuevo.strip(),
+                                nota=nota
+                            )
                         except ValueError:
                             continue
 
@@ -542,10 +401,8 @@ def editar_conformidad(request, pk):
     tramites_existentes = list(
         certificado.tramites.values('tipo_nombre', 'campo_modificado', 'valor_nuevo', 'nota')
     )
-
     return render(request, 'conformidades/conformidad_form.html', {
-        'form': form,
-        'editando': True,
+        'form': form, 'editando': True,
         'sedes_json': obtener_sedes_json(),
         'tramites_json': _json.dumps(tramites_existentes),
     })
