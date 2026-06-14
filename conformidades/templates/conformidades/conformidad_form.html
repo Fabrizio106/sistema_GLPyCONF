@@ -1,17 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <form method="POST" id="certificado-form">
-    {% csrf_token %} {% if form.errors %}
-    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
-      <div class="d-flex align-items-center">
-        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-        <div>
-          <strong>Por favor corrija los siguientes errores:</strong>
-          {{ form.errors }}
-        </div>
-      </div>
-    </div>
-    {% endif %}
+    {% csrf_token %} 
 
     <!-- TÍTULO FUERA DEL CARD -->
     <div class="page-title-row">
@@ -236,7 +226,7 @@
           </label>
 
           <select class="form-select selector-tipo shadow-sm"
-                  name="tipo_tramite_multiple[]"
+                  name="tipo_tramite[]"
                   required>
             <option value="">Seleccione tipo</option>
             <option value="RECTIFICACION">RECTIFICACIÓN</option>
@@ -290,6 +280,15 @@
             <tbody class="inputs-area"></tbody>
 
           </table>
+
+          <div class="contenedor-nota-tramite mt-4 p-3 bg-light border-start border-warning border-3 rounded-3" style="display: none;">
+            <label class="form-label small fw-bold text-dark text-uppercase">
+              <i class="bi bi-pencil-square text-warning me-1"></i> Nota de Modificación Adicional
+            </label>
+            <p class="text-muted small mb-2">Por favor, detalle el motivo de la modificación de combustible y/o motor en este trámite.</p>
+            <textarea name="nota_modificacion_tramite[]" class="form-control text-nota-tramite" rows="2" placeholder="Describa los cambios..."></textarea>
+          </div>
+
         </div>
 
       </div>
@@ -319,6 +318,10 @@
   const TRAMITES_INICIALES = JSON.parse('{{ tramites_json|default:"[]"|escapejs }}');
 </script>
 
+{% if form.errors %}
+  {{ form.errors|json_script:"django-errors-data" }}
+{% endif %}
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const masterContainer = document.getElementById(
@@ -326,6 +329,39 @@
     );
     const addBlockBtn = document.getElementById("btn-add-tramite-block");
     const template = document.getElementById("tramite-block-template");
+
+    // --- EMISIÓN DE ERRORES DE DJANGO VÍA SWEETALERT2 ---
+    const errorsTag = document.getElementById("django-errors-data");
+    
+    if (errorsTag) {
+      // Convertimos el JSON de Django a un objeto JS
+      const errorsObj = JSON.parse(errorsTag.textContent);
+      let errorMgs = "";
+
+      // Recorremos el objeto de errores para armar el HTML limpio
+      for (const field in errorsObj) {
+        errorsObj[field].forEach(errorText => {
+          const message = (typeof errorText === 'object' && errorText.message) ? errorText.message : errorText;
+          
+          if (field === '__all__') {
+            errorMgs += `• ${message}<br>`;
+          } else {
+            // Convertimos el campo a MAYÚSCULAS y lo envolvemos entre comillas ""
+            const fieldUpper = `"${field.toUpperCase()}"`;
+            errorMgs += `<strong>${fieldUpper}:</strong> ${message}<br>`;
+          }
+        });
+      }
+
+      // Lanzamos la alerta de SweetAlert2
+      Swal.fire({
+        title: 'Verifique el formulario',
+        html: '<div style="text-align: left;">' + errorMgs + '</div>',
+        icon: 'warning',
+        confirmButtonColor: '#ff7300',
+        confirmButtonText: 'Corregir'
+      });
+    }
 
     function actualizarNumeracionTramites() {
             document.querySelectorAll('.tramite-block').forEach((block, index) => {
@@ -368,6 +404,7 @@
     const config = {
       RECTIFICACION: [
         "categoria",
+        "combustible",
         "marca",
         "modelo",
         "color",
@@ -462,6 +499,64 @@
       });
     }
 
+    // Lógica para evaluar la visibilidad de la nota local dentro de un bloque específico
+    function evaluarNotaDelBloque(block) {
+      const selectorTipo = block.querySelector(".selector-tipo");
+      const contenedorNota = block.querySelector(".contenedor-nota-tramite");
+      const textareaNota = block.querySelector(".text-nota-tramite");
+      
+      if (!selectorTipo || !contenedorNota || !textareaNota) return;
+
+      let mostrarNota = false;
+      let combustibleMarcado = false;
+      let motorMarcado = false;
+
+      // Condición estricta: Tipo es MODIFICACIÓN
+      if (selectorTipo.value === "MODIFICACION") {
+        const chkCombustible = block.querySelector('.chk-item[data-campo="combustible"]');
+        const chkMotor = block.querySelector('.chk-item[data-campo="numero_motor"]');
+
+        combustibleMarcado = chkCombustible ? chkCombustible.checked : false;
+        motorMarcado = chkMotor ? chkMotor.checked : false;
+
+        if (combustibleMarcado || motorMarcado) {
+          mostrarNota = true;
+        }
+      }
+
+      // Textos predefinidos base
+      const textoCombustible = "EL SISTEMA BI-COMBUSTIBLE GLP HA SIDO DESMONTADO (KIT DE GLP)";
+      const textoMotor = "EL NUEVO MOTOR ENSAMBLADO TIENE EL MISMO MODELO DEL ANTERIOR MOTOR POR LO CUAL, EL COMBUSTIBLE, CILINDRADA Y CILINDROS NO SE VEN AFECTADOS POR ESTE CAMBIO";
+      const textoMixto = `${textoCombustible}.\n\n${textoMotor}`;
+
+      // Cambios visuales y de requerimiento en base al bloque modificado
+      if (mostrarNota) {
+        contenedorNota.style.display = "block";
+        textareaNota.required = true;
+
+        // =================================================================
+        // SOLUCIÓN DINÁMICA: Sincroniza el texto según la combinación exacta
+        // =================================================================
+        const valorActual = textareaNota.value.trim();
+
+        // Solo automatizamos si el campo está vacío, o si contiene exactamente uno de nuestros textos por defecto
+        if (valorActual === "" || valorActual === textoCombustible || valorActual === textoMotor || valorActual === textoMixto) {
+          if (combustibleMarcado && motorMarcado) {
+            textareaNota.value = textoMixto;
+          } else if (combustibleMarcado) {
+            textareaNota.value = textoCombustible;
+          } else if (motorMarcado) {
+            textareaNota.value = textoMotor;
+          }
+        }
+        
+      } else {
+        contenedorNota.style.display = "none";
+        textareaNota.required = false;
+        textareaNota.value = ""; // Limpiamos si se desmarca todo
+      }
+    }
+
     function createNewBlock() {
       const currentBlocks = document.querySelectorAll(".tramite-block");
       if (currentBlocks.length >= Object.keys(config).length) {
@@ -534,6 +629,7 @@
           checklistArea.classList.add("d-none");
         }
         updateSelectors();
+        evaluarNotaDelBloque(block);
       });
 
       // --- C. LÓGICA DE TABLA (Checklist -> Filas) ---
@@ -574,6 +670,7 @@
             if (el) el.remove();
             if (inputsArea.children.length === 0) tabla.classList.add("d-none");
           }
+          evaluarNotaDelBloque(block);
         }
       });
 
@@ -588,6 +685,7 @@
           if (checkbox) checkbox.checked = false; // Desmarcar el check
           btn.closest("tr").remove(); // Eliminar fila
           if (inputsArea.children.length === 0) tabla.classList.add("d-none");
+          evaluarNotaDelBloque(block);
         }
       });
 
@@ -666,9 +764,17 @@
             return;
           }
 
+          // Variable temporal para guardar la nota si algún ítem la trae
+          let notaEncontrada = "";
+
           items.forEach(item => {
             const campo = item.campo_modificado;
             const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
+
+            // Guardamos la nota si este ítem en particular la tiene
+            if (item.nota && item.nota.trim() !== "") {
+              notaEncontrada = item.nota;
+            }
 
             // Marcar el checkbox visualmente
             const chk = block.querySelector(`[data-campo="${campo}"]`);
@@ -695,6 +801,16 @@
             inputsArea.appendChild(tr);
           });
 
+          // =================================================================
+          // NUEVA ASIGNACIÓN: Si encontramos una nota, la inyectamos al textarea
+          // =================================================================
+          if (notaEncontrada) {
+            const textareaNota = block.querySelector('.text-nota-tramite');
+            if (textareaNota) {
+              textareaNota.value = notaEncontrada;
+            }
+          }
+
           // Mostrar tabla si tiene filas
           if (inputsArea.children.length > 0) {
             tabla.classList.remove('d-none');
@@ -702,6 +818,7 @@
           }
 
           updateSelectors();
+          evaluarNotaDelBloque(block); // Esto forzará que el contenedor amarillo aparezca
           setTimeout(procesarSiguiente, 100);
         }
 

@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-pe'
+LANGUAGE_CODE = 'es'
 import locale
 try:
     locale.setlocale(locale.LC_ALL, 'es_PE.UTF-8') # Fuerza el sistema a español de Perú
