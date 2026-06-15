@@ -147,90 +147,179 @@ registradas, actualmente, son las siguientes:</p>
     <tr>
         <td class="c-n">1</td>
         <td class="c-lb">Titular o Propietario</td>
-        <td colspan="4">{{ certificado.propietario|upper }}</td>
+        <td colspan="4">{% if certificado.propietario %}{{ certificado.propietario|upper }}{% endif %}</td>
     </tr>
+
     <tr>
         <td class="c-n">2</td><td class="c-lb">Placa</td>
-        <td class="c-vl">{{ certificado.placa|upper }}</td>
+        <td class="c-vl">{% if certificado.placa %}{{ certificado.placa|upper }}{% endif %}</td>
         <td class="c-n2">13</td><td class="c-lb2">N° Serie</td>
-        <td class="c-vl2">{{ certificado.numero_serie|upper }}</td>
+        <td class="c-vl2">{% if certificado.numero_serie %}{{ certificado.numero_serie|upper }}{% endif %}</td>
     </tr>
+
     <tr>
         <td class="c-n">3</td><td class="c-lb">Categoría / Clase</td>
-        <td class="c-vl">{{ certificado.categoria|upper }}</td>
+        <td class="c-vl">{% if certificado.categoria %}{{ certificado.categoria|upper }}{% endif %}</td>
         <td class="c-n2">14</td><td class="c-lb2">Ruedas</td>
-        <td class="c-vl2">{{ certificado.ruedas }}</td>
+        <td class="c-vl2">{% if certificado.ruedas %}{{ certificado.ruedas }}{% endif %}</td>
     </tr>
+
     <tr>
         <td class="c-n">4</td><td class="c-lb">Marca</td>
-        <td class="c-vl">{{ certificado.marca|upper }}</td>
+        <td class="c-vl">{% if certificado.marca %}{{ certificado.marca|upper }}{% endif %}</td>
         <td class="c-n2">15</td><td class="c-lb2">Pasajeros</td>
-        <td class="c-vl2">{{ certificado.pasajeros }}</td>
+        <td class="c-vl2">{% if certificado.pasajeros %}{{ certificado.pasajeros }}{% endif %}</td>
     </tr>
+
     <tr>
         <td class="c-n">5</td><td class="c-lb">Año Fab. / Año Mod.</td>
-        <td class="c-vl">{{ certificado.anio_fabricacion }} / {{ certificado.anio_modelo }}</td>
+        <td class="c-vl">
+            {% if certificado.anio_fabricacion or certificado.anio_modelo %}
+                {{ certificado.anio_fabricacion|default_if_none:"" }} / {{ certificado.anio_modelo|default_if_none:"" }}
+            {% endif %}
+        </td>
         <td class="c-n2">16</td><td class="c-lb2">Asientos</td>
-        <td class="c-vl2">{{ certificado.asientos }}</td>
+        <td class="c-vl2">{% if certificado.asientos %}{{ certificado.asientos }}{% endif %}</td>
     </tr>
+
     <tr>
         <td class="c-n">6</td><td class="c-lb">Modelo</td>
-        <td class="c-vl">{{ certificado.modelo|upper }}</td>
+        <td class="c-vl">{% if certificado.modelo %}{{ certificado.modelo|upper }}{% endif %}</td>
         <td class="c-n2">17</td><td class="c-lb2">Peso Neto</td>
-        <td class="c-vl2">{{ certificado.peso_neto|floatformat:0 }}kg</td>
+        <td class="c-vl2">
+            {% if certificado.peso_neto %}
+                {{ certificado.peso_neto|floatformat:0 }}kg
+            {% endif %}
+        </td>
     </tr>
+
     <tr>
         <td class="c-n">7</td><td class="c-lb">Combustible</td>
-        <td class="c-vl">{{ certificado.combustible|upper }}</td>
+        <td class="c-vl">{% if certificado.combustible %}{{ certificado.combustible|upper }}{% endif %}</td>
         <td class="c-n2">18</td><td class="c-lb2">Peso Bruto</td>
-        <td class="c-vl2">{{ certificado.peso_bruto|floatformat:0 }}kg</td>
+        <td class="c-vl2">
+            {% if certificado.peso_bruto %}
+                {{ certificado.peso_bruto|floatformat:0 }}kg
+            {% endif %}
+        </td>
     </tr>
+
     <tr>
         <td class="c-n">8</td><td class="c-lb">Tipo de carrocería</td>
-        <td class="c-vl">{{ certificado.carroceria|upper }}</td>
+        <td class="c-vl">{% if certificado.carroceria %}{{ certificado.carroceria|upper }}{% endif %}</td>
         <td class="c-n2">19</td><td class="c-lb2">Longitud</td>
-        <td class="c-vl2">{{ certificado.longitud }}m</td>
+        <td class="c-vl2">
+            {% if certificado.longitud %}
+                {{ certificado.longitud }}m
+            {% endif %}
+        </td>
     </tr>
+
     <tr>
         <td class="c-n">9</td><td class="c-lb">Ejes</td>
-        <td class="c-vl">{{ certificado.ejes }}</td>
+        <td class="c-vl">{% if certificado.ejes %}{{ certificado.ejes }}{% endif %}</td>
         <td class="c-n2">20</td><td class="c-lb2">Altura</td>
-        <td class="c-vl2">{{ certificado.altura }}m</td>
+        <td class="c-vl2">
+            {% if certificado.altura %}
+                {{ certificado.altura }}m
+            {% endif %}
+        </td>
     </tr>
+
     <tr>
         <td class="c-n">10</td><td class="c-lb">Colores</td>
-        <td class="c-vl">{{ certificado.color|upper }}</td>
+        <td class="c-vl">{% if certificado.color %}{{ certificado.color|upper }}{% endif %}</td>
         <td class="c-n2">21</td><td class="c-lb2">Ancho</td>
-        <td class="c-vl2">{{ certificado.ancho }}m</td>
+        <td class="c-vl2">
+            {% if certificado.ancho %}
+                {{ certificado.ancho }}m
+            {% endif %}
+        </td>
     </tr>
+
     <tr>
         <td class="c-n">11</td><td class="c-lb">N° Motor</td>
-        <td class="c-vl">{{ certificado.numero_motor|upper }}</td>
+        <td class="c-vl">{% if certificado.numero_motor %}{{ certificado.numero_motor|upper }}{% endif %}</td>
         <td class="c-n2">22</td><td class="c-lb2">Carga Util</td>
-        <td class="c-vl2">{{ certificado.carga_util|floatformat:0 }}kg</td>
+        <td class="c-vl2">
+            {% if certificado.carga_util %}
+                {{ certificado.carga_util|floatformat:0 }}kg
+            {% endif %}
+        </td>
     </tr>
+
     <tr>
         <td class="c-n">12</td><td class="c-lb">Cilindros/Cilindrada</td>
-        <td class="c-vl">{{ certificado.cilindros }} / {{ certificado.cilindrada }}</td>
+        <td class="c-vl">
+            {% if certificado.cilindros or certificado.cilindrada %}
+                {{ certificado.cilindros|default_if_none:"" }} / {{ certificado.cilindrada|default_if_none:"" }}
+            {% endif %}
+        </td>
         <td class="c-n2">23</td><td class="c-lb2">Potencia</td>
-        <td class="c-vl2">{{ certificado.potencia }}</td>
+        <td class="c-vl2">{% if certificado.potencia %}{{ certificado.potencia }}{% endif %}</td>
     </tr>
 </table>
 
 <p class="tramites-intro">Al que se le ha efectuado las siguientes modificaciones y características registrables:</p>
 
+{# PRIMERO MOSTRAR TODAS LAS MODIFICACIONES #}
 {% for bloque in bloques %}
-    {% if forloop.first %}
-        <p class="tipo-titulo">TIPO DE {{ bloque.tipo }}: {{ bloque.primer_label|upper }}</p>
-        <p class="de-linea"><strong>DE:</strong> {{ bloque.valor_anterior|upper }}</p>
+    {% if bloque.tipo_raw == 'MODIFICACION' %}
+
+        <p class="tipo-titulo">
+            TIPO DE {{ bloque.tipo }}: {{ bloque.primer_label|upper }}
+        </p>
+
+        <p class="de-linea">
+            <strong>DE:</strong> {{ bloque.valor_anterior|upper }}
+        </p>
+
         <p class="de-linea" style="margin-bottom:3pt;">
-            <strong>A:</strong> {{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}:</strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+            <strong>A:</strong> {{ bloque.primer_val_new }}
+            {% if bloque.norma_primer %}
+                {{ bloque.norma_primer }}
+            {% endif %}
+
+            {% for ad in bloque.adicionales %}
+                /
+                <strong>{{ ad.label|upper }}:</strong>
+                {{ ad.valor_nuevo }}
+                {% if ad.norma %}
+                    {{ ad.norma }}
+                {% endif %}
+            {% endfor %}
         </p>
-    {% else %}
-        <p class="tramite-titulo-extra">{{ bloque.tipo }}:</p>
+
+    {% endif %}
+{% endfor %}
+
+
+{# DESPUÉS MOSTRAR LOS DEMÁS TRÁMITES #}
+{% for bloque in bloques %}
+    {% if bloque.tipo_raw != 'MODIFICACION' %}
+
+        <p class="tramite-titulo-extra">
+            {{ bloque.tipo }}
+        </p>
+
         <p class="tramite-detalle-extra">
-            <strong>{{ bloque.primer_label|upper }}: </strong>{{ bloque.primer_val_new|upper }}{% if bloque.norma_primer %} {{ bloque.norma_primer }}{% endif %}{% for ad in bloque.adicionales %} / <strong>{{ ad.label|upper }}: </strong> {{ ad.valor_nuevo }}{% if ad.norma %} {{ ad.norma }}{% endif %}{% endfor %}
+            <strong>{{ bloque.primer_label|upper }}:</strong>
+            {{ bloque.primer_val_new }}
+
+            {% if bloque.norma_primer %}
+                {{ bloque.norma_primer }}
+            {% endif %}
+
+            {% for ad in bloque.adicionales %}
+                /
+                <strong>{{ ad.label|upper }}:</strong>
+                {{ ad.valor_nuevo }}
+                {% if ad.norma %}
+                    {{ ad.norma }}
+                {% endif %}
+            {% endfor %}
         </p>
+
     {% endif %}
 {% endfor %}
 
