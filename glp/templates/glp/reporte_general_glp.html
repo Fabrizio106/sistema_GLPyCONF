@@ -211,9 +211,18 @@
 
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">
-                                <i class="bi bi-search fs-1 d-block mb-3"></i>
-                                No se encontraron registros con los filtros seleccionados.
+                            <td colspan="7" class="text-center py-5">
+
+                                <i class="bi bi-search fs-1 text-muted"></i>
+
+                                <div class="mt-3 fw-semibold">
+                                    No se encontraron registros.
+                                </div>
+
+                                <small class="text-secondary">
+                                    Utilice los filtros disponibles para consultar certificados.
+                                </small>
+
                             </td>
                         </tr>
                         {% endfor %}
