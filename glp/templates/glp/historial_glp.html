@@ -137,7 +137,23 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center text-muted p-5">No se encontraron certificados registrados.</td>
+                    <td colspan="7" class="text-center py-5">
+
+                        <i class="bi bi-search fs-1 text-muted"></i>
+
+                        <div class="mt-3 fw-semibold">
+                            No se encontraron certificados registrados.
+                        </div>
+
+                        <small class="text-secondary d-block mt-2">
+                            Por defecto se muestran los certificados emitidos en la fecha actual.
+                        </small>
+
+                        <small class="text-secondary">
+                            Utilice los filtros de fecha para consultar registros anteriores.
+                        </small>
+
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
