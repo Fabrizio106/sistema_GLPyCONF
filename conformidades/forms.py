@@ -25,7 +25,9 @@ class CertificadoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CertificadoForm, self).__init__(*args, **kwargs)
         if not self.instance.pk:
-            self.fields['fecha_emision'].initial = date.today()
+            self.fields['fecha_emision'].initial = date.today() - timedelta(days=1)
+
+        # Mostrar enteros al editar
         if self.instance and self.instance.pk:
             if self.instance.peso_bruto is not None:
                 self.initial['peso_bruto'] = int(self.instance.peso_bruto)
@@ -51,6 +53,8 @@ class CertificadoForm(forms.ModelForm):
         widgets.update({
             'placa': forms.TextInput(attrs={
                 'class': 'form-control', 'maxlength': '10',
+                'pattern': '[A-Za-z0-9-]{1,10}',  
+                'title': 'La placa debe tener como máximo 10 caracteres alfanuméricos',
                 'style': 'text-transform: uppercase;'
             }),
             'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
@@ -74,6 +78,9 @@ class TramiteForm(forms.ModelForm):
             'valor_nuevo': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+        
+# ESTE ES EL MOTOR DINÁMICO
+# Crea un conjunto de formularios de Trámites vinculados a un Certificado
 TramiteFormSet = inlineformset_factory(
     CertificadoConformidad, TramiteConformidad,
     form=TramiteForm, extra=1, can_delete=True

@@ -1,18 +1,7 @@
-conformidad_form.html:
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <form method="POST" id="certificado-form">
-    {% csrf_token %} {% if form.errors %}
-    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
-      <div class="d-flex align-items-center">
-        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-        <div>
-          <strong>Por favor corrija los siguientes errores:</strong>
-          {{ form.errors }}
-        </div>
-      </div>
-    </div>
-    {% endif %}
+    {% csrf_token %}
 
     <!-- TÍTULO FUERA DEL CARD -->
     <div class="page-title-row">
@@ -45,44 +34,47 @@ conformidad_form.html:
 
       <!-- FILA 1 -->
       <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">PLACA</label>
-          <div class="input-group">
-            {{ form.placa }}
-            <button class="btn btn-search-orange" type="button" id="btn-buscar-historial">
-              <i class="bi bi-search"></i>
-            </button>
+          <div class="col-md-4">
+              <label class="form-label fw-bold small text-secondary">
+                  PLACA
+              </label>
+              <div class="input-group">
+                  {{ form.placa }}
+                  <button class="btn btn-search-orange" type="button" id="btn-buscar-historial">
+                      <i class="bi bi-search"></i>
+                  </button>
+              </div>
           </div>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-bold small text-secondary">TITULAR / PROPIETARIO</label>
-          {{ form.propietario }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">CATEGORÍA</label>{{ form.categoria }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">MARCA</label>
-          {{form.marca }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">MODELO</label>{{ form.modelo }}
-        </div>
+
+          <div class="col-md-8">
+              <label class="form-label fw-bold small text-secondary">
+                  TITULAR / PROPIETARIO
+              </label>
+              {{ form.propietario }}
+          </div>
       </div>
+
+      <!-- FILA 2 -->
       <div class="row g-3 mt-1">
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">VERSIÓN</label>{{ form.version }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">COLOR</label>
-          {{form.color }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">AÑO FABRICACIÓN</label>{{ form.anio_fabricacion }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold small text-secondary">AÑO MODELO</label>{{ form.anio_modelo }}
-        </div>
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">CATEGORÍA</label>
+              {{ form.categoria }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">MARCA</label>
+              {{ form.marca }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">MODELO</label>
+              {{ form.modelo }}
+          </div>
+
+          <div class="col-md-3">
+              <label class="form-label fw-bold small text-secondary">VERSIÓN</label>
+              {{ form.version }}
+          </div>
       </div>
 
       <!-- FILA 3 -->
@@ -332,10 +324,6 @@ conformidad_form.html:
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    
-    const masterContainer = document.getElementById("tramites-master-container", );
-    const addBlockBtn = document.getElementById("btn-add-tramite-block");
-    const template = document.getElementById("tramite-block-template");
 
     // --- EMISIÓN DE ERRORES DE DJANGO VÍA SWEETALERT2 ---
     const errorsTag = document.getElementById("django-errors-data");
@@ -369,6 +357,17 @@ conformidad_form.html:
         confirmButtonText: 'Corregir'
       });
     }
+
+    const masterContainer = document.getElementById("tramites-master-container", );
+    const addBlockBtn = document.getElementById("btn-add-tramite-block");
+    const template = document.getElementById("tramite-block-template");
+
+    function actualizarNumeracionTramites() {
+            document.querySelectorAll('.tramite-block').forEach((block, index) => {
+                block.querySelector('.tramite-title').textContent =
+                    `Trámite #${index + 1}`;
+            });
+        }
 
     // OPCIÓN 1: Diccionario de nombres profesionales
     const nombresAmigables = {
@@ -480,52 +479,6 @@ conformidad_form.html:
         "cilindros",
       ],
     };
-    function actualizarNumeracionTramites() {
-        document.querySelectorAll('.tramite-block').forEach((block, index) => {
-            const title = block.querySelector('.tramite-title');
-
-            if (title) {
-                title.textContent = `Trámite #${index + 1}`;
-            }
-        });
-    }
-
-    function evaluarNotaDelBloque(block) {
-
-        const selectorTipo = block.querySelector('.selector-tipo');
-        const contenedorNota = block.querySelector('.contenedor-nota-tramite');
-        const textareaNota = block.querySelector('.text-nota-tramite');
-
-        if (!selectorTipo || !contenedorNota || !textareaNota) return;
-
-        let mostrar = false;
-
-        if (selectorTipo.value === 'MODIFICACION') {
-
-            const chkCombustible = block.querySelector(
-                '.chk-item[data-campo="combustible"]'
-            );
-
-            const chkMotor = block.querySelector(
-                '.chk-item[data-campo="numero_motor"]'
-            );
-
-            if (
-                (chkCombustible && chkCombustible.checked) ||
-                (chkMotor && chkMotor.checked)
-            ) {
-                mostrar = true;
-            }
-        }
-
-        contenedorNota.style.display = mostrar ? 'block' : 'none';
-
-        textareaNota.required = mostrar;
-
-        if (!mostrar) {
-            textareaNota.value = '';
-        }
-    }
 
     // 1. Lógica de bloqueo de opciones duplicadas
     function updateSelectors() {
@@ -676,7 +629,6 @@ conformidad_form.html:
         }
         updateSelectors();
         evaluarNotaDelBloque(block);
-        evaluarNotaDelBloque(block);
       });
 
       // --- C. LÓGICA DE TABLA (Checklist -> Filas) ---
@@ -717,7 +669,6 @@ conformidad_form.html:
             if (el) el.remove();
             if (inputsArea.children.length === 0) tabla.classList.add("d-none");
           }
-          evaluarNotaDelBloque(block);
         }
         evaluarNotaDelBloque(block);
       });
@@ -757,7 +708,6 @@ conformidad_form.html:
       });
 
       masterContainer.appendChild(block);
-      actualizarNumeracionTramites()
       updateSelectors();
       actualizarNumeracionTramites();
     }
@@ -813,9 +763,6 @@ conformidad_form.html:
             setTimeout(() => esperarCheckboxes(intentos - 1), 80);
             return;
           }
-
-          // Variable temporal para guardar la nota si algún ítem la trae
-          let notaEncontrada = "";
 
           items.forEach(item => {
             const campo = item.campo_modificado;
@@ -879,12 +826,8 @@ conformidad_form.html:
                   textarea.value = notaGuardada.nota;
               }
           }
-
-          evaluarNotaDelBloque(block);
-
-
           updateSelectors();
-          evaluarNotaDelBloque(block); // Esto forzará que el contenedor amarillo aparezca
+          evaluarNotaDelBloque(block);
           setTimeout(procesarSiguiente, 100);
         }
 
