@@ -71,10 +71,12 @@ class CertificadoConformidad(models.Model):
             if ultimo:
                 try:
                     seq = int(ultimo.numero_certificado.split('-')[0]) + 1
+                    if seq < 6200:
+                        seq = 6200
                 except (IndexError, ValueError):
-                    seq = 1
+                    seq = 6200
             else:
-                seq = 1
+                seq = 6200
             self.numero_certificado = f"{seq:07d}-{year_suffix}"
 
     def save(self, *args, **kwargs):
