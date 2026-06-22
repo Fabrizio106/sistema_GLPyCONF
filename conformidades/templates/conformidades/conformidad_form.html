@@ -165,7 +165,7 @@
           <label class="form-label fw-bold small text-secondary">PESO NETO (kg)</label>{{ form.peso_neto }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-success">CARGA ÚTIL (kg)</label>{{ form.carga_util }}
+          <label class="form-label fw-bold small text-secondary">CARGA ÚTIL (kg)</label>{{ form.carga_util }}
         </div>
       </div>
     </div>
@@ -186,8 +186,10 @@
       </div>
     </div>
 
+    <input type="hidden" name="origen" value="{{ request.GET.origen }}">
+
     <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
-      <a href="{% if editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
+      <a href="{% if request.GET.origen == 'reporte' %}{% url 'reporte_cmd_admin' %}{% elif editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
         class="btn btn-outline-orange">
         Cancelar
       </a>
@@ -712,22 +714,6 @@
       actualizarNumeracionTramites();
     }
 
-    // Inicializar cálculos de Carga Útil (Sección B/C)
-    const pb = document.getElementById("id_peso_bruto");
-    const pn = document.getElementById("id_peso_neto");
-    const cu = document.getElementById("id_carga_util");
-
-    function calc() {
-      if (!pb || !pn || !cu) return;
-      const val = (parseFloat(pb.value) || 0) - (parseFloat(pn.value) || 0);
-      cu.value = val > 0 ? Math.round(val) : 0;
-    }
-
-    if (pb && pn) {
-      pb.addEventListener("input", calc);
-      pn.addEventListener("input", calc);
-    }
-
     function cargarTramitesExistentes(tramites) {
       const grupos = {};
       tramites.forEach(t => {
@@ -748,7 +734,6 @@
         const block = blocks[blocks.length - 1];
         const selector = block.querySelector('.selector-tipo');
         const checklistArea = block.querySelector('.checklist-area');
-        const checklistOptions = block.querySelector('.checklist-options');
         const tabla = block.querySelector('.tabla-modificaciones');
         const inputsArea = block.querySelector('.inputs-area');
 
@@ -764,43 +749,52 @@
             return;
           }
 
+          // ¡CORRECCIÓN 1: Declarar la variable para evitar el colapso del sistema!
+          let notaEncontrada = null;
+
           items.forEach(item => {
             const campo = item.campo_modificado;
             const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
 
-            // Guardamos la nota si este ítem en particular la tiene
+            // Guardamos la nota si la tiene
             if (item.nota && item.nota.trim() !== "") {
               notaEncontrada = item.nota;
             }
 
             // Marcar el checkbox visualmente
             const chk = block.querySelector(`[data-campo="${campo}"]`);
-            if (chk) chk.checked = true;
+            if (chk) {
+                chk.checked = true;
 
-            // Obtener valor actual del formulario
-            const inputOriginal = document.getElementById(`id_${campo}`);
-            const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+                // ¡CORRECCIÓN 2: Extraer el ID dinámico para que se pueda desmarcar sin errores!
+                const chkIdParts = chk.id.split('-');
+                const localBlockId = chkIdParts[1];
 
-            // Crear la fila directamente sin disparar evento
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                        <td class="fw-bold text-dark small">${labelStr}</td>
-                        <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
-                        <td>
-                            <input type="text" name="valor_${tipo}_${campo}" class="form-control form-control-sm border-warning shadow-sm" value="${item.valor_nuevo}" placeholder="Ingresar nuevo valor">
-                            <input type="hidden" name="mapa_tramites[]" value="${tipo}|${campo}">
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
-                                <i class="bi bi-trash-fill fs-5"></i>
-                            </button>
-                        </td>`;
-            inputsArea.appendChild(tr);
+                // Obtener valor actual del formulario
+                const inputOriginal = document.getElementById(`id_${campo}`);
+                const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+
+                // Crear la fila
+                const tr = document.createElement('tr');
+                tr.id = `row-${localBlockId}-${campo}`; // Ahora tiene su ID correcto
+                tr.className = "animate__animated animate__fadeInUp animate__faster";
+                tr.innerHTML = `
+                            <td class="fw-bold text-dark small">${labelStr}</td>
+                            <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
+                            <td>
+                                <input type="text" name="valor_${tipo}_${campo}" class="form-control form-control-sm border-warning shadow-sm" value="${item.valor_nuevo}" placeholder="Ingresar nuevo valor">
+                                <input type="hidden" name="mapa_tramites[]" value="${tipo}|${campo}">
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
+                                    <i class="bi bi-trash-fill fs-5"></i>
+                                </button>
+                            </td>`;
+                inputsArea.appendChild(tr);
+            }
           });
 
-          // =================================================================
-          // NUEVA ASIGNACIÓN: Si encontramos una nota, la inyectamos al textarea
-          // =================================================================
+          // Inyectar nota si existe
           if (notaEncontrada) {
             const textareaNota = block.querySelector('.text-nota-tramite');
             if (textareaNota) {
@@ -808,24 +802,12 @@
             }
           }
 
-          // Mostrar tabla si tiene filas
+          // Mostrar tabla si tiene filas (¡Ahora sí llegará a esta parte!)
           if (inputsArea.children.length > 0) {
             tabla.classList.remove('d-none');
             checklistArea.classList.remove('d-none');
           }
-          const notaGuardada = items.find(
-              i => i.nota && i.nota.trim()
-          );
-
-          if (notaGuardada) {
-
-              const textarea =
-                  block.querySelector('.text-nota-tramite');
-
-              if (textarea) {
-                  textarea.value = notaGuardada.nota;
-              }
-          }
+          
           updateSelectors();
           evaluarNotaDelBloque(block);
           setTimeout(procesarSiguiente, 100);
@@ -895,41 +877,93 @@
         });
     });
 
-  //VALIDADORES DE CAMPOS
-  document.getElementById("id_placa").setAttribute("maxlength", "10");
-  document.getElementById("id_numero_vin").setAttribute("maxlength", "20");
-  document.getElementById("id_numero_serie").setAttribute("maxlength", "20");
-  document.getElementById("id_numero_motor").setAttribute("maxlength", "20");
-  [
-    "id_asientos",
-    "id_pasajeros",
-    "id_ruedas",
-    "id_ejes",
-    "id_cilindros",
-  ].forEach((id) => {
+  // =================================================================
+  // VALIDADORES DE CAMPOS (Protegidos contra nulos)
+  // =================================================================
+  // El signo de interrogación (?.) evita que el sistema colapse si el campo no existe
+  document.getElementById("id_placa")?.setAttribute("maxlength", "10");
+  document.getElementById("id_numero_vin")?.setAttribute("maxlength", "20");
+  document.getElementById("id_numero_serie")?.setAttribute("maxlength", "20");
+  document.getElementById("id_numero_motor")?.setAttribute("maxlength", "20");
+  document.getElementById("id_potencia")?.setAttribute("maxlength", "10");
+  document.getElementById("id_formula_rodante")?.setAttribute("maxlength", "10");
+
+  ["id_asientos", "id_pasajeros", "id_ruedas", "id_ejes", "id_cilindros"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.setAttribute("maxlength", "3");
-      el.oninput = function () {
+      el.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "");
-      };
+      });
     }
   });
-  document.getElementById("id_cilindrada").setAttribute("maxlength", "5");
-  document.getElementById("id_cilindrada").oninput = function () {
-    this.value = this.value.replace(/[^0-9]/g, "");
-  };
-  document.getElementById("id_potencia").setAttribute("maxlength", "10");
-  document.getElementById("id_formula_rodante").setAttribute("maxlength", "10");
-  const camposAnio = ["id_anio_fabricacion", "id_anio_modelo"];
-  camposAnio.forEach((id) => {
+
+  const cilindrada = document.getElementById("id_cilindrada");
+  if (cilindrada) {
+    cilindrada.setAttribute("maxlength", "5");
+    cilindrada.addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+  }
+
+  ["id_anio_fabricacion", "id_anio_modelo"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.setAttribute("maxlength", "4");
-      el.oninput = function () {
+      el.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "");
-      };
+      });
     }
   });
+
+  // =================================================================
+  // AUTOMATIZACIÓN DE FECHAS SEGÚN LA SEDE (OMITIENDO DOMINGOS)
+  // =================================================================
+  const REGLAS_SEDES = JSON.parse('{{ sedes_json|default:"{}"|escapejs }}');
+  const selectorSede = document.getElementById("id_sede");
+  const inputFechaEmision = document.getElementById("id_fecha_emision");
+
+  function calcularFechaSede() {
+    const sedeId = selectorSede.value;
+    const regla = REGLAS_SEDES[sedeId];
+
+    if (!regla) return;
+
+    let fecha = new Date(); // Fecha de hoy (del sistema)
+    let diasARestar = 0;
+
+    if (regla === "ANTES") diasARestar = 1;
+    if (regla === "ANTES_2") diasARestar = 2;
+
+    // Retroceder días de manera estricta omitiendo los domingos
+    while (diasARestar > 0) {
+      fecha.setDate(fecha.getDate() - 1);
+      if (fecha.getDay() !== 0) { // 0 es Domingo en JS
+        diasARestar--;
+      }
+    }
+
+    // Si por algún motivo cae un domingo, retroceder al sábado inmediatamente
+    if (fecha.getDay() === 0) {
+      fecha.setDate(fecha.getDate() - 1);
+    }
+
+    // Armar el formato estándar YYYY-MM-DD para el input de tipo date
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    
+    inputFechaEmision.value = `${anio}-${mes}-${dia}`;
+  }
+
+  if (selectorSede && inputFechaEmision) {
+    // Escuchar cuando el usuario cambie la sede manualmente
+    selectorSede.addEventListener("change", calcularFechaSede);
+
+    // Ejecutar la función inmediatamente al cargar la página
+    if (selectorSede.value) {
+      calcularFechaSede();
+    }
+  }
 </script>
 {% endblock %}

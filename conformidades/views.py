@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db import transaction
 from django.contrib import messages
-from .models import TramiteConformidad, CertificadoConformidad
+from .models import TramiteConformidad, CertificadoConformidad, SedeConformidad
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.utils import timezone
@@ -12,13 +12,17 @@ from collections import OrderedDict
 import json
 from datetime import date, timedelta
 from django.http import JsonResponse
-from .forms import CertificadoForm
-from glp.models import SedeConfiguracion
+from .forms import CertificadoForm, SedeConformidadForm
+from django.contrib.auth.models import User
+from django.db.models import Count
+import openpyxl
+from django.utils import timezone
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 CAMPO_LABELS = {
     'categoria': 'Categoría', 'marca': 'Marca', 'modelo': 'Modelo',
     'color': 'Color', 'numero_vin': 'N° VIN', 'numero_serie': 'N° Serie',
-    'numero_motor': 'N° Motor', 'anio_fabricacion': 'Año Fabricación',
+    'numero_motor': 'Motor', 'anio_fabricacion': 'Año Fabricación',
     'anio_modelo': 'Año Modelo', 'ejes': 'Ejes', 'ruedas': 'Ruedas',
     'peso_bruto': 'Peso Bruto', 'peso_neto': 'Peso Neto', 'carga_util': 'Carga Útil',
     'carroceria': 'Carrocería', 'potencia': 'Potencia', 'combustible': 'Combustible',
@@ -40,12 +44,12 @@ def generar_norma_conformidad(tipo, campo, valor_nuevo, valor_anterior):
     val_nuevo_up = str(valor_nuevo).upper().strip()
     if campo_lower == 'carroceria':
         TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
-                     'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
-                     'REMOLCADOR','GRUA','PANEL','CARGOBUS',
-                     'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
+                    'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
+                    'REMOLCADOR','GRUA','PANEL','CARGOBUS',
+                    'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
         TIPO_2006 = ['STATION WAGON','HATCH BACK','HATCHBACK','SUV',
-                     'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
-                     'PLATAFORMA','VOLQUETE','M1']
+                    'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
+                    'PLATAFORMA','VOLQUETE','M1']
         if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008]):
             return "(Adecuación acorde a R.D. N°10476-2008-MTC/15)"
         elif any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2006]):
@@ -107,7 +111,7 @@ def render_to_pdf_conformidad(template_src, context_dict, filename="certificado"
     template = get_template(template_src)
     html = template.render(context_dict)
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{filename}_conformidad.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{filename}_CMD.pdf"'
     pisa_status = pisa.CreatePDF(html, dest=response)
     if pisa_status.err:
         return HttpResponse('Error al generar PDF <pre>' + html + '</pre>')
@@ -117,7 +121,7 @@ def render_to_pdf_conformidad(template_src, context_dict, filename="certificado"
 def obtener_sedes_json():
     sedes_data = {
         str(s.id): {'anual_dias': s.fecha_anual, 'inicial_dias': s.fecha_inicial}
-        for s in SedeConfiguracion.objects.all()
+        for s in SedeConformidad.objects.all()
     }
     return json.dumps(sedes_data)
 
@@ -242,7 +246,7 @@ def historial_conformidades(request):
         certificados = certificados.filter(tramites__tipo_nombre=tipo_tramite).distinct()
     return render(request, 'conformidades/historial_conformidades.html', {
         'certificados': certificados,
-        'sedes': SedeConfiguracion.objects.all(),
+        'sedes': SedeConformidad.objects.all(),
         'campo_labels': CAMPO_LABELS,
     })
 
@@ -357,7 +361,7 @@ def editar_conformidad(request, pk):
                     # editado.fecha_emision = timezone.localdate()
                     editado.save()
 
-                    mapa_tramites = request. POST. getlist( 'mapa_tramites []')
+                    mapa_tramites = request. POST. getlist( 'mapa_tramites[]')
                     notas_bloques = request. POST. getlist('nota_modificacion_tramite[]')
                     tipos_generales = request.POST. getlist('tipo_tramite[]')
                     vistos = set()
@@ -365,7 +369,7 @@ def editar_conformidad(request, pk):
                     for item in mapa_tramites:
                         try:
                             tipo, campo = item.split('|')
-                            clave = f'{tipo} | {campo}'
+                            clave = f'{tipo}|{campo}'
                             if clave in vistos:
                                 continue
                             vistos.add(clave)
@@ -381,16 +385,22 @@ def editar_conformidad(request, pk):
                                     except:
                                         nota = None
 
-                            TramiteConformidad. objects. create(
-                                certificado=editado, tipo_nombre=tipo,
-                                campo_modificado=campo, valor_nuevo=valor_nuevo.strip(),
+                            TramiteConformidad.objects.create(
+                                certificado=editado,
+                                tipo_nombre=tipo,
+                                campo_modificado=campo,
+                                valor_nuevo=valor_nuevo.strip(),
                                 nota=nota
                             )
                         except ValueError:
                             continue
 
                     messages.success(request, "Certificado actualizado correctamente.", extra_tags='conformidad')
-                    return redirect('historial_conformidades')
+                    origen = request.POST.get('origen')
+                    if origen == 'reporte':
+                        return redirect('reporte_cmd_admin')
+                    else:
+                        return redirect('historial_conformidades')
             except Exception as e:
                 form.add_error(None, f"Error al guardar: {e}")
     else:
@@ -406,3 +416,212 @@ def editar_conformidad(request, pk):
         'sedes_json': obtener_sedes_json(),
         'tramites_json': _json.dumps(tramites_existentes),
     })
+
+def obtener_sedes_json():
+    sedes_data = {
+        str(s.id): s.regla_fecha
+        for s in SedeConformidad.objects.all()
+    }
+    return json.dumps(sedes_data)
+
+
+@login_required
+def gestion_sedes_conformidad(request):
+    sedes = SedeConformidad.objects.all()
+    if request.method == 'POST':
+        form = SedeConformidadForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # AGREGAMOS extra_tags='sede_info'
+            messages.success(request, "Sede de conformidad registrada con éxito.", extra_tags='sede_info')
+            return redirect('gestion_sedes_conformidad')
+    else:
+        form = SedeConformidadForm()
+        
+    return render(request, 'conformidades/sede_conformidad_form.html', {
+        'form': form,
+        'sedes': sedes,
+        'editando': False
+    })
+
+@login_required
+def editar_sede_conformidad(request, pk):
+    sede = get_object_or_404(SedeConformidad, pk=pk)
+    sedes = SedeConformidad.objects.all()
+    if request.method == 'POST':
+        form = SedeConformidadForm(request.POST, instance=sede)
+        if form.is_valid():
+            form.save()
+            # AGREGAMOS extra_tags='sede_info'
+            messages.success(request, "Sede de conformidad actualizada correctamente.", extra_tags='sede_info')
+            return redirect('gestion_sedes_conformidad')
+    else:
+        form = SedeConformidadForm(instance=sede)
+        
+    return render(request, 'conformidades/sede_conformidad_form.html', {
+        'form': form,
+        'sedes': sedes,
+        'editando': sede
+    })
+
+@login_required
+def eliminar_sede_conformidad(request, pk):
+    sede = get_object_or_404(SedeConformidad, pk=pk)
+    if request.method == 'POST':
+        sede.delete()
+        messages.success(request, "Sede eliminada correctamente.", extra_tags='sede_info')
+    return redirect('gestion_sedes_conformidad')
+
+@login_required
+def reporte_cmd_admin(request):
+    query = request.GET.get('q')
+    usuario_id = request.GET.get('usuario')
+    sede_id = request.GET.get('sede')
+    fecha_unica = request.GET.get('fecha')
+    f_inicio = request.GET.get('inicio')
+    f_fin = request.GET.get('fin')
+    tipo_tramite = request.GET.get('tipo_tramite')
+
+    filtros_activos = any([query, usuario_id, sede_id, fecha_unica, f_inicio, f_fin, tipo_tramite])
+
+    if filtros_activos:
+        certificados = CertificadoConformidad.objects.all().order_by('-id').prefetch_related('tramites', 'sede', 'usuario')
+
+        if query:
+            certificados = certificados.filter(placa__icontains=query)
+        if usuario_id:
+            certificados = certificados.filter(usuario_id=usuario_id)
+        if sede_id:
+            certificados = certificados.filter(sede_id=sede_id)
+        if fecha_unica:
+            certificados = certificados.filter(fecha_emision=fecha_unica)
+        elif f_inicio and f_fin:
+            certificados = certificados.filter(fecha_emision__range=[f_inicio, f_fin])
+        if tipo_tramite:
+            certificados = certificados.filter(tramites__tipo_nombre=tipo_tramite).distinct()
+
+        total_encontrados = certificados.count()
+        total_modificaciones = certificados.filter(tramites__tipo_nombre='MODIFICACION').distinct().count()
+        total_adecuaciones = certificados.filter(tramites__tipo_nombre='ADECUACION').distinct().count()
+        total_incorporaciones = certificados.filter(tramites__tipo_nombre='INCORPORACION').distinct().count()
+        total_rectificaciones = certificados.filter(tramites__tipo_nombre='RECTIFICACION').distinct().count()
+
+    else:
+        certificados = CertificadoConformidad.objects.none()
+        total_encontrados = 0
+        total_modificaciones = 0
+        total_adecuaciones = 0
+        total_incorporaciones = 0
+        total_rectificaciones = 0
+
+    return render(request, 'conformidades/reporte_cmd.html', {
+        'certificados': certificados,
+        'usuarios': User.objects.all(),
+        'sedes': SedeConformidad.objects.all(),
+        'total_encontrados': total_encontrados,
+        'total_modificaciones': total_modificaciones,
+        'total_adecuaciones': total_adecuaciones,
+        'total_incorporaciones': total_incorporaciones,
+        'total_rectificaciones': total_rectificaciones,
+    })
+
+@login_required
+def descargar_excel_cmd(request):
+    # 1. Filtros
+    query = request.GET.get('q')
+    usuario_id = request.GET.get('usuario')
+    sede_id = request.GET.get('sede')
+    fecha_unica = request.GET.get('fecha')
+    f_inicio = request.GET.get('inicio')
+    f_fin = request.GET.get('fin')
+    tipo_tramite = request.GET.get('tipo_tramite')
+
+    filtros_activos = any([query, usuario_id, sede_id, fecha_unica, f_inicio, f_fin, tipo_tramite])
+
+    if filtros_activos:
+        certificados = CertificadoConformidad.objects.all().order_by('-id').prefetch_related('tramites', 'sede', 'usuario')
+
+        if query:
+            certificados = certificados.filter(placa__icontains=query)
+        if usuario_id:
+            certificados = certificados.filter(usuario_id=usuario_id)
+        if sede_id:
+            certificados = certificados.filter(sede_id=sede_id)
+        if fecha_unica:
+            certificados = certificados.filter(fecha_emision=fecha_unica)
+        elif f_inicio and f_fin:
+            certificados = certificados.filter(fecha_emision__range=[f_inicio, f_fin])
+        if tipo_tramite:
+            certificados = certificados.filter(tramites__tipo_nombre=tipo_tramite).distinct()
+    else:
+        certificados = CertificadoConformidad.objects.none()
+
+    # 2. Configuración de Excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Reporte CMD"
+
+    # ESTILOS: Fuente, Alineación, Fondo y ahora BORDES
+    font_header = Font(name="Arial", size=11, bold=True, color="FFFFFF")
+    fill_header = PatternFill(start_color="FF7300", end_color="FF7300", fill_type="solid")
+    alignment_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    
+    # Creamos un borde delgado para los 4 lados de la celda
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    headers = [
+        "Nº", "Sede", "Placa", "Certificador", 
+        "Trámites Realizados", "Fecha Emisión", "Fecha Certificación", "Hora"
+    ]
+    ws.append(headers)
+
+    # Aplicamos estilos y bordes a la CABECERA
+    for cell in ws[1]:
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = alignment_center
+        cell.border = thin_border
+    ws.row_dimensions[1].height = 28
+
+    # 3. Volcado de datos con conversor de zona horaria
+    for index, c in enumerate(certificados, start=1):
+        lista_tramites = []
+        for t in c.tramites.all():
+            lista_tramites.append(f"[{t.tipo_nombre}] {t.campo_modificado.upper()}: {t.valor_nuevo}")
+        tramites_str = " | ".join(lista_tramites) if lista_tramites else "Sin trámites"
+
+        # Transformamos la hora UTC a la hora local exacta
+        fecha_registro_local = timezone.localtime(c.fecha_registro) if c.fecha_registro else None
+
+        fecha_emision_str = fecha_registro_local.strftime('%d/%m/%Y') if fecha_registro_local else "—"
+        fecha_cert_str = c.fecha_emision.strftime('%d/%m/%Y') if c.fecha_emision else "—"
+        hora_str = fecha_registro_local.strftime('%H:%M') if fecha_registro_local else "—"
+        
+        certificador_str = c.usuario.get_full_name() if c.usuario and c.usuario.get_full_name() else (c.usuario.username if c.usuario else "—")
+
+        row = [
+            index,
+            c.sede.nombre_sede.upper() if c.sede else "—",
+            c.placa.upper() if c.placa else "—",
+            certificador_str,
+            tramites_str,
+            fecha_emision_str,
+            fecha_cert_str,
+            hora_str
+        ]
+        ws.append(row)
+        
+        # Aplicamos bordes a todas las celdas de la fila que acabamos de agregar
+        for cell in ws[ws.max_row]:
+            cell.border = thin_border
+            cell.alignment = Alignment(vertical="center")
+
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or '')) for cell in col)
+        col_letter = openpyxl.utils.get_column_letter(col[0].column)
+        ws.column_dimensions[col_letter].width = max(max_len + 3, 10)
+
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="reporte_conformidades_cmd.xlsx"'
+    wb.save(response)
+    return response

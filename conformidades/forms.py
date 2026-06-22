@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import CertificadoConformidad, TramiteConformidad
+from .models import CertificadoConformidad, TramiteConformidad, SedeConformidad
 from glp.models import SedeConfiguracion
 from datetime import date, timedelta
 
@@ -17,9 +17,9 @@ class CertificadoForm(forms.ModelForm):
     )
     
     sede = forms.ModelChoiceField(
-        queryset=SedeConfiguracion.objects.all(),
+        queryset=SedeConformidad.objects.all(),
         empty_label="Seleccione una Sede",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_sede'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -63,7 +63,7 @@ class CertificadoForm(forms.ModelForm):
             'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'carga_util': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}),
+            'carga_util': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'propietario': forms.TextInput(attrs={'class': 'form-control'}),
         })
 
@@ -85,3 +85,12 @@ TramiteFormSet = inlineformset_factory(
     CertificadoConformidad, TramiteConformidad,
     form=TramiteForm, extra=1, can_delete=True
 )
+
+class SedeConformidadForm(forms.ModelForm):
+    class Meta:
+        model = SedeConformidad
+        fields = ['nombre_sede', 'regla_fecha']
+        widgets = {
+            'nombre_sede': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: VENTANILLA'}),
+            'regla_fecha': forms.Select(attrs={'class': 'form-select'}),
+        }
