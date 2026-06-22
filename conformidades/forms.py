@@ -57,7 +57,7 @@ class CertificadoForm(forms.ModelForm):
                 'title': 'La placa debe tener como máximo 10 caracteres alfanuméricos',
                 'style': 'text-transform: uppercase;'
             }),
-            'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_emision': forms.DateInput( format='%Y-%m-%d',attrs={'class': 'form-control', 'type': 'date'}),
             'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.00001'}),
             'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),

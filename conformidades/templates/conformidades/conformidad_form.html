@@ -324,6 +324,7 @@
   {{ form.errors|json_script:"django-errors-data" }}
 {% endif %}
 
+<input type="hidden" id="modo-pantalla" value="{% if editando %}true{% else %}false{% endif %}">
 <script>
   document.addEventListener("DOMContentLoaded", function () {
 
@@ -957,13 +958,30 @@
   }
 
   if (selectorSede && inputFechaEmision) {
-    // Escuchar cuando el usuario cambie la sede manualmente
+    // Si el usuario cambia la sede a mano con un click, SÍ recalculamos
     selectorSede.addEventListener("change", calcularFechaSede);
 
-    // Ejecutar la función inmediatamente al cargar la página
-    if (selectorSede.value) {
-      calcularFechaSede();
+    // Leemos el input oculto de forma 100% limpia (cero líneas rojas)
+    const modoPantallaInput = document.getElementById("modo-pantalla");
+    const ESTA_EDITANDO = modoPantallaInput && modoPantallaInput.value === "true";
+
+    if (ESTA_EDITANDO) {
+      // MODO EDICIÓN: Nos cruzamos de brazos y dejamos que brille la fecha de la BD (ej: 19)
+      console.log("Modo Edición: Respetando fecha histórica.");
+    } else {
+      // MODO NUEVA CONFORMIDAD: 
+      // Bloqueamos el autocompletado del navegador para que no meta fechas viejas
+      inputFechaEmision.setAttribute("autocomplete", "off");
+
+      if (selectorSede.value) {
+        // Si por defecto ya viniera una sede marcada, calculamos su fecha
+        calcularFechaSede();
+      } else {
+        // Si dice "Seleccione Sede", forzamos a que el campo esté 100% VACÍO al arrancar
+        inputFechaEmision.value = "";
+      }
     }
   }
+
 </script>
 {% endblock %}
