@@ -188,7 +188,7 @@ registradas, actualmente, son las siguientes:</p>
         <td class="c-n2">17</td><td class="c-lb2">Peso Neto</td>
         <td class="c-vl2">
             {% if certificado.peso_neto %}
-                {{ certificado.peso_neto|floatformat:0 }}kg
+                {{ certificado.peso_neto|floatformat:0 }}kg.
             {% endif %}
         </td>
     </tr>
@@ -199,7 +199,7 @@ registradas, actualmente, son las siguientes:</p>
         <td class="c-n2">18</td><td class="c-lb2">Peso Bruto</td>
         <td class="c-vl2">
             {% if certificado.peso_bruto %}
-                {{ certificado.peso_bruto|floatformat:0 }}kg
+                {{ certificado.peso_bruto|floatformat:0 }}kg.
             {% endif %}
         </td>
     </tr>
@@ -210,7 +210,7 @@ registradas, actualmente, son las siguientes:</p>
         <td class="c-n2">19</td><td class="c-lb2">Longitud</td>
         <td class="c-vl2">
             {% if certificado.longitud %}
-                {{ certificado.longitud }}m
+                {{ certificado.longitud }}m.
             {% endif %}
         </td>
     </tr>
@@ -221,7 +221,7 @@ registradas, actualmente, son las siguientes:</p>
         <td class="c-n2">20</td><td class="c-lb2">Altura</td>
         <td class="c-vl2">
             {% if certificado.altura %}
-                {{ certificado.altura }}m
+                {{ certificado.altura }}m.
             {% endif %}
         </td>
     </tr>
@@ -232,7 +232,7 @@ registradas, actualmente, son las siguientes:</p>
         <td class="c-n2">21</td><td class="c-lb2">Ancho</td>
         <td class="c-vl2">
             {% if certificado.ancho %}
-                {{ certificado.ancho }}m
+                {{ certificado.ancho }}m.
             {% endif %}
         </td>
     </tr>
@@ -243,7 +243,7 @@ registradas, actualmente, son las siguientes:</p>
         <td class="c-n2">22</td><td class="c-lb2">Carga Util</td>
         <td class="c-vl2">
             {% if certificado.carga_util %}
-                {{ certificado.carga_util|floatformat:0 }}kg
+                {{ certificado.carga_util|floatformat:0 }}kg.
             {% endif %}
         </td>
     </tr>
@@ -329,15 +329,17 @@ registradas, actualmente, son las siguientes:</p>
     están actualizando las características de acuerdo a la normatividad vigente.
 </p>
 
-{% if notas %}
-    {% if notas|length == 1 %}
-        <p class="nota-linea">NOTA: {{ notas.0 }}</p>
-    {% else %}
-        {% for nota in notas %}
-        <p class="nota-linea">NOTA {{ forloop.counter }}: {{ nota }}</p>
-        {% endfor %}
+<div style="font-size: 8pt; line-height: 1.2; margin-top: 3pt; margin-bottom: 3pt;">
+    {% if notas %}
+        {% if notas|length == 1 %}
+            <p style="text-align: justify; margin: 0;">NOTA: {{ notas.0 }}</p>
+        {% else %}
+            {% for nota in notas %}
+            <p style="text-align: justify; margin: 0 0 2pt 0;">NOTA {{ forloop.counter }}: {{ nota }}</p>
+            {% endfor %}
+        {% endif %}
     {% endif %}
-{% endif %}
+</div>
 
 <p class="parrafo">
     Conste por el presente documento de acuerdo con el expediente CDT HR-CON

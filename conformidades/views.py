@@ -101,9 +101,6 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
             return "EL VEHICULO HA MODIFICADO DE RUEDAS TIPO EXTRA ANCHAS A RUEDAS TIPO CONVENCIONALES."
         else:
             return "EL VEHICULO HA MODIFICADO DE RUEDAS CONVENCIONALES A TIPO EXTRA ANCHAS (LLANTAS BALON)."
-    elif campo_lower == 'categoria':
-        if tipo == 'RECTIFICACION':
-            return "RECTIFICAR CATEGORIA de acuerdo a la RD N 4848-2006-MTC/15."
     return ""
 
 
@@ -179,7 +176,7 @@ def crear_certificado_conformidad(request):
                                         
                                         if bloque_index < len(notas_bloques):
                                             nota_input = notas_bloques[bloque_index].strip()
-                                            nota_para_este_tramite = nota_input if nota_input else None
+                                            nota_para_este_tramite = nota_input if nota_input != "" else None
                                 except Exception as index_err:
                                     nota_para_este_tramite = None
 
@@ -305,14 +302,13 @@ def descargar_pdf_conformidad(request, pk):
         for item in items:
             valor_ant_item = str(getattr(certificado, item.campo_modificado, '') or '')
             
-            # Si es MODIFICACION de combustible o motor Y tiene nota manual, solo usa la manual
-            if (item.tipo_nombre == 'MODIFICACION' 
-                    and item.campo_modificado in ['combustible', 'numero_motor']
-                    and item.nota and item.nota.strip()):
-                if item.nota.strip() not in notas:
-                    notas.append(item.nota.strip())
+            if item.tipo_nombre == 'MODIFICACION' and item.campo_modificado in ['combustible', 'numero_motor']:
+                # Si el usuario dejó un texto, lo usamos. Si lo borró, NO HACEMOS NADA.
+                if item.nota and item.nota.strip():
+                    if item.nota.strip() not in notas:
+                        notas.append(item.nota.strip())
             else:
-                # Para todo lo demás, usa la nota automática normal
+                # Para todo lo demás (que no sea modif. de combustible/motor), usa la nota automática normal
                 nota_auto = generar_nota_conformidad(item.tipo_nombre, item.campo_modificado, item.valor_nuevo, valor_ant_item)
                 if nota_auto and nota_auto not in notas:
                     notas.append(nota_auto)
@@ -381,7 +377,7 @@ def editar_conformidad(request, pk):
                                         indices = [i for i, x in enumerate(tipos_generales) if x == 'MODIFICACION']
                                         if indices and indices[0] < len(notas_bloques):
                                             nota_txt = notas_bloques[indices[0]].strip()
-                                            nota = nota_txt if nota_txt else None
+                                            nota = nota_txt if nota_txt != "" else None
                                     except:
                                         nota = None
 

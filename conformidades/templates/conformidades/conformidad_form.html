@@ -502,7 +502,7 @@
     }
 
     // Lógica para evaluar la visibilidad de la nota local dentro de un bloque específico
-    function evaluarNotaDelBloque(block) {
+    function evaluarNotaDelBloque(block, evitarAutocompletado = false) {
       const selectorTipo = block.querySelector(".selector-tipo");
       const contenedorNota = block.querySelector(".contenedor-nota-tramite");
       const textareaNota = block.querySelector(".text-nota-tramite");
@@ -534,7 +534,7 @@
       // Cambios visuales y de requerimiento en base al bloque modificado
       if (mostrarNota) {
         contenedorNota.style.display = "block";
-        textareaNota.required = true;
+        textareaNota.required = false;
 
         // =================================================================
         // SOLUCIÓN DINÁMICA: Sincroniza el texto según la combinación exacta
@@ -542,13 +542,15 @@
         const valorActual = textareaNota.value.trim();
 
         // Solo automatizamos si el campo está vacío, o si contiene exactamente uno de nuestros textos por defecto
-        if (valorActual === "" || valorActual === textoCombustible || valorActual === textoMotor || valorActual === textoMixto) {
-          if (combustibleMarcado && motorMarcado) {
-            textareaNota.value = textoMixto;
-          } else if (combustibleMarcado) {
-            textareaNota.value = textoCombustible;
-          } else if (motorMarcado) {
-            textareaNota.value = textoMotor;
+        if (!evitarAutocompletado) {
+          if (valorActual === "" || valorActual === textoCombustible || valorActual === textoMotor || valorActual === textoMixto) {
+            if (combustibleMarcado && motorMarcado) {
+              textareaNota.value = textoMixto;
+            } else if (combustibleMarcado) {
+              textareaNota.value = textoCombustible;
+            } else if (motorMarcado) {
+              textareaNota.value = textoMotor;
+            }
           }
         }
         
@@ -810,7 +812,7 @@
           }
           
           updateSelectors();
-          evaluarNotaDelBloque(block);
+          evaluarNotaDelBloque(block, true);
           setTimeout(procesarSiguiente, 100);
         }
 
@@ -882,12 +884,12 @@
   // VALIDADORES DE CAMPOS (Protegidos contra nulos)
   // =================================================================
   // El signo de interrogación (?.) evita que el sistema colapse si el campo no existe
-  document.getElementById("id_placa")?.setAttribute("maxlength", "10");
+  document.getElementById("id_placa")?.setAttribute("maxlength", "15");
   document.getElementById("id_numero_vin")?.setAttribute("maxlength", "20");
-  document.getElementById("id_numero_serie")?.setAttribute("maxlength", "20");
-  document.getElementById("id_numero_motor")?.setAttribute("maxlength", "20");
-  document.getElementById("id_potencia")?.setAttribute("maxlength", "10");
-  document.getElementById("id_formula_rodante")?.setAttribute("maxlength", "10");
+  document.getElementById("id_numero_serie")?.setAttribute("maxlength", "30");
+  document.getElementById("id_numero_motor")?.setAttribute("maxlength", "30");
+  document.getElementById("id_potencia")?.setAttribute("maxlength", "50");
+  document.getElementById("id_formula_rodante")?.setAttribute("maxlength", "20");
 
   ["id_asientos", "id_pasajeros", "id_ruedas", "id_ejes", "id_cilindros"].forEach((id) => {
     const el = document.getElementById(id);

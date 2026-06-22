@@ -58,9 +58,9 @@ class CertificadoForm(forms.ModelForm):
                 'style': 'text-transform: uppercase;'
             }),
             'fecha_emision': forms.DateInput( format='%Y-%m-%d',attrs={'class': 'form-control', 'type': 'date'}),
-            'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
-            'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.00001'}),
-            'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'longitud': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 13.20'}),
+            'altura': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 1.50'}),
+            'ancho': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 1.80'}),
             'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'carga_util': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
