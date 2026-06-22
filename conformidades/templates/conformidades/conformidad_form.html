@@ -1,4 +1,3 @@
-conformidad_form.html:
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <form method="POST" id="certificado-form">
@@ -166,7 +165,7 @@ conformidad_form.html:
           <label class="form-label fw-bold small text-secondary">PESO NETO (kg)</label>{{ form.peso_neto }}
         </div>
         <div class="col-md-4">
-          <label class="form-label fw-bold small text-success">CARGA ÚTIL (kg)</label>{{ form.carga_util }}
+          <label class="form-label fw-bold small text-secondary">CARGA ÚTIL (kg)</label>{{ form.carga_util }}
         </div>
       </div>
     </div>
@@ -187,8 +186,10 @@ conformidad_form.html:
       </div>
     </div>
 
+    <input type="hidden" name="origen" value="{{ request.GET.origen }}">
+
     <div class="d-flex justify-content-end gap-3 mt-4 mb-5">
-      <a href="{% if editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
+      <a href="{% if request.GET.origen == 'reporte' %}{% url 'reporte_cmd_admin' %}{% elif editando %}{% url 'historial_conformidades' %}{% else %}{% url 'crear_certificado_conformidad' %}{% endif %}"
         class="btn btn-outline-orange">
         Cancelar
       </a>
@@ -201,17 +202,34 @@ conformidad_form.html:
 
 <template id="tramite-block-template">
   <div class="tramite-block border border-2 rounded-3 mb-5 shadow-sm bg-white overflow-hidden">
-    <div class="tramite-header d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-light">
-      <span class="tramite-title fw-bold text-dark">Trámite</span>
-      <button type="button" class="btn-delete-action remove-block-btn" title="Eliminar trámite">
-        <i class="bi bi-trash"></i> Eliminar
+
+    <!-- CABECERA -->
+    <div class="tramite-header d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+      <span class="tramite-title">
+        Trámite
+      </span>
+
+      <button type="button"
+        class="btn-delete-action remove-block-btn"
+        title="Eliminar trámite">
+        <i class="bi bi-trash"></i>
+        <span>Eliminar</span>
       </button>
     </div>
+
+    <!-- CONTENIDO -->
     <div class="p-4">
+
       <div class="row g-3 mb-4">
+
         <div class="col-md-5">
-          <label class="form-label small fw-bold text-uppercase">Tipo de Trámite</label>
-          <select class="form-select selector-tipo shadow-sm" name="tipo_tramite[]" required>
+          <label class="form-label small fw-bold text-uppercase">
+            Tipo de Trámite
+          </label>
+
+          <select class="form-select selector-tipo shadow-sm"
+                  name="tipo_tramite[]"
+                  required>
             <option value="">Seleccione tipo</option>
             <option value="RECTIFICACION">RECTIFICACIÓN</option>
             <option value="ADECUACION">ADECUACIÓN</option>
@@ -219,20 +237,37 @@ conformidad_form.html:
             <option value="MODIFICACION">MODIFICACIÓN</option>
           </select>
         </div>
+
         <div class="col-md-7">
-          <label class="form-label small fw-bold text-uppercase">Campos a modificar (Buscador)</label>
+          <label class="form-label small fw-bold text-uppercase">
+            Campos a modificar (Buscador)
+          </label>
+
           <div class="input-group shadow-sm">
-            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control buscador-campos" placeholder="Buscar campos por nombre..."/>
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+
+            <input type="text"
+                  class="form-control buscador-campos"
+                  placeholder="Buscar campos por nombre...">
           </div>
         </div>
+
       </div>
 
       <div class="checklist-area d-none">
+
         <div class="mb-3">
-          <label class="form-label small fw-bold text-muted text-uppercase">Campos disponibles:</label>
-          <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0" style="max-height:150px; overflow-y:auto"></div>
+          <label class="form-label small fw-bold text-muted text-uppercase">
+            Campos disponibles:
+          </label>
+
+          <div class="checklist-options row g-2 p-3 bg-light rounded-3 border mx-0"
+              style="max-height:150px; overflow-y:auto">
+          </div>
         </div>
+
         <div class="table-responsive mt-4">
           <table class="table table-hover table-bordered align-middle d-none tabla-modificaciones shadow-sm">
             <thead class="table-warning text-dark small text-uppercase">
@@ -243,18 +278,21 @@ conformidad_form.html:
                 <th style="width:10%; text-align:center">Acciones</th>
               </tr>
             </thead>
+
             <tbody class="inputs-area"></tbody>
+
           </table>
 
-          <!-- Nota manual — solo aparece en MODIFICACIÓN con combustible o motor -->
-          <div class="contenedor-nota-tramite mt-4 p-3 bg-light border-start border-warning border-3 rounded-3" style="display:none;">
+          <div class="contenedor-nota-tramite mt-4 p-3 bg-light border-start border-warning border-3 rounded-3" style="display: none;">
             <label class="form-label small fw-bold text-dark text-uppercase">
               <i class="bi bi-pencil-square text-warning me-1"></i> Nota de Modificación Adicional
             </label>
-            <p class="text-muted small mb-2">Detalle el motivo de la modificación de combustible y/o motor.</p>
+            <p class="text-muted small mb-2">Por favor, detalle el motivo de la modificación de combustible y/o motor en este trámite.</p>
             <textarea name="nota_modificacion_tramite[]" class="form-control text-nota-tramite" rows="2" placeholder="Describa los cambios..."></textarea>
           </div>
+
         </div>
+
       </div>
 
     </div>
@@ -289,41 +327,40 @@ conformidad_form.html:
 <script>
   document.addEventListener("DOMContentLoaded", function () {
 
-        // --- EMISIÓN DE ERRORES DE DJANGO VÍA SWEETALERT2 ---
+    // --- EMISIÓN DE ERRORES DE DJANGO VÍA SWEETALERT2 ---
     const errorsTag = document.getElementById("django-errors-data");
-
+    
     if (errorsTag) {
+      // Convertimos el JSON de Django a un objeto JS
       const errorsObj = JSON.parse(errorsTag.textContent);
       let errorMgs = "";
 
+      // Recorremos el objeto de errores para armar el HTML limpio
       for (const field in errorsObj) {
         errorsObj[field].forEach(errorText => {
-
-          const message =
-            (typeof errorText === 'object' && errorText.message)
-              ? errorText.message
-              : errorText;
-
+          const message = (typeof errorText === 'object' && errorText.message) ? errorText.message : errorText;
+          
           if (field === '__all__') {
             errorMgs += `• ${message}<br>`;
           } else {
+            // Convertimos el campo a MAYÚSCULAS y lo envolvemos entre comillas ""
             const fieldUpper = `"${field.toUpperCase()}"`;
             errorMgs += `<strong>${fieldUpper}:</strong> ${message}<br>`;
           }
         });
       }
 
+      // Lanzamos la alerta de SweetAlert2
       Swal.fire({
         title: 'Verifique el formulario',
-        html: '<div style="text-align:left;">' + errorMgs + '</div>',
+        html: '<div style="text-align: left;">' + errorMgs + '</div>',
         icon: 'warning',
         confirmButtonColor: '#ff7300',
         confirmButtonText: 'Corregir'
       });
     }
-    const masterContainer = document.getElementById(
-      "tramites-master-container",  
-    );
+
+    const masterContainer = document.getElementById("tramites-master-container", );
     const addBlockBtn = document.getElementById("btn-add-tramite-block");
     const template = document.getElementById("tramite-block-template");
 
@@ -368,6 +405,7 @@ conformidad_form.html:
     const config = {
       RECTIFICACION: [
         "categoria",
+        "combustible",
         "marca",
         "modelo",
         "color",
@@ -443,52 +481,6 @@ conformidad_form.html:
         "cilindros",
       ],
     };
-    function actualizarNumeracionTramites() {
-        document.querySelectorAll('.tramite-block').forEach((block, index) => {
-            const title = block.querySelector('.tramite-title');
-
-            if (title) {
-                title.textContent = `Trámite #${index + 1}`;
-            }
-        });
-    }
-
-    function evaluarNotaDelBloque(block) {
-
-        const selectorTipo = block.querySelector('.selector-tipo');
-        const contenedorNota = block.querySelector('.contenedor-nota-tramite');
-        const textareaNota = block.querySelector('.text-nota-tramite');
-
-        if (!selectorTipo || !contenedorNota || !textareaNota) return;
-
-        let mostrar = false;
-
-        if (selectorTipo.value === 'MODIFICACION') {
-
-            const chkCombustible = block.querySelector(
-                '.chk-item[data-campo="combustible"]'
-            );
-
-            const chkMotor = block.querySelector(
-                '.chk-item[data-campo="numero_motor"]'
-            );
-
-            if (
-                (chkCombustible && chkCombustible.checked) ||
-                (chkMotor && chkMotor.checked)
-            ) {
-                mostrar = true;
-            }
-        }
-
-        contenedorNota.style.display = mostrar ? 'block' : 'none';
-
-        textareaNota.required = mostrar;
-
-        if (!mostrar) {
-            textareaNota.value = '';
-        }
-    }
 
     // 1. Lógica de bloqueo de opciones duplicadas
     function updateSelectors() {
@@ -506,6 +498,64 @@ conformidad_form.html:
           }
         });
       });
+    }
+
+    // Lógica para evaluar la visibilidad de la nota local dentro de un bloque específico
+    function evaluarNotaDelBloque(block) {
+      const selectorTipo = block.querySelector(".selector-tipo");
+      const contenedorNota = block.querySelector(".contenedor-nota-tramite");
+      const textareaNota = block.querySelector(".text-nota-tramite");
+      
+      if (!selectorTipo || !contenedorNota || !textareaNota) return;
+
+      let mostrarNota = false;
+      let combustibleMarcado = false;
+      let motorMarcado = false;
+
+      // Condición estricta: Tipo es MODIFICACIÓN
+      if (selectorTipo.value === "MODIFICACION") {
+        const chkCombustible = block.querySelector('.chk-item[data-campo="combustible"]');
+        const chkMotor = block.querySelector('.chk-item[data-campo="numero_motor"]');
+
+        combustibleMarcado = chkCombustible ? chkCombustible.checked : false;
+        motorMarcado = chkMotor ? chkMotor.checked : false;
+
+        if (combustibleMarcado || motorMarcado) {
+          mostrarNota = true;
+        }
+      }
+
+      // Textos predefinidos base
+      const textoCombustible = "EL SISTEMA BI-COMBUSTIBLE GLP HA SIDO DESMONTADO (KIT DE GLP)";
+      const textoMotor = "EL NUEVO MOTOR ENSAMBLADO TIENE EL MISMO MODELO DEL ANTERIOR MOTOR POR LO CUAL, EL COMBUSTIBLE, CILINDRADA Y CILINDROS NO SE VEN AFECTADOS POR ESTE CAMBIO";
+      const textoMixto = `${textoCombustible}.\n\n${textoMotor}`;
+
+      // Cambios visuales y de requerimiento en base al bloque modificado
+      if (mostrarNota) {
+        contenedorNota.style.display = "block";
+        textareaNota.required = true;
+
+        // =================================================================
+        // SOLUCIÓN DINÁMICA: Sincroniza el texto según la combinación exacta
+        // =================================================================
+        const valorActual = textareaNota.value.trim();
+
+        // Solo automatizamos si el campo está vacío, o si contiene exactamente uno de nuestros textos por defecto
+        if (valorActual === "" || valorActual === textoCombustible || valorActual === textoMotor || valorActual === textoMixto) {
+          if (combustibleMarcado && motorMarcado) {
+            textareaNota.value = textoMixto;
+          } else if (combustibleMarcado) {
+            textareaNota.value = textoCombustible;
+          } else if (motorMarcado) {
+            textareaNota.value = textoMotor;
+          }
+        }
+        
+      } else {
+        contenedorNota.style.display = "none";
+        textareaNota.required = false;
+        textareaNota.value = ""; // Limpiamos si se desmarca todo
+      }
     }
 
     function createNewBlock() {
@@ -636,6 +686,7 @@ conformidad_form.html:
           if (checkbox) checkbox.checked = false; // Desmarcar el check
           btn.closest("tr").remove(); // Eliminar fila
           if (inputsArea.children.length === 0) tabla.classList.add("d-none");
+          evaluarNotaDelBloque(block);
         }
       });
 
@@ -663,22 +714,6 @@ conformidad_form.html:
       actualizarNumeracionTramites();
     }
 
-    // Inicializar cálculos de Carga Útil (Sección B/C)
-    const pb = document.getElementById("id_peso_bruto");
-    const pn = document.getElementById("id_peso_neto");
-    const cu = document.getElementById("id_carga_util");
-
-    function calc() {
-      if (!pb || !pn || !cu) return;
-      const val = (parseFloat(pb.value) || 0) - (parseFloat(pn.value) || 0);
-      cu.value = val > 0 ? Math.round(val) : 0;
-    }
-
-    if (pb && pn) {
-      pb.addEventListener("input", calc);
-      pn.addEventListener("input", calc);
-    }
-
     function cargarTramitesExistentes(tramites) {
       const grupos = {};
       tramites.forEach(t => {
@@ -699,7 +734,6 @@ conformidad_form.html:
         const block = blocks[blocks.length - 1];
         const selector = block.querySelector('.selector-tipo');
         const checklistArea = block.querySelector('.checklist-area');
-        const checklistOptions = block.querySelector('.checklist-options');
         const tabla = block.querySelector('.tabla-modificaciones');
         const inputsArea = block.querySelector('.inputs-area');
 
@@ -715,58 +749,67 @@ conformidad_form.html:
             return;
           }
 
+          // ¡CORRECCIÓN 1: Declarar la variable para evitar el colapso del sistema!
+          let notaEncontrada = null;
+
           items.forEach(item => {
             const campo = item.campo_modificado;
             const labelStr = nombresAmigables[campo] || campo.replace(/_/g, ' ').toUpperCase();
 
+            // Guardamos la nota si la tiene
+            if (item.nota && item.nota.trim() !== "") {
+              notaEncontrada = item.nota;
+            }
+
             // Marcar el checkbox visualmente
             const chk = block.querySelector(`[data-campo="${campo}"]`);
-            if (chk) chk.checked = true;
+            if (chk) {
+                chk.checked = true;
 
-            // Obtener valor actual del formulario
-            const inputOriginal = document.getElementById(`id_${campo}`);
-            const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+                // ¡CORRECCIÓN 2: Extraer el ID dinámico para que se pueda desmarcar sin errores!
+                const chkIdParts = chk.id.split('-');
+                const localBlockId = chkIdParts[1];
 
-            // Crear la fila directamente sin disparar evento
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                        <td class="fw-bold text-dark small">${labelStr}</td>
-                        <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
-                        <td>
-                            <input type="text" name="valor_${tipo}_${campo}" class="form-control form-control-sm border-warning shadow-sm" value="${item.valor_nuevo}" placeholder="Ingresar nuevo valor">
-                            <input type="hidden" name="mapa_tramites[]" value="${tipo}|${campo}">
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
-                                <i class="bi bi-trash-fill fs-5"></i>
-                            </button>
-                        </td>`;
-            inputsArea.appendChild(tr);
+                // Obtener valor actual del formulario
+                const inputOriginal = document.getElementById(`id_${campo}`);
+                const valorActual = inputOriginal ? (inputOriginal.value || '---') : '---';
+
+                // Crear la fila
+                const tr = document.createElement('tr');
+                tr.id = `row-${localBlockId}-${campo}`; // Ahora tiene su ID correcto
+                tr.className = "animate__animated animate__fadeInUp animate__faster";
+                tr.innerHTML = `
+                            <td class="fw-bold text-dark small">${labelStr}</td>
+                            <td><input type="text" class="form-control form-control-sm bg-light border-0" value="${valorActual}" readonly></td>
+                            <td>
+                                <input type="text" name="valor_${tipo}_${campo}" class="form-control form-control-sm border-warning shadow-sm" value="${item.valor_nuevo}" placeholder="Ingresar nuevo valor">
+                                <input type="hidden" name="mapa_tramites[]" value="${tipo}|${campo}">
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" data-campo="${campo}">
+                                    <i class="bi bi-trash-fill fs-5"></i>
+                                </button>
+                            </td>`;
+                inputsArea.appendChild(tr);
+            }
           });
 
-          // Mostrar tabla si tiene filas
+          // Inyectar nota si existe
+          if (notaEncontrada) {
+            const textareaNota = block.querySelector('.text-nota-tramite');
+            if (textareaNota) {
+              textareaNota.value = notaEncontrada;
+            }
+          }
+
+          // Mostrar tabla si tiene filas (¡Ahora sí llegará a esta parte!)
           if (inputsArea.children.length > 0) {
             tabla.classList.remove('d-none');
             checklistArea.classList.remove('d-none');
           }
-          const notaGuardada = items.find(
-              i => i.nota && i.nota.trim()
-          );
-
-          if (notaGuardada) {
-
-              const textarea =
-                  block.querySelector('.text-nota-tramite');
-
-              if (textarea) {
-                  textarea.value = notaGuardada.nota;
-              }
-          }
-
-          evaluarNotaDelBloque(block);
-
-
+          
           updateSelectors();
+          evaluarNotaDelBloque(block);
           setTimeout(procesarSiguiente, 100);
         }
 
@@ -834,41 +877,93 @@ conformidad_form.html:
         });
     });
 
-  //VALIDADORES DE CAMPOS
-  document.getElementById("id_placa").setAttribute("maxlength", "10");
-  document.getElementById("id_numero_vin").setAttribute("maxlength", "20");
-  document.getElementById("id_numero_serie").setAttribute("maxlength", "20");
-  document.getElementById("id_numero_motor").setAttribute("maxlength", "20");
-  [
-    "id_asientos",
-    "id_pasajeros",
-    "id_ruedas",
-    "id_ejes",
-    "id_cilindros",
-  ].forEach((id) => {
+  // =================================================================
+  // VALIDADORES DE CAMPOS (Protegidos contra nulos)
+  // =================================================================
+  // El signo de interrogación (?.) evita que el sistema colapse si el campo no existe
+  document.getElementById("id_placa")?.setAttribute("maxlength", "10");
+  document.getElementById("id_numero_vin")?.setAttribute("maxlength", "20");
+  document.getElementById("id_numero_serie")?.setAttribute("maxlength", "20");
+  document.getElementById("id_numero_motor")?.setAttribute("maxlength", "20");
+  document.getElementById("id_potencia")?.setAttribute("maxlength", "10");
+  document.getElementById("id_formula_rodante")?.setAttribute("maxlength", "10");
+
+  ["id_asientos", "id_pasajeros", "id_ruedas", "id_ejes", "id_cilindros"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.setAttribute("maxlength", "3");
-      el.oninput = function () {
+      el.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "");
-      };
+      });
     }
   });
-  document.getElementById("id_cilindrada").setAttribute("maxlength", "5");
-  document.getElementById("id_cilindrada").oninput = function () {
-    this.value = this.value.replace(/[^0-9]/g, "");
-  };
-  document.getElementById("id_potencia").setAttribute("maxlength", "10");
-  document.getElementById("id_formula_rodante").setAttribute("maxlength", "10");
-  const camposAnio = ["id_anio_fabricacion", "id_anio_modelo"];
-  camposAnio.forEach((id) => {
+
+  const cilindrada = document.getElementById("id_cilindrada");
+  if (cilindrada) {
+    cilindrada.setAttribute("maxlength", "5");
+    cilindrada.addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+  }
+
+  ["id_anio_fabricacion", "id_anio_modelo"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.setAttribute("maxlength", "4");
-      el.oninput = function () {
+      el.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "");
-      };
+      });
     }
   });
+
+  // =================================================================
+  // AUTOMATIZACIÓN DE FECHAS SEGÚN LA SEDE (OMITIENDO DOMINGOS)
+  // =================================================================
+  const REGLAS_SEDES = JSON.parse('{{ sedes_json|default:"{}"|escapejs }}');
+  const selectorSede = document.getElementById("id_sede");
+  const inputFechaEmision = document.getElementById("id_fecha_emision");
+
+  function calcularFechaSede() {
+    const sedeId = selectorSede.value;
+    const regla = REGLAS_SEDES[sedeId];
+
+    if (!regla) return;
+
+    let fecha = new Date(); // Fecha de hoy (del sistema)
+    let diasARestar = 0;
+
+    if (regla === "ANTES") diasARestar = 1;
+    if (regla === "ANTES_2") diasARestar = 2;
+
+    // Retroceder días de manera estricta omitiendo los domingos
+    while (diasARestar > 0) {
+      fecha.setDate(fecha.getDate() - 1);
+      if (fecha.getDay() !== 0) { // 0 es Domingo en JS
+        diasARestar--;
+      }
+    }
+
+    // Si por algún motivo cae un domingo, retroceder al sábado inmediatamente
+    if (fecha.getDay() === 0) {
+      fecha.setDate(fecha.getDate() - 1);
+    }
+
+    // Armar el formato estándar YYYY-MM-DD para el input de tipo date
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    
+    inputFechaEmision.value = `${anio}-${mes}-${dia}`;
+  }
+
+  if (selectorSede && inputFechaEmision) {
+    // Escuchar cuando el usuario cambie la sede manualmente
+    selectorSede.addEventListener("change", calcularFechaSede);
+
+    // Ejecutar la función inmediatamente al cargar la página
+    if (selectorSede.value) {
+      calcularFechaSede();
+    }
+  }
 </script>
 {% endblock %}

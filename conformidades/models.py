@@ -1,10 +1,26 @@
 from django.db import models
-from glp.models import SedeConfiguracion
 from django.conf import settings
+
+class SedeConformidad(models.Model):
+    REGLA_FECHA_CHOICES = [
+        ('MISMO', 'Mismo día'),
+        ('ANTES', '1 día antes'),
+        ('ANTES_2', '2 días antes'),
+    ]
+    
+    nombre_sede = models.CharField(max_length=150, verbose_name="Nombre de la Sede")
+    regla_fecha = models.CharField(max_length=10, choices=REGLA_FECHA_CHOICES, default='MISMO', verbose_name="Regla de Fecha")
+
+    class Meta:
+        verbose_name = "Sede Conformidad"
+        verbose_name_plural = "Sedes Conformidad"
+
+    def __str__(self):
+        return self.nombre_sede
 
 class CertificadoConformidad(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Certificador')
-    sede = models.ForeignKey(SedeConfiguracion, on_delete=models.PROTECT, verbose_name="Sede")
+    sede = models.ForeignKey(SedeConformidad, on_delete=models.PROTECT, verbose_name="Sede")
     propietario = models.CharField(max_length=300, blank=True, null=True, verbose_name="Titular / Propietario")
     fecha_emision = models.DateField(blank=True, null=True, verbose_name="Fecha de Emisión (Real)")
     numero_certificado = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="N° de Certificado")
@@ -24,9 +40,11 @@ class CertificadoConformidad(models.Model):
     ruedas = models.CharField(max_length=10, blank=True, null=True, verbose_name="Ruedas")
     ejes = models.CharField(max_length=10, blank=True, null=True, verbose_name="Ejes")
     cilindros = models.CharField(max_length=10, blank=True, null=True, verbose_name="Cilindros")
-    longitud = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, verbose_name="Longitud (m)")
-    altura = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, verbose_name="Altura (m)")
-    ancho = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, verbose_name="Ancho (m)")
+    
+    # Medidas (DecimalField para precisión técnica)
+    longitud = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="Longitud (m)")
+    altura = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="Altura (m)")
+    ancho = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, verbose_name="Ancho (m)")
     cilindrada = models.CharField(max_length=20, blank=True, null=True, verbose_name="Cilindrada")
     peso_bruto = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True, verbose_name="Peso Bruto (kg)")
     peso_neto = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True, verbose_name="Peso Neto (kg)")

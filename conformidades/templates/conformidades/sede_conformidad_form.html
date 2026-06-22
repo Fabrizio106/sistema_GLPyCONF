@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-title-row">
+        <h3 class="page-title">Configuración de Sedes - Conformidades</h3>
+    </div>
+
+    <div class="card section-card mb-5">
+        <div class="card-body">
+            <h5 class="card-title section-title">
+                <i class="bi bi-geo-alt"></i>
+                {% if editando %} Editar Sede: {{ editando.nombre_sede }} {% else %} Registrar Nueva Sede {% endif %}
+            </h5>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="{{ form.nombre_sede.id_for_label }}">Nombre de la Sede</label>
+                        {{ form.nombre_sede }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="{{ form.regla_fecha.id_for_label }}">Regla de Fecha de Certificación</label>
+                        {{ form.regla_fecha }}
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    {% if editando %}
+                    <a href="{% url 'gestion_sedes_conformidad' %}" class="btn btn-outline-orange me-2">Cancelar</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-orange">
+                        {% if editando %} Actualizar Cambios {% else %} Guardar Sede {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card section-card">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="bi bi-building"></i> Sedes de Conformidad</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover mt-3 align-middle" style="border: 0.5pt solid #dee2e6;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sede</th>
+                                    <th>Regla Asignada</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in sedes %}
+                                <tr>
+                                    <td><strong>{{ s.nombre_sede }}</strong></td>
+                                    <td><span class="badge bg-primary p-2">{{ s.get_regla_fecha_display }}</span></td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="{% url 'editar_sede_conformidad' s.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            
+                                            <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                                    onclick="confirmarEliminacionSede('{{ s.pk }}', '{{ s.nombre_sede }}')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+
+                                            <form id="form-eliminar-sede-{{ s.pk }}" action="{% url 'eliminar_sede_conformidad' s.pk %}" method="POST" style="display:none;">
+                                                {% csrf_token %}
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">No hay sedes configuradas para conformidades.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% if messages %}
+    {% for message in messages %}
+        {% if 'sede_info' in message.tags %}
+            <div id="msg-data" data-text="{{ message }}"></div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const msgData = document.getElementById("msg-data");
+
+    if (msgData) {
+        const textoMensaje = msgData.getAttribute("data-text");
+
+        Swal.fire({
+            title: '¡Operación Éxito!',
+            text: textoMensaje,
+            icon: 'success',
+            confirmButtonColor: '#ff7300',
+            confirmButtonText: 'Entendido'
+        });
+    }
+    });
+
+    function confirmarEliminacionSede(id, nombre) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Vas a eliminar la sede '" + nombre + "'. ¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-eliminar-sede-' + id).submit();
+            }
+        });
+    }
+</script>
+{% endblock %}

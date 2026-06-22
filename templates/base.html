@@ -94,7 +94,12 @@
                         <div class="sidebar-submenu">
                             <a href="{% url 'gestion_sedes' %}"
                                 class="sidebar-sublink {% if request.resolver_match.url_name == 'gestion_sedes' %}active-child{% endif %}">
-                                <span>Sedes</span>
+                                <span>Sedes GLP</span>
+                            </a>
+
+                            <a href="{% url 'gestion_sedes_conformidad' %}"
+                                class="sidebar-sublink {% if request.resolver_match.url_name == 'gestion_sedes_conformidad' %}active-child{% endif %}">
+                                <span>Sedes CMD</span>
                             </a>
 
                             <a href="{% url 'gestion_usuarios' %}"
@@ -134,18 +139,22 @@
                 <!-- REPORTES -->
                 {% if user.is_staff %}
                 <div class="sidebar-item">
-                    <a class="sidebar-link {% if request.resolver_match.url_name == 'reporte_glp_admin' %}active-parent{% else %}collapsed{% endif %}"
+                    <a class="sidebar-link {% if request.resolver_match.url_name == 'reporte_glp_admin' or request.resolver_match.url_name == 'reporte_cmd_admin' %}active-parent{% else %}collapsed{% endif %}"
                         data-bs-toggle="collapse" href="#submenuReportes" role="button">
                         <i class="bi bi-bar-chart-line"></i>
                         <span>Reportes</span>
                         <i class="bi bi-chevron-down sidebar-arrow"></i>
                     </a>
 
-                    <div class="collapse {% if request.resolver_match.url_name == 'reporte_glp_admin' %}show{% endif %}" id="submenuReportes">
+                    <div class="collapse {% if request.resolver_match.url_name == 'reporte_glp_admin' or request.resolver_match.url_name == 'reporte_cmd_admin' %}show{% endif %}" id="submenuReportes">
                         <div class="sidebar-submenu">
                             <a href="{% url 'reporte_glp_admin' %}"
                                 class="sidebar-sublink {% if request.resolver_match.url_name == 'reporte_glp_admin' %}active-child{% endif %}">
                                 <span>Reporte GLP</span>
+                            </a>
+                            <a href="{% url 'reporte_cmd_admin' %}"
+                                class="sidebar-sublink {% if request.resolver_match.url_name == 'reporte_cmd_admin' %}active-child{% endif %}">
+                                <span>Reporte CMD</span>
                             </a>
                         </div>
                     </div>

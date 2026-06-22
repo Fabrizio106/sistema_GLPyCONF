@@ -137,48 +137,21 @@
                     </a>
                 </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label small text-muted fw-bold">DÍA ESPECÍFICO</label>
-                        <input type="date" name="fecha" class="form-control" value="{{ request.GET.fecha }}">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label small text-muted fw-bold">RANGO DE FECHAS</label>
-                        <div class="input-group">
-                            <input type="date" name="inicio" class="form-control" value="{{ request.GET.inicio }}">
-                            <span class="input-group-text">al</span>
-                            <input type="date" name="fin" class="form-control" value="{{ request.GET.fin }}">
-                        </div>
-                    </div>
-
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary me-1">
-                            <i class="bi bi-funnel"></i>
-                        </button>
-
-                        <a href="{% url 'historial_conformidades' %}"
-                        class="btn btn-light border"
-                        title="Limpiar">
-                            <i class="bi bi-eraser"></i>
-                        </a>
-                    </div>
-
-                </form>
-            </div>
+            </form>
         </div>
     </div>
-
+    
     <div class="table-responsive">
         <table class="table table-hover align-middle tabla-conformidades">
             <thead class="table-light">
                 <tr>
-                    <th>N°&nbsp;Conformidad</th>
+                    <th>N° Conformidad</th>
                     <th>Placa</th>
                     <th>Sede</th>
                     <th>Marca / Modelo</th>
-                    <th>Fecha</th>
-                    <th>Trámites</th>
-                    <th>Acciones</th>
+                    <th>Fecha Certificación</th>
+                    <th>Trámites Realizados</th>
+                    <th class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -214,7 +187,7 @@
                                 {% elif label == 'color' %}COLOR
                                 {% elif label == 'numero_vin' %}N° VIN
                                 {% elif label == 'numero_serie' %}N° SERIE
-                                {% elif label == 'numero_motor' %}N° MOTOR
+                                {% elif label == 'numero_motor' %}MOTOR
                                 {% elif label == 'anio_fabricacion' %}AÑO FABRICACIÓN
                                 {% elif label == 'anio_modelo' %}AÑO MODELO
                                 {% elif label == 'version' %}VERSIÓN

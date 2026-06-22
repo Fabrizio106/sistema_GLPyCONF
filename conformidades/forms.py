@@ -1,30 +1,33 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import CertificadoConformidad, TramiteConformidad
+from .models import CertificadoConformidad, TramiteConformidad, SedeConformidad
 from glp.models import SedeConfiguracion
 from datetime import date, timedelta
 
 class CertificadoForm(forms.ModelForm):
+    
     nota_modificacion = forms.CharField(
         widget=forms.Textarea(attrs={
-            'rows': 3,
-            'class': 'form-control',
+            'rows': 3, 
+            'class': 'form-control', 
             'placeholder': 'Escriba una nota sobre la modificación de motor/combustible...'
         }),
         required=False,
         label="Nota"
     )
-
+    
     sede = forms.ModelChoiceField(
-        queryset=SedeConfiguracion.objects.all(),
+        queryset=SedeConformidad.objects.all(),
         empty_label="Seleccione una Sede",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_sede'})
     )
 
     def __init__(self, *args, **kwargs):
         super(CertificadoForm, self).__init__(*args, **kwargs)
         if not self.instance.pk:
-            self.fields['fecha_emision'].initial = date.today()
+            self.fields['fecha_emision'].initial = date.today() - timedelta(days=1)
+
+        # Mostrar enteros al editar
         if self.instance and self.instance.pk:
             if self.instance.peso_bruto is not None:
                 self.initial['peso_bruto'] = int(self.instance.peso_bruto)
@@ -50,15 +53,17 @@ class CertificadoForm(forms.ModelForm):
         widgets.update({
             'placa': forms.TextInput(attrs={
                 'class': 'form-control', 'maxlength': '10',
+                'pattern': '[A-Za-z0-9-]{1,10}',  
+                'title': 'La placa debe tener como máximo 10 caracteres alfanuméricos',
                 'style': 'text-transform: uppercase;'
             }),
             'fecha_emision': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
+            'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.00001'}),
+            'ancho': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001'}),
             'peso_bruto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peso_neto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'carga_util': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control bg-light'}),
+            'carga_util': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'propietario': forms.TextInput(attrs={'class': 'form-control'}),
         })
 
@@ -73,7 +78,19 @@ class TramiteForm(forms.ModelForm):
             'valor_nuevo': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+        
+# ESTE ES EL MOTOR DINÁMICO
+# Crea un conjunto de formularios de Trámites vinculados a un Certificado
 TramiteFormSet = inlineformset_factory(
     CertificadoConformidad, TramiteConformidad,
     form=TramiteForm, extra=1, can_delete=True
 )
+
+class SedeConformidadForm(forms.ModelForm):
+    class Meta:
+        model = SedeConformidad
+        fields = ['nombre_sede', 'regla_fecha']
+        widgets = {
+            'nombre_sede': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: VENTANILLA'}),
+            'regla_fecha': forms.Select(attrs={'class': 'form-select'}),
+        }
