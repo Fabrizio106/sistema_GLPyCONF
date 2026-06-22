@@ -18,9 +18,9 @@
         </a>
     </div>
 
-    <div class="row g-3 mb-4">
+    <div class="report-stats-grid-cmd mb-4">
 
-        <div class="col-md-2 col-sm-6">
+     
             <div class="report-stat-card stat-orange h-100">
                 <div class="stat-icon">
                     <i class="bi bi-file-check"></i>
@@ -30,9 +30,9 @@
                     <h3 class="stat-value">{{ total_encontrados|default:0 }}</h3>
                 </div>
             </div>
-        </div>
+      
 
-        <div class="col-md-2 col-sm-6">
+     
             <div class="report-stat-card stat-blue h-100">
                 <div class="stat-icon">
                     <i class="bi bi-tools"></i>
@@ -42,9 +42,9 @@
                     <h3 class="stat-value">{{ total_modificaciones|default:0 }}</h3>
                 </div>
             </div>
-        </div>
+      
 
-        <div class="col-md-2 col-sm-6">
+
             <div class="report-stat-card stat-orange h-100">
                 <div class="stat-icon">
                     <i class="bi bi-gear-wide-connected"></i>
@@ -54,9 +54,9 @@
                     <h3 class="stat-value">{{ total_adecuaciones|default:0 }}</h3>
                 </div>
             </div>
-        </div>
+  
 
-        <div class="col-md-3 col-sm-6">
+     
             <div class="report-stat-card stat-blue h-100">
                 <div class="stat-icon">
                     <i class="bi bi-node-plus"></i>
@@ -66,9 +66,9 @@
                     <h3 class="stat-value">{{ total_incorporaciones|default:0 }}</h3>
                 </div>
             </div>
-        </div>
+   
 
-        <div class="col-md-3 col-sm-6">
+    
             <div class="report-stat-card stat-orange h-100">
                 <div class="stat-icon">
                     <i class="bi bi-pencil-square"></i>
@@ -78,14 +78,14 @@
                     <h3 class="stat-value">{{ total_rectificaciones|default:0 }}</h3>
                 </div>
             </div>
-        </div>
+    
 
     </div>
 
     <div class="card section-card">
         <div class="card-body">
 
-            <form method="GET" class="filters-grid filters-grid-report mb-4">
+            <form method="GET" class="filters-grid-report-cmd mb-4">
 
                 <div class="filter-field">
                     <label class="form-label">Buscar placa</label>
@@ -172,7 +172,7 @@
                             <td class="fw-bold">{{ c.numero_certificado }}</td>
 
                             <td>
-                                <span class="fw-semibold small">{{ c.placa }}</span>
+                                <span class="badge badge-placa">{{ c.placa }}</span>
                             </td>
 
                             <td>

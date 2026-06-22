@@ -169,3 +169,40 @@ p {
     min-width: 40px;
 }
 
+/* CONFORMIDAD */
+
+.report-stats-grid-cmd{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:20px;
+}
+
+.report-stat-card{
+    min-height:110px;
+    padding:20px;
+}
+
+.stat-value{
+    font-size:32px;
+}
+
+.stat-label{
+    font-size:14px;
+    line-height:1.2;
+}
+
+.filters-grid-report-cmd{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:20px;
+}
+
+.filters-grid-report-cmd .filter-rango{
+    grid-column: span 2;
+}
+
+.filters-grid-report-cmd .filter-actions{
+    display:flex;
+    align-items:end;
+    gap:10px;
+}

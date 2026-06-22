@@ -152,10 +152,18 @@
 }
 
 .badge-placa{
-    background:#F1F5F9;
-    color:#475569;
-    border:1px solid #E2E8F0;
-    text-transform: uppercase;
+    background:#FFF3EA;
+    color:#FD7401;
+    border:1px solid #FFD5B0;
+
+    font-weight:700;
+    font-size:.9rem;
+    letter-spacing:.5px;
+
+    padding:8px 14px;
+    border-radius:8px;
+
+    text-transform:uppercase;
 }
 
 @media (max-width: 1200px) {
