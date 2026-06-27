@@ -70,12 +70,12 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
 
     if campo_lower == 'carroceria' and tipo == 'ADECUACION':
         TIPO_2008 = ['PICK UP','BARANDA','MINIBUS','MICROBÚS','MICROBUS',
-                     'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
-                     'REMOLCADOR','GRUA','PANEL','CARGOBUS',
-                     'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
+                    'OMNIBUS URBANO','OMNIBUS INTERURBANO','OMNIBUS PANORAMICO',
+                    'REMOLCADOR','GRUA','PANEL','CARGOBUS',
+                    'TRIMOTO PASAJEROS','TRIMOTO CARGA','TRIMOTO DE PASAJEROS']
         TIPO_2006 = ['STATION WAGON','HATCH BACK','HATCHBACK','SUV',
-                     'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
-                     'PLATAFORMA','VOLQUETE','M1']
+                    'COUPE','MULTIPROPÓSITO','MULTIPROPOSITO','SEDAN',
+                    'PLATAFORMA','VOLQUETE','M1']
         if any(c in val_nuevo_up for c in [x.upper() for x in TIPO_2008 + TIPO_2006]):
             return "EL VEHÍCULO INSPECCIONADO NO HA SUFRIDO MODIFICACIÓN ALGUNA EN SU ESTRUCTURA FÍSICA DEL CHASIS NI CARROCERÍA."
 
@@ -89,18 +89,8 @@ def generar_nota_conformidad(tipo, campo, valor_nuevo, valor_anterior):
             return "EL VEHICULO CUENTA CON SISTEMA BI-COMBUSTIBLE GLP"
         if 'GNV' in val_nuevo_up and 'GNV' not in val_ant_up:
             return "EL VEHICULO MANTIENE EL SISTEMA BI-COMBUSTIBLE GNV"
-        if tipo == 'RECTIFICACION':
-            return "RECTIFICAR COMBUSTIBLE de acuerdo a la RD N 4848-2006-MTC/15."
     elif campo_lower == 'asientos':
         return "EL VEHÍCULO NO HA SUFRIDO MODIFICACIÓN ALGUNA CON RESPECTO AL NUMERO DE ASIENTOS."
-    elif campo_lower == 'numero_motor':
-        return ("EL NUEVO MOTOR ENSAMBLADO TIENE EL MISMO MODELO DEL ANTERIOR MOTOR "
-                "POR LO CUAL, EL COMBUSTIBLE, CILINDRADA Y CILINDROS NO SE VEN AFECTADOS POR ESTE CAMBIO.")
-    elif campo_lower == 'ruedas':
-        if 'EXTRA' in val_ant_up or 'BALON' in val_ant_up:
-            return "EL VEHICULO HA MODIFICADO DE RUEDAS TIPO EXTRA ANCHAS A RUEDAS TIPO CONVENCIONALES."
-        else:
-            return "EL VEHICULO HA MODIFICADO DE RUEDAS CONVENCIONALES A TIPO EXTRA ANCHAS (LLANTAS BALON)."
     return ""
 
 
@@ -126,15 +116,25 @@ def obtener_sedes_json():
 def formatear_valor_con_unidad(campo, valor):
     if not valor or str(valor).strip() == '':
         return str(valor)
+    
     campo_lower = campo.lower()
+    val_str = str(valor).strip()
+    
     if campo_lower in ['longitud', 'altura', 'ancho']:
-        return f"{str(valor).rstrip('0').rstrip('.')}m"
+        return f"{val_str.rstrip('0').rstrip('.')}m"
+        
     if campo_lower in ['peso_neto', 'peso_bruto', 'carga_util']:
         try:
-            return f"{int(float(str(valor)))}kg"
+            # Quitamos comas y espacios por si el usuario tipeó "12,500"
+            num_limpio = val_str.replace(',', '').replace(' ', '')
+            return f"{int(float(num_limpio))}kg"
         except:
-            return str(valor)
-    return str(valor)
+            # Si hay cualquier fallo, le forzamos la palabra "kg" al final obligatoriamente
+            if 'kg' not in val_str.lower():
+                return f"{val_str}kg"
+            return val_str
+            
+    return val_str
 
 
 @login_required
