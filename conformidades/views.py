@@ -333,7 +333,7 @@ def descargar_pdf_conformidad(request, pk):
             categoria_final = t.valor_nuevo
             break
 
-    tipo_transporte = 'PERSONAS' if categoria_final.upper().startswith('M') else 'MERCANCÍAS'
+    tipo_transporte = 'PERSONAS' if categoria_final.upper().startswith('M', 'L') else 'MERCANCÍAS'
 
     return render_to_pdf_conformidad(
         'conformidades/pdf_conformidad.html',
